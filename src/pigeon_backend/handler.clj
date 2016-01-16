@@ -3,7 +3,8 @@
             [ring.util.http-response :refer :all]
             [schema.core :as s]
             [pigeon-backend.routes.hello :refer [hello-routes]]
-            [ring.server.standalone :as ring])
+            [ring.server.standalone :as ring]
+            [environ.core :refer [env]])
   (:gen-class))
 
 (defapi app
@@ -16,5 +17,11 @@
     :tags ["hello"]
     hello-routes))
 
+(defn coerce-to-integer [v]
+  (if (string? v)
+    (Integer/parseInt v)
+    v))
+
 (defn -main [& args]
-  (ring/serve app {:port 3000}))
+  (let [port (coerce-to-integer (env :port))]
+    (ring/serve app {:port port})))
