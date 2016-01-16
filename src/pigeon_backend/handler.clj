@@ -3,7 +3,8 @@
             [ring.util.http-response :refer :all]
             [schema.core :as s]
             [pigeon-backend.routes.hello :refer [hello-routes]]
-            [ring.server.standalone :as ring])
+            [ring.server.standalone :as ring]
+            [environ.core :refer [env]])
   (:gen-class))
 
 (defapi app
@@ -16,5 +17,13 @@
     :tags ["hello"]
     hello-routes))
 
+(defn handle-port-env [v]
+  (cond (and (string? v)
+             ((complement empty?) v))
+        (Integer/parseInt (env :port))
+        (integer? v)
+        v))
+
 (defn -main [& args]
-  (ring/serve app {:port 3000}))
+  (let [port (handle-port-env (env :port))]
+    (ring/serve app {:port port})))
