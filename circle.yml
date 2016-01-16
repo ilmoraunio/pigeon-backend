@@ -1,13 +1,8 @@
-dependencies:
-  pre:
-    - git config --global user.email "circleci@ignore"
-    - git config --global user.name "CircleCI"
-    - heroku git:remote -a $APP
 test:
   override:
     - lein midje
 deployment:
-  production_deploy:
+  staging:
     branch: circle-automatic-master-deploy
-    commands:
-      - git push heroku circle-automatic-master-deploy:master
+    heroku:
+      appname: $APP
