@@ -2,6 +2,7 @@ dependencies:
   pre:
     - git config --global user.email "circleci@ignore"
     - git config --global user.name "CircleCI"
+    - heroku git:remote -a $APP
 test:
   override:
     - lein midje
