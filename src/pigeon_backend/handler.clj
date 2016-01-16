@@ -2,7 +2,9 @@
   (:require [compojure.api.sweet :refer :all]
             [ring.util.http-response :refer :all]
             [schema.core :as s]
-            [pigeon-backend.routes.hello :refer [hello-routes]]))
+            [pigeon-backend.routes.hello :refer [hello-routes]]
+            [ring.server.standalone :as ring])
+  (:gen-class))
 
 (defapi app
   (swagger-ui)
@@ -13,3 +15,6 @@
   (context* "/hello" []
     :tags ["hello"]
     hello-routes))
+
+(defn -main [& args]
+  (ring/serve app {:port 3000}))
