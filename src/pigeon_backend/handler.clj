@@ -17,13 +17,11 @@
     :tags ["hello"]
     hello-routes))
 
-(defn handle-port-env [v]
-  (cond (and (string? v)
-             ((complement empty?) v))
-        (Integer/parseInt (env :port))
-        (integer? v)
-        v))
+(defn coerce-to-integer [v]
+  (if (string? v)
+    (Integer/parseInt v)
+    v))
 
 (defn -main [& args]
-  (let [port (handle-port-env (env :port))]
+  (let [port (coerce-to-integer (env :port))]
     (ring/serve app {:port port})))
