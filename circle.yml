@@ -5,4 +5,4 @@ deployment:
   staging:
     branch: circle-automatic-master-deploy
     heroku:
-      appname: ${APP}
+      appname: pigeon-backend-staging
