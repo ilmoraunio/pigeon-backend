@@ -3,6 +3,6 @@ test:
     - lein midje
 deployment:
   staging:
-    branch: circle-automatic-master-deploy
+    branch: master
     heroku:
       appname: pigeon-backend-staging
