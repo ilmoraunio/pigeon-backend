@@ -1,6 +1,7 @@
 test:
   override:
     - lein midje
+    - lein cloverage
 deployment:
   staging:
     branch: master
