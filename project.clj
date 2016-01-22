@@ -5,6 +5,7 @@
                  [metosin/compojure-api "0.22.0"]
                  [ring-server "0.4.0"]
                  [environ "1.0.1"]]
+  :plugins       [[lein-environ "0.4.0"]]
   :ring {:handler pigeon-backend.handler/app}
   :uberjar-name "server.jar"
   :profiles {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
@@ -14,5 +15,8 @@
                                   [enlive "1.1.6"]]
                    :plugins [[lein-ring "0.9.6"]
                              [lein-midje "3.1.3"]
-                             [lein-cloverage "1.0.6"]]}}
+                             [lein-cloverage "1.0.6"]]
+                   :env {:port 3000}}
+             :production {}
+             :uberjar {:aot :all}}
    :main pigeon-backend.handler)
