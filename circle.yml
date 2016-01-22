@@ -2,6 +2,8 @@ test:
   override:
     - lein midje
     - lein cloverage
+  post:
+    - lein run -m pigeon-backend.coverage 82.26 88.89
 deployment:
   staging:
     branch: master
