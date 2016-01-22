@@ -1,0 +1,1 @@
+web: java -cp target/server.jar clojure.main -m pigeon-backend.handler
