@@ -17,6 +17,5 @@
                              [lein-midje "3.1.3"]
                              [lein-cloverage "1.0.6"]]
                    :env {:port 3000}}
-             :production {}
              :uberjar {:aot :all}}
    :main pigeon-backend.handler)
