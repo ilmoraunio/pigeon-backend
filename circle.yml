@@ -5,6 +5,10 @@ test:
   post:
     - lein run -m pigeon-backend.coverage 82.26 88.89
 deployment:
+  production:
+    tag: /release-.*/
+    heroku:
+      appname: pigeon-backend
   staging:
     branch: master
     heroku:
