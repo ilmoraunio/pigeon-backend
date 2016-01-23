@@ -1,12 +1,14 @@
 # pigeon-backend
 
+[![Circle CI](https://circleci.com/gh/ilmoraunio/pigeon-backend.svg?style=svg)](https://circleci.com/gh/ilmoraunio/pigeon-backend)
+
 Pigeon is a rulebased messaging service.
 
 ## Usage
 
 ### Run the application locally
 
-`lein ring server`
+`lein run` or `lein ring server`
 
 ### Run the tests
 
@@ -15,13 +17,15 @@ Pigeon is a rulebased messaging service.
 ### Packaging and running as standalone jar
 
 ```
-lein do clean, ring uberjar
-java -jar target/server.jar
+lein uberjar
+java $JVM_OPTS -jar target/server.jar
 ```
 
-### Packaging as war
+Make sure to set the following environment variable(s):
 
-`lein ring uberwar`
+```
+PORT
+```
 
 ## License
 
