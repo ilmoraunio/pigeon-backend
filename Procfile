@@ -1,1 +1,1 @@
-web: java -cp target/server.jar clojure.main -m pigeon-backend.handler
+web: java $JVM_OPTS -jar target/server.jar
