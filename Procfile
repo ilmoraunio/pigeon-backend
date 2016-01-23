@@ -1,1 +1,1 @@
-web: sh -c 'lein uberjar && java $JVM_OPTS -jar target/server.jar'
+web: java $JVM_OPTS -jar target/server.jar
