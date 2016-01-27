@@ -1,0 +1,2 @@
+{:profiles/dev  {:env {:connection-uri "jdbc:postgresql://localhost/pigeon-backend?user=pigeon-backend&password=pigeon-backend"}}
+ :profiles/test {:env {:connection-uri "jdbc:postgresql://localhost/pigeon-backend-test?user=pigeon-backend-test&password=pigeon-backend-test"}}}
