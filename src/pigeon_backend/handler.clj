@@ -4,7 +4,8 @@
             [schema.core :as s]
             [pigeon-backend.routes.hello :refer [hello-routes]]
             [ring.server.standalone :as ring]
-            [environ.core :refer [env]])
+            [environ.core :refer [env]]
+            [pigeon-backend.db.migrations :as migrations])
   (:gen-class))
 
 (defapi app
@@ -24,4 +25,5 @@
 
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]
+    (migrations/migrate)
     (ring/serve app {:port port})))

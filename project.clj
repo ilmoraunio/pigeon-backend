@@ -4,18 +4,34 @@
                  [clj-time "0.9.0"] ; required due to bug in lein-ring
                  [metosin/compojure-api "0.22.0"]
                  [ring-server "0.4.0"]
-                 [environ "1.0.1"]]
+                 [environ "1.0.1"]
+                 [ragtime "0.5.2"]
+                 [org.clojure/tools.nrepl "0.2.10"]
+                 [org.postgresql/postgresql "9.4.1207.jre7"]
+                 [yesql "0.5.2"]]
   :plugins       [[lein-environ "0.4.0"]]
   :ring {:handler pigeon-backend.handler/app}
   :uberjar-name "server.jar"
-  :profiles {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
-                                  [cheshire "5.3.1"]
-                                  [ring-mock "0.1.5"]
-                                  [midje "1.6.3"]
-                                  [enlive "1.1.6"]]
-                   :plugins [[lein-ring "0.9.6"]
-                             [lein-midje "3.1.3"]
-                             [lein-cloverage "1.0.6"]]
-                   :env {:port 3000}}
-             :uberjar {:aot :all}}
+  :eval-in :nrepl
+  :profiles {:dev [:project/dev :profiles/dev]
+             :test [:project/test :profiles/test]
+             :project/dev {:dependencies [[javax.servlet/servlet-api "2.5"]
+                                          [cheshire "5.3.1"]
+                                          [ring-mock "0.1.5"]
+                                          [midje "1.6.3"]
+                                          [enlive "1.1.6"]]
+                           :plugins [[lein-ring "0.9.6"]
+                                     [lein-midje "3.1.3"]
+                                     [lein-cloverage "1.0.6"]]
+                           ;;when :nrepl-port is set the application starts the nREPL server on load
+                           :env {:dev true
+                                 :port 3000
+                                 :nrepl-port 7000}}
+             :project/test {:env {:test true
+                                  :port 3001
+                                  :nrepl-port 7001}}
+             :uberjar {:omit-source true
+                       :aot :all}}
+   :aliases {"migrate" ["run" "-m" "pigeon-backend.db.migrations/migrate"]
+             "rollback" ["run" "-m" "pigeon-backend.db.migrations/rollback"]}
    :main pigeon-backend.handler)
