@@ -8,7 +8,7 @@ test:
     - lein with-profile +test midje
     - lein with-profile +test cloverage
   post:
-    - lein run -m pigeon-backend.coverage 86.16 95
+    - lein run -m pigeon-backend.coverage 86.03 95
 deployment:
   production:
     tag: /release-.*/
