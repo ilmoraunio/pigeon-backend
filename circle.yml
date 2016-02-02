@@ -1,3 +1,8 @@
+dependencies:
+  pre:
+    - createdb pigeon-backend-test
+    - createuser pigeon-backend-test
+    - echo '{:profiles/test {:env {:database-url "jdbc:postgresql://localhost/pigeon-backend-test?user=pigeon-backend-test&password=pigeon-backend-test"}}}' > profiles.clj
 test:
   override:
     - lein with-profile +test midje
