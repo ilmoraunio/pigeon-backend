@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/rulebased-chat/pigeon-backend.png?label=ready&title=Ready)](https://waffle.io/rulebased-chat/pigeon-backend)
 # pigeon-backend
 
 [![Circle CI](https://circleci.com/gh/ilmoraunio/pigeon-backend.svg?style=svg)](https://circleci.com/gh/ilmoraunio/pigeon-backend)
