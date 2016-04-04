@@ -13,15 +13,15 @@
   (wrap-cors handler :access-control-allow-origin [#".*"]
                      :access-control-allow-methods [:get :put :post :delete]))
 
-(defapi app
-  (swagger-ui)
-  (swagger-docs
-    {:info {:title "Pigeon-backend"
-            :description "Compojure Api example"}
-     :tags [{:name "hello", :description "says hello in Finnish"}]})
-  (context* "/hello" []
-    :tags ["hello"]
-    (wrap-cors-fn hello-routes)))
+(def app
+  (api
+    {:swagger
+     {:ui "/"
+      :spec "/swagger.json"
+      :data {:info {:title "Sample API"
+                    :description "Compojure Api example"}
+             :tags [{:name "api", :description "some apis"}]}}}
+    hello-routes))
 
 (defn coerce-to-integer [v]
   (if (string? v)
@@ -31,4 +31,5 @@
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]
     (migrations/migrate)
-    (ring/serve app {:port port})))
+    (ring/serve (-> app 
+                    wrap-cors-fn) {:port port})))
