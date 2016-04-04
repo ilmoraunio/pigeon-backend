@@ -1,8 +1,8 @@
 (defproject pigeon-backend "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.7.0"]
                  [clj-time "0.9.0"] ; required due to bug in lein-ring
-                 [metosin/compojure-api "0.22.0"]
+                 [metosin/compojure-api "1.0.2"]
                  [ring-server "0.4.0"]
                  [environ "1.0.1"]
                  [ragtime "0.5.2"]

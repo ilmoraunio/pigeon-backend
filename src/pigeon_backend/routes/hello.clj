@@ -5,14 +5,18 @@
 
 (s/defschema Message {:message String})
 
-(defroutes* hello-routes
-  (GET* "/" []
-      :return Message
-      :query-params [name :- String]
-      :summary "say hello"
-      (ok {:message (str "Terve, " name)}))
-  (GET* "/en" []
-      :return Message
-      :query-params [name :- String]
-      :summary "say hello in English"
-      (ok {:message (str "Hello, " name)})))
+(def hello-routes
+  (context "/hello" []
+    :tags ["hello"]
+
+    (GET "/" []
+        :return Message
+        :query-params [name :- String]
+        :summary "say hello"
+        (ok {:message (str "Terve, " name)}))
+
+    (GET "/en" []
+        :return Message
+        :query-params [name :- String]
+        :summary "say hello in English"
+        (ok {:message (str "Hello, " name)}))))
