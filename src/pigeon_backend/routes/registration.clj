@@ -3,13 +3,6 @@
             [ring.util.http-response :refer :all]
             [schema.core :as s]))
 
-; TODO: move to dao layer
-(s/defschema UserModel
-  {:id s/Int 
-   :username String
-   :password String
-   :deleted Boolean})
-
 (def registration-routes
   (context "/user" []
     :tags ["registration"]
