@@ -8,6 +8,6 @@
     :tags ["registration"]
 
     (PUT "/" []
-      :query-params [username :- String, password :- String]
+      :body-params [username :- String, password :- String]
       :summary "Creates a user account with given unique username and password"
       (ok))))
