@@ -8,10 +8,9 @@ test:
     - lein with-profile +test midje
     - lein with-profile +test cloverage
   post:
-    coveralls_coverage:
-      branch: master
-      commands:
-        - bash -ex test/coveralls.sh
-    coverage_checkup:
-      commands:
-        - lein run -m pigeon-backend.coverage 85 95
+    - lein run -m pigeon-backend.coverage 85 95
+deployment:
+  coverage:
+    branch: master
+    commands:
+      - bash -ex test/coveralls.sh
