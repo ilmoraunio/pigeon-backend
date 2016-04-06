@@ -12,4 +12,6 @@ test:
       branch: master
       commands:
         - bash -ex test/coveralls.sh
-    - lein run -m pigeon-backend.coverage 85 95
+    coverage_checkup:
+      commands:
+        - lein run -m pigeon-backend.coverage 85 95
