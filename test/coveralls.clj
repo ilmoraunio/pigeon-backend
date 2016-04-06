@@ -3,7 +3,8 @@
             [clojure.java.io :as io]
             [environ.core :refer [env]]))
 
-; lein run -m coveralls to add relevant repo token
+; lein run -m coveralls to add relevant Coveralls.io repo token.
+; Assumes repo token has been set to COVERALLS_REPO_TOKEN env variable.
 
 (defn -main [& args]
   (let [json-as-object (cheshire/parse-string 
