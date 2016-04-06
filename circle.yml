@@ -8,4 +8,5 @@ test:
     - lein with-profile +test midje
     - lein with-profile +test cloverage
   post:
-    - lein run -m pigeon-backend.coverage 86.03 95
+    - bash -ex test/coveralls.sh
+    - lein run -m pigeon-backend.coverage 85 95

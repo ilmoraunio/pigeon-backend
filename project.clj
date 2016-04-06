@@ -3,6 +3,7 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [clj-time "0.9.0"] ; required due to bug in lein-ring
                  [metosin/compojure-api "1.0.2"]
+                 [metosin/ring-http-response "0.6.5"]
                  [ring-server "0.4.0"]
                  [environ "1.0.1"]
                  [ragtime "0.5.2"]
@@ -20,7 +21,8 @@
                                           [cheshire "5.3.1"]
                                           [ring-mock "0.1.5"]
                                           [midje "1.6.3"]
-                                          [enlive "1.1.6"]]
+                                          [enlive "1.1.6"]
+                                          [org.clojure/data.json "0.2.6"]]
                            :plugins [[lein-ring "0.9.6"]
                                      [lein-midje "3.1.3"]
                                      [lein-cloverage "1.0.6"]]
