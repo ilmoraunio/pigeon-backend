@@ -6,7 +6,9 @@
             [ring.server.standalone :as ring]
             [environ.core :refer [env]]
             [pigeon-backend.db.migrations :as migrations]
-            [ring.middleware.cors :refer [wrap-cors]])
+            [ring.middleware.cors :refer [wrap-cors]]
+            [ring.middleware.reload :refer [wrap-reload]]
+            [pigeon-backend.routes.registration :refer [registration-routes]])
   (:gen-class))
 
 (defn wrap-cors-fn [handler]
@@ -21,7 +23,8 @@
       :data {:info {:title "Sample API"
                     :description "Compojure Api example"}
              :tags [{:name "api", :description "some apis"}]}}}
-    hello-routes))
+    hello-routes
+    registration-routes))
 
 (defn coerce-to-integer [v]
   (if (string? v)
@@ -31,5 +34,9 @@
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]
     (migrations/migrate)
-    (ring/serve (-> app 
+    ; TODO: get production-ready server running here...
+    (ring/serve (-> #'app
+                    ; TODO: do not enable by default, but
+                    ; allow it to be enabled through app properties.
+                    wrap-reload 
                     wrap-cors-fn) {:port port})))
