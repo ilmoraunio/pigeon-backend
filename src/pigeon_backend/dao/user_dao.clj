@@ -11,13 +11,13 @@
                       :full_name String 
                       :password String})
 
-(s/defschema UserOutput {:id s/Int
-                         :username String
-                         :full_name String
-                         :deleted Boolean})
+(s/defschema PersistedUser {:id s/Int
+                            :username String
+                            :full_name String
+                            :deleted Boolean})
 
 (defn create [user] {:pre [(s/validate NewUser user)] 
-                     :post [(s/validate UserOutput %)]}
+                     :post [(s/validate PersistedUser %)]}
   {:id 1
    :username (:username user)
    :full_name (:full_name user)
