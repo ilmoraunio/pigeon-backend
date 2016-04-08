@@ -19,4 +19,4 @@
   (facts "Create"
     (with-state-changes [(before :facts (drop-and-create-tables))]
       (fact "Basic case"
-        (s/validate dao/PersistedUser (dao/create user-dto))))))
+        (dao/create user-dto) => 1))))
