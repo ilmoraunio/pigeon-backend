@@ -1,4 +1,4 @@
-(ns pigeon-backend.util
+(ns pigeon-backend.test-util
   (:require [pigeon-backend.migrations_test :refer [drop-all-tables]]
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.db.migrations :as migrations]))

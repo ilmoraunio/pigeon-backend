@@ -25,14 +25,14 @@
 (defquery sql-user-create! "sql/user/create.sql"
   {:connection db-spec})
 
-(defn user-create [user] {:pre [(s/validate NewUser user)]
-                     :post [(instance? Boolean %)]}
+(defn create! [user] {:pre [(s/validate NewUser user)]
+                     :post [(true? %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (sql-user-create! user {:connection tx})
     true))
 
-(defn user-read [])
+(defn get-from-db [])
 
-(defn user-update [])
+(defn update! [])
 
-(defn user-delete [])
+(defn delete! [])

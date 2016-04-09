@@ -2,7 +2,8 @@
   (:require [clojure.test :refer [deftest]]
             [midje.sweet :refer :all]
             [pigeon-backend.dao.user-dao :as dao]
-            [schema.core :as s])
+            [schema.core :as s]
+            [pigeon-backend.test-util :refer [drop-and-create-tables]])
   (import java.sql.BatchUpdateException))
 
 (def user-dto {:username "foobar"
@@ -13,7 +14,7 @@
   (facts "Create"
     (with-state-changes [(before :facts (drop-and-create-tables))]
       (fact "Basic case"
-        (dao/user-create user-dto) => true)
-      (fact "PSQLException failure"
-        (dao/user-create user-dto)
-        (dao/user-create user-dto) => (throws BatchUpdateException)))))
+        (dao/create! user-dto) => true)
+      (fact "Duplicate username entry not allowed"
+        (dao/create! user-dto)
+        (dao/create! user-dto) => (throws BatchUpdateException)))))
