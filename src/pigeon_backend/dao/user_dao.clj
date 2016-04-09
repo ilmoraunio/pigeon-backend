@@ -1,7 +1,9 @@
 (ns pigeon-backend.dao.user-dao
   (:require [schema.core :as s]
             [yesql.core :refer [defquery]]
-            [pigeon-backend.db.config :refer [db-spec]]))
+            [pigeon-backend.db.config :refer [db-spec]]
+            [clojure.java.jdbc :as jdbc])
+  (import org.postgresql.util.PSQLException))
 
 (s/defschema UserModel {:id s/Int 
                         :username String 
@@ -20,16 +22,22 @@
                             :full_name String
                             :deleted Boolean})
 
-(defquery sql-create! "sql/user/create.sql"
+(defquery sql-user-create! "sql/user/create.sql"
   {:connection db-spec})
 
-(defn create [user] {:pre [(s/validate NewUser user)] 
-                     :post [(= 1 %)]}
+(defn user-create [user] {:pre [(s/validate NewUser user)]
+                     :post [(instance? Boolean %)]}
+  (try 
+    (jdbc/with-db-transaction [tx db-spec]
+      (sql-user-create! user {:connection tx})
+      true)
+    (catch Exception e
+      (binding [*out* *err*]
+        (println (.getNextException e)))
+      false)))
 
-  (sql-create! user))
+(defn user-read [])
 
-(defn read [])
+(defn user-update [])
 
-(defn update [])
-
-(defn delete [])
+(defn user-delete [])

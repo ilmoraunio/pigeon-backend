@@ -19,4 +19,7 @@
   (facts "Create"
     (with-state-changes [(before :facts (drop-and-create-tables))]
       (fact "Basic case"
-        (dao/create user-dto) => 1))))
+        (dao/user-create user-dto) => true)
+      (fact "PSQLException failure"
+        (dao/user-create user-dto)
+        (dao/user-create user-dto) => false))))
