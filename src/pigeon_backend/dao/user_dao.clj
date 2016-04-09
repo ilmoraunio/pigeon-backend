@@ -27,14 +27,9 @@
 
 (defn user-create [user] {:pre [(s/validate NewUser user)]
                      :post [(instance? Boolean %)]}
-  (try 
-    (jdbc/with-db-transaction [tx db-spec]
-      (sql-user-create! user {:connection tx})
-      true)
-    (catch Exception e
-      (binding [*out* *err*]
-        (println (.getNextException e)))
-      false)))
+  (jdbc/with-db-transaction [tx db-spec]
+    (sql-user-create! user {:connection tx})
+    true))
 
 (defn user-read [])
 
