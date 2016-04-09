@@ -26,20 +26,28 @@
 (defquery sql-user-create! "sql/user/create.sql"
   {:connection db-spec})
 
-(defn create! [user] {:pre [(s/validate NewUser user)]
-                     :post [(true? %)]}
+(defn invoke-sql [f dto db-spec]
   (try
-    (jdbc/with-db-transaction [tx db-spec]
-      (sql-user-create! user {:connection tx})
-      true)
+    (f dto db-spec)
     (catch BatchUpdateException e
       (let [message (-> e .getNextException .getMessage)
-            duplicate-user #"duplicate key value violates unique constraint"]
-        (when-let [[_ field] (re-find duplicate-user message)]
+            duplicate-user #"username.*?already exists"]
+        (when-let [findings (re-find duplicate-user message)]
           (throw
             (ex-info
-              (format "Duplicate user %s found" (:username user))
-              user)))))))
+              (format "User %s already exists" (:username dto))
+              dto)))
+        (throw (.getNextException e))))))
+
+(defn create! [user] {:pre [(s/validate NewUser user)]
+                     :post [(true? %)]}
+  (invoke-sql 
+    (fn [dto db-spec]
+      (jdbc/with-db-transaction [tx db-spec]
+        (sql-user-create! dto {:connection tx}))
+      true) 
+    user
+    db-spec))
 
 (defn get-from-db [])
 
