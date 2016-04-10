@@ -9,9 +9,10 @@
   (try 
     (user-dao/create! dto)
     (catch clojure.lang.ExceptionInfo e
-      (let [status-code (status-code-for cause)
-            cause (:cause (ex-data e))
+      (let [cause (:cause (ex-data e))
+            status-code (status-code-for cause)
             detail (:detail (ex-data e))]
-        {:status status-code
-         :title (.getMessage e)
-         :detail detail}))))
+        {:errors
+          {:status status-code
+           :title (.getMessage e)
+           :detail detail}}))))
