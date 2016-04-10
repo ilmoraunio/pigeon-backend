@@ -2,9 +2,8 @@
   (:require [schema.core :as s]
             [yesql.core :refer [defquery]]
             [pigeon-backend.db.config :refer [db-spec]]
-            [clojure.java.jdbc :as jdbc])
-  (import org.postgresql.util.PSQLException)
-  (import java.sql.BatchUpdateException))
+            [pigeon-backend.dao.psql-util :refer [execute-sql-and-handle-exceptions]]
+            [clojure.java.jdbc :as jdbc]))
 
 (s/defschema UserModel {:id s/Int 
                         :username String 
@@ -26,28 +25,15 @@
 (defquery sql-user-create! "sql/user/create.sql"
   {:connection db-spec})
 
-(defn invoke-sql [f dto db-spec]
-  (try
-    (f dto db-spec)
-    (catch BatchUpdateException e
-      (let [message (-> e .getNextException .getMessage)
-            duplicate-user #"username.*?already exists"]
-        (when-let [findings (re-find duplicate-user message)]
-          (throw
-            (ex-info
-              (format "User %s already exists" (:username dto))
-              dto)))
-        (throw (.getNextException e))))))
-
 (defn create! [user] {:pre [(s/validate NewUser user)]
                      :post [(true? %)]}
-  (invoke-sql 
-    (fn [dto db-spec]
+  (execute-sql-and-handle-exceptions
+    (fn [db-spec map-args]
       (jdbc/with-db-transaction [tx db-spec]
-        (sql-user-create! dto {:connection tx}))
-      true) 
-    user
-    db-spec))
+        (sql-user-create! map-args {:connection tx}))
+      true)
+    db-spec
+    user))
 
 (defn get-from-db [])
 

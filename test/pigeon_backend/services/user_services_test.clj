@@ -17,4 +17,9 @@
   (facts "Create"
     (with-state-changes [(before :facts (drop-and-create-tables))]
       (fact "Basic case"
-        (service/user-create! user-dto) => true))))
+        (service/user-create! user-dto) => true)
+      (fact "Duplicate username entry not allowed"
+        (service/user-create! user-dto)
+        (service/user-create! user-dto) => {:status 400 
+                                            :title "Invalid username" 
+                                            :detail "User foobar already exists"}))))

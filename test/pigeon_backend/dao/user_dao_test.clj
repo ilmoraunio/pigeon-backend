@@ -17,4 +17,4 @@
         (dao/create! user-dto) => true)
       (fact "Duplicate username entry not allowed"
         (dao/create! user-dto)
-        (dao/create! user-dto) => (throws #"User.*?already exists")))))
+        (dao/create! user-dto) => (throws #"Invalid username")))))
