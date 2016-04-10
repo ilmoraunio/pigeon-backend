@@ -3,6 +3,7 @@
             [midje.sweet :refer :all]
             [pigeon-backend.dao.user-dao :as dao]
             [schema.core :as s]
+            [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [drop-and-create-tables]])
   (import java.sql.BatchUpdateException))
 
@@ -14,7 +15,7 @@
   (facts "Create"
     (with-state-changes [(before :facts (drop-and-create-tables))]
       (fact "Basic case"
-        (dao/create! user-dto) => true)
+        (dao/create! db-spec user-dto) => true)
       (fact "Duplicate username entry not allowed"
-        (dao/create! user-dto)
-        (dao/create! user-dto) => (throws #"Invalid username")))))
+        (dao/create! db-spec user-dto)
+        (dao/create! db-spec user-dto) => (throws #"Duplicate username")))))

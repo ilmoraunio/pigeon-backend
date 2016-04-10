@@ -4,9 +4,9 @@
   (case cause
     :username-exists 400))
 
-(defn execute-dao-or-handle-exception [f dto]
+(defn execute-dao-or-handle-exception [f tx dto]
   (try
-    (f dto)
+    (f tx dto)
     (catch clojure.lang.ExceptionInfo e
       (let [cause (:cause (ex-data e))
             status-code (status-code-for cause)

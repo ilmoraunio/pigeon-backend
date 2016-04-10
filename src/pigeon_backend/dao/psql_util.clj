@@ -10,6 +10,7 @@
         (when-let [findings (re-find #"username.*?already exists" message)]
           (throw
             (ex-info
-              "Invalid username"
-              {:cause :username-exists :detail (format "User %s already exists" (:username map-args))}))))
+              "Duplicate username"
+              {:cause :username-exists
+               :detail (format "User %s already exists" (:username map-args))}))))
       (throw (.getNextException e)))))
