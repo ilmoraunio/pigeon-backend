@@ -20,6 +20,6 @@
         (service/user-create! user-dto) => true)
       (fact "Duplicate username entry not allowed"
         (service/user-create! user-dto)
-        (service/user-create! user-dto) => {:errors [{:status 400 
-                                                      :title "Duplicate username" 
-                                                      :detail "User foobar already exists"}]}))))
+        (service/user-create! user-dto) => {:error-status 400
+                                            :title "Duplicate username" 
+                                            :detail "User foobar already exists"}))))

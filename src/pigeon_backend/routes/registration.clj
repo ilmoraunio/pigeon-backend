@@ -2,13 +2,23 @@
   (:require [compojure.api.sweet :refer :all]
             [ring.util.http-response :refer :all]
             [ring.util.http-status :as status]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [pigeon-backend.services.user-service :as user-service]
+            [pigeon-backend.services.exception-util :refer [ErrorMessage]]))
 
 (def registration-routes
   (context "/user" []
     :tags ["registration"]
 
     (PUT "/" []
-      :body-params [username :- String, password :- String]
-      :summary "Creates a user account with given unique username and password"
-      (created))))
+      :body-params [username :- String,
+                    password :- String,
+                    full_name :- String]
+      :summary "Creates a user account with given unique username,
+                password and full name (optional)"
+      (let [body-value (user-service/user-create! {:username username
+                                              :password password
+                                              :full_name full_name})]
+        (if-not (s/check ErrorMessage body-value)
+          (status/status (:error-status body-value))
+          (created))))))

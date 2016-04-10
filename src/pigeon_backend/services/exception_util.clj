@@ -1,4 +1,10 @@
-(ns pigeon-backend.services.exception-util)
+(ns pigeon-backend.services.exception-util
+  (:require [schema.core :as s]))
+
+(s/defschema ErrorMessage
+  {:error-status s/Int
+   :title String
+   :detail String})
 
 (defn- status-code-for [cause]
   (case cause
@@ -11,7 +17,6 @@
       (let [cause (:cause (ex-data e))
             status-code (status-code-for cause)
             detail (:detail (ex-data e))]
-          {:errors
-            [{:status status-code
-              :title (.getMessage e)
-              :detail detail}]}))))
+          {:error-status status-code
+           :title (.getMessage e)
+           :detail detail}))))
