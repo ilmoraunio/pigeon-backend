@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [yesql.core :refer [defquery]]
             [pigeon-backend.db.config :refer [db-spec]]
-            [pigeon-backend.dao.psql-util :refer [execute-sql-and-handle-exceptions]]
+            [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exceptions]]
             [clojure.java.jdbc :as jdbc]))
 
 (s/defschema UserModel {:id s/Int 
@@ -27,7 +27,7 @@
 
 (defn create! [user] {:pre [(s/validate NewUser user)]
                      :post [(true? %)]}
-  (execute-sql-and-handle-exceptions
+  (execute-sql-or-handle-exceptions
     (fn [db-spec map-args]
       (jdbc/with-db-transaction [tx db-spec]
         (sql-user-create! map-args {:connection tx}))

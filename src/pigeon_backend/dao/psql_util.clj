@@ -2,7 +2,7 @@
   (import java.sql.BatchUpdateException)
   (import org.postgresql.util.PSQLException))
 
-(defn execute-sql-and-handle-exceptions [f db-spec map-args]
+(defn execute-sql-or-handle-exceptions [f db-spec map-args]
   (try
     (f db-spec map-args)
     (catch Exception e
