@@ -26,4 +26,4 @@
                   "application/json"))]
           status => 201
           body => nil)
-          (-> (sql-user-get-all) count) => 1))))
+        ))))

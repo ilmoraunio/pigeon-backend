@@ -16,9 +16,8 @@
                     full_name :- String]
       :summary "Creates a user account with given unique username,
                 password and full name (optional)"
-      (let [body-value (user-service/user-create! {:username username
-                                              :password password
-                                              :full_name full_name})]
-        (if-not (s/check ErrorMessage body-value)
-          (status/status (:error-status body-value))
-          (created))))))
+      (let [return-value (user-service/user-create! 
+                           {:username username
+                            :password password
+                            :full_name full_name})]
+        (created)))))

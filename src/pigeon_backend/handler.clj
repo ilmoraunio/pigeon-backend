@@ -31,12 +31,17 @@
     (Integer/parseInt v)
     v))
 
+;; TODO: middleware to handle clojure.lang.ExceptionInfo
+
+(defn app-fn []
+  (-> #'app
+      ; TODO: do not enable by default, but
+      ; allow it to be enabled through app properties.
+      wrap-reload 
+      wrap-cors-fn))
+
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]
     (migrations/migrate)
     ; TODO: get production-ready server running here...
-    (ring/serve (-> #'app
-                    ; TODO: do not enable by default, but
-                    ; allow it to be enabled through app properties.
-                    wrap-reload 
-                    wrap-cors-fn) {:port port})))
+    (ring/serve (app-fn) {:port port})))

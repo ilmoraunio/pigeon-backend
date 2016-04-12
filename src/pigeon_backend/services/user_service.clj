@@ -6,4 +6,4 @@
 
 (defn user-create! [dto]
   (jdbc/with-db-transaction [tx db-spec]
-    (execute-dao-or-handle-exception user-dao/create! tx dto)))
+    (user-dao/create! tx dto)))

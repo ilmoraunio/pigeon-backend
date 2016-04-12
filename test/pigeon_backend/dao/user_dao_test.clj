@@ -12,10 +12,10 @@
                :password "hunter2"})
 
 (deftest user-crud
-  (facts "Create"
+  (facts "User dao, create"
     (with-state-changes [(before :facts (drop-and-create-tables))]
       (fact "Basic case"
-        (dao/create! db-spec user-dto) => true)
+        (dao/create! db-spec user-dto) => user-dto)
       (fact "Duplicate username entry not allowed"
         (dao/create! db-spec user-dto)
         (dao/create! db-spec user-dto) => (throws #"Duplicate username")))))

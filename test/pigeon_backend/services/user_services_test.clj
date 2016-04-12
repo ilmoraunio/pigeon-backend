@@ -14,12 +14,11 @@
                :password "hunter2"})
 
 (deftest user-service-crud
-  (facts "Create"
+  (facts "User service, create"
     (with-state-changes [(before :facts (drop-and-create-tables))]
       (fact "Basic case"
-        (service/user-create! user-dto) => true)
+        (service/user-create! user-dto) => user-dto)
       (fact "Duplicate username entry not allowed"
         (service/user-create! user-dto)
-        (service/user-create! user-dto) => {:error-status 400
-                                            :title "Duplicate username" 
-                                            :detail "User foobar already exists"}))))
+        (service/user-create! user-dto) => (throws clojure.lang.ExceptionInfo 
+                                             "Duplicate username")))))

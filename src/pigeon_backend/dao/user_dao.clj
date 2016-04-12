@@ -27,12 +27,11 @@
 (defquery sql-user-get-all "sql/user/get-all.sql"
   {:connection db-spec})
 
-(defn create! [tx user] {:pre [(s/validate NewUser user)]
-                         :post [(true? %)]}
+(defn create! [tx user] {:pre [(s/validate NewUser user)]}
   (execute-sql-or-handle-exceptions
     (fn [tx map-args]
       (sql-user-create! map-args {:connection tx})
-      true)
+      user)
     tx
     user))
 
