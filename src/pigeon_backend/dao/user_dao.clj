@@ -31,9 +31,7 @@
   (execute-sql-or-handle-exceptions
     (fn [tx map-args]
       (sql-user-create! map-args {:connection tx})
-      user)
-    tx
-    user))
+      user) tx user))
 
 (defn get-from-db [])
 
