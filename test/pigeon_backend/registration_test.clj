@@ -11,19 +11,40 @@
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 
+(def user-dto {:username "foobar" 
+               :password "hunter2" 
+               :full_name "Mr Foo Bar"})
+
 (deftest registration-test
-  (facts "Registration"
+  (facts "Controller, registration"
     (with-state-changes [(before :facts (drop-and-create-tables))]
+
       (fact "Basic case"
         (let [{status :status body :body} 
-                (app
+                ((app-with-middleware)
                  (mock/content-type
                   (mock/body
                     (mock/request :put "/user")
-                    (json/write-str {:username "foobar" 
-                                     :password "hunter2" 
-                                     :full_name "Mr Foo Bar"}))
+                    (json/write-str user-dto))
                   "application/json"))]
           status => 201
-          body => nil)
-        ))))
+          body => nil))
+
+      (fact "Duplicate username"
+        (let [_ ((app-with-middleware)
+                  (mock/content-type
+                    (mock/body
+                      (mock/request :put "/user")
+                      (json/write-str user-dto))
+                    "application/json"))
+              {status :status body :body}
+                ((app-with-middleware)
+                 (mock/content-type
+                   (mock/body
+                     (mock/request :put "/user")
+                     (json/write-str user-dto))
+                   "application/json"))]
+          status => 400
+          (parse-body body) => {:error-status 400,
+                                :title "Duplicate username"
+                                :detail "User foobar already exists"})))))

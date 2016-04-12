@@ -8,7 +8,8 @@
             [pigeon-backend.db.migrations :as migrations]
             [ring.middleware.cors :refer [wrap-cors]]
             [ring.middleware.reload :refer [wrap-reload]]
-            [pigeon-backend.routes.registration :refer [registration-routes]])
+            [pigeon-backend.routes.registration :refer [registration-routes]]
+            [pigeon-backend.services.exception-util :refer [status-code-for]])
   (:gen-class))
 
 (defn wrap-cors-fn [handler]
@@ -31,17 +32,15 @@
     (Integer/parseInt v)
     v))
 
-;; TODO: middleware to handle clojure.lang.ExceptionInfo
-
-(defn app-fn []
-  (-> #'app
-      ; TODO: do not enable by default, but
-      ; allow it to be enabled through app properties.
-      wrap-reload 
-      wrap-cors-fn))
+(defn app-with-middleware
+  ([] (-> #'app
+          ; TODO: do not enable by default, but
+          ; allow it to be enabled through app properties.
+          wrap-reload
+          wrap-cors-fn)))
 
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]
     (migrations/migrate)
     ; TODO: get production-ready server running here...
-    (ring/serve (app-fn) {:port port})))
+    (ring/serve (app-with-middleware) {:port port})))

@@ -14,7 +14,7 @@
                       :full_name String 
                       :password String})
 
-;; TODO: NewUserr password transformation
+;; TODO: NewUser password transformation
 
 (s/defschema PersistedUser {:id s/Int
                             :username String

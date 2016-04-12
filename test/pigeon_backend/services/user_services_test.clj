@@ -21,4 +21,4 @@
       (fact "Duplicate username entry not allowed"
         (service/user-create! user-dto)
         (service/user-create! user-dto) => (throws clojure.lang.ExceptionInfo 
-                                             "Duplicate username")))))
+                                                   "Duplicate username")))))
