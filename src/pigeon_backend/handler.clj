@@ -9,7 +9,7 @@
             [ring.middleware.cors :refer [wrap-cors]]
             [ring.middleware.reload :refer [wrap-reload]]
             [pigeon-backend.routes.registration :refer [registration-routes]]
-            [pigeon-backend.services.exception-util :refer [status-code-for]])
+            [pigeon-backend.services.exception-util :refer [handle-exception-info]])
   (:gen-class))
 
 (defn wrap-cors-fn [handler]
@@ -23,7 +23,8 @@
       :spec "/swagger.json"
       :data {:info {:title "Sample API"
                     :description "Compojure Api example"}
-             :tags [{:name "api", :description "some apis"}]}}}
+             :tags [{:name "api", :description "some apis"}]}}
+     :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
     hello-routes
     registration-routes))
 

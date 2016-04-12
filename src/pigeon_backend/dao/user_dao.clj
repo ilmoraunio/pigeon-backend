@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [yesql.core :refer [defquery]]
             [pigeon-backend.db.config :refer [db-spec]]
-            [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exceptions]]))
+            [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]))
 
 (s/defschema UserModel {:id s/Int 
                         :username String 
@@ -28,7 +28,7 @@
   {:connection db-spec})
 
 (defn create! [tx user] {:pre [(s/validate NewUser user)]}
-  (execute-sql-or-handle-exceptions
+  (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-user-create! map-args {:connection tx})
       user) tx user))

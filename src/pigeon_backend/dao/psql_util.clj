@@ -2,7 +2,7 @@
   (import java.sql.BatchUpdateException)
   (import org.postgresql.util.PSQLException))
 
-(defn execute-sql-or-handle-exceptions [f db-spec map-args]
+(defn execute-sql-or-handle-exception [f db-spec map-args]
   (try
     (f db-spec map-args)
     (catch Exception e
@@ -11,6 +11,6 @@
           (throw
             (ex-info
               "Duplicate username"
-              {:cause :username-exists
+              {:type :username-exists
                :detail (format "User %s already exists" (:username map-args))}))))
       (throw (.getNextException e)))))

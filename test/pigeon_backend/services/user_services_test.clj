@@ -14,7 +14,7 @@
                :password "hunter2"})
 
 (deftest user-service-crud
-  (facts "User service, create"
+  (facts "Service: user create"
     (with-state-changes [(before :facts (drop-and-create-tables))]
       (fact "Basic case"
         (service/user-create! user-dto) => user-dto)

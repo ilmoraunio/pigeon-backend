@@ -12,7 +12,7 @@
                :password "hunter2"})
 
 (deftest user-crud
-  (facts "User dao, create"
+  (facts "Dao: user create"
     (with-state-changes [(before :facts (drop-and-create-tables))]
       (fact "Basic case"
         (dao/create! db-spec user-dto) => user-dto)

@@ -16,7 +16,7 @@
                :full_name "Mr Foo Bar"})
 
 (deftest registration-test
-  (facts "Controller, registration"
+  (facts "Route: registration"
     (with-state-changes [(before :facts (drop-and-create-tables))]
 
       (fact "Basic case"
