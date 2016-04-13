@@ -1,15 +1,12 @@
 (ns pigeon-backend.registration-test
   (:require [clojure.test :refer [deftest]]
-            [cheshire.core :as cheshire]
             [midje.sweet :refer :all]
             [pigeon-backend.handler :refer :all]
             [ring.mock.request :as mock]
             [clojure.data.json :as json]
             [pigeon-backend.dao.user-dao :refer [sql-user-get-all]]
-            [pigeon-backend.test-util :refer [drop-and-create-tables]]))
-
-(defn parse-body [body]
-  (cheshire/parse-string (slurp body) true))
+            [pigeon-backend.test-util :refer [drop-and-create-tables
+                                              parse-body]]))
 
 (def user-dto {:username "foobar" 
                :password "hunter2" 

@@ -9,7 +9,8 @@
             [ring.middleware.cors :refer [wrap-cors]]
             [ring.middleware.reload :refer [wrap-reload]]
             [pigeon-backend.routes.registration :refer [registration-routes]]
-            [pigeon-backend.services.exception-util :refer [handle-exception-info]])
+            [pigeon-backend.services.exception-util :refer [handle-exception-info]]
+            [pigeon-backend.routes.login :refer [login-routes]])
   (:gen-class))
 
 (defn wrap-cors-fn [handler]
@@ -26,7 +27,8 @@
              :tags [{:name "api", :description "some apis"}]}}
      :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
     hello-routes
-    registration-routes))
+    registration-routes
+    login-routes))
 
 (defn coerce-to-integer [v]
   (if (string? v)

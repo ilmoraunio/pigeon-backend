@@ -13,3 +13,8 @@
             (assoc dto :password 
                        (hashers/derive (:password dto)))]
       (user-dao/create! tx user-with-hashed-password))))
+
+(defn check-credentials [dto] {:pre [(s/validate {:username String
+                                                  :password String} dto)]
+                               :post [(true? %)]}
+  (not (empty? (:password dto))))
