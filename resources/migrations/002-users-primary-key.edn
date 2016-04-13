@@ -1,6 +1,0 @@
-{:up ["CREATE SEQUENCE users_seq;"
-      "ALTER TABLE users ADD PRIMARY KEY (id);"
-      "ALTER TABLE users ALTER id SET DEFAULT nextval('users_seq');"]
- :down ["ALTER TABLE users DROP CONSTRAINT IF EXISTS users_pkey;"
-        "ALTER TABLE users ALTER id DROP DEFAULT;"
-        "DROP SEQUENCE users_seq;"]}
