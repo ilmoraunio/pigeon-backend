@@ -10,7 +10,8 @@
                  [org.clojure/tools.nrepl "0.2.10"]
                  [org.postgresql/postgresql "9.4.1207.jre7"]
                  [yesql "0.5.2"]
-                 [ring-cors "0.1.7"]]
+                 [ring-cors "0.1.7"]
+                 [buddy/buddy-hashers "0.14.0"]]
   :plugins       [[lein-environ "0.4.0"]]
   :ring {:handler pigeon-backend.handler/app}
   :uberjar-name "server.jar"

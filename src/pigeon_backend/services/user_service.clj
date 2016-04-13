@@ -1,8 +1,14 @@
 (ns pigeon-backend.services.user-service
   (:require [pigeon-backend.dao.user-dao :as user-dao]
             [clojure.java.jdbc :as jdbc]
-            [pigeon-backend.db.config :refer [db-spec]]))
+            [pigeon-backend.db.config :refer [db-spec]]
+            [buddy.hashers :as hashers]
+            [schema.core :as s]
+            [pigeon-backend.dao.user-dao :refer [NewUser]]))
 
-(defn user-create! [dto]
+(defn user-create! [dto] {:pre [(s/validate NewUser dto)]}
   (jdbc/with-db-transaction [tx db-spec]
-    (user-dao/create! tx dto)))
+    (let [user-with-hashed-password
+            (assoc dto :password 
+                       (hashers/derive (:password dto)))]
+      (user-dao/create! tx user-with-hashed-password))))
