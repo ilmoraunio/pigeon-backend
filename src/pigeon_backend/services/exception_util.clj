@@ -4,7 +4,8 @@
 
 (defn- status-code-for [type]
   (case type
-    :username-exists 400))
+    :username-exists 400
+    400))
 
 (defn- return-exception-message [e]
   (let [type (:type (ex-data e))

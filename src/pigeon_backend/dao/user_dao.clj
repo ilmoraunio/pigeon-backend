@@ -23,6 +23,9 @@
 
 (s/defschema GetByUsername {:username String})
 
+(s/defschema LoginUser {:username String
+                        :password String})
+
 (defquery sql-user-create! "sql/user/create.sql"
   {:connection db-spec})
 

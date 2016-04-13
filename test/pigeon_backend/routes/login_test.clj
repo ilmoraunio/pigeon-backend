@@ -12,17 +12,17 @@
 (def user-dto {:username "foobar" 
                :password "hunter2"})
 
-(deftest login-test
-  (facts "Route: login"
-    (with-state-changes [(before :facts (drop-and-create-tables))]
-
-      (fact "Success"
-        (let [{status :status body :body} 
-                ((app-with-middleware)
-                 (mock/content-type
-                  (mock/body
-                    (mock/request :post "/user/login")
-                    (json/write-str user-dto))
-                  "application/json"))]
-          status => 200
-          body => nil)))))
+;;(deftest login-test
+;;  (facts "Route: login"
+;;    (with-state-changes [(before :facts (drop-and-create-tables))]
+;;
+;;      (fact "Success"
+;;        (let [{status :status body :body} 
+;;                ((app-with-middleware)
+;;                 (mock/content-type
+;;                  (mock/body
+;;                    (mock/request :post "/user/login")
+;;                    (json/write-str user-dto))
+;;                  "application/json"))]
+;;          status => 200
+;;          body => nil)))))
