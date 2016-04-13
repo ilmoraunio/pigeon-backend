@@ -16,7 +16,6 @@
   :uberjar-name "server.jar"
   :eval-in :nrepl
   :profiles {:dev [:project/dev :profiles/dev]
-             :test [:project/test :profiles/test]
              :project/dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                                           [cheshire "5.3.1"]
                                           [ring-mock "0.1.5"]
@@ -30,9 +29,7 @@
                            :env {:dev true
                                  :port 3000
                                  :nrepl-port 7000}}
-             :project/test {:env {:test true
-                                  :port 3001
-                                  :nrepl-port 7001}}
+             :project/test {}
              :uberjar {:omit-source true
                        :aot :all}}
    :aliases {"migrate" ["run" "-m" "pigeon-backend.db.migrations/migrate"]

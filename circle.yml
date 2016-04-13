@@ -1,12 +1,12 @@
 dependencies:
   pre:
-    - createdb pigeon-backend-test
-    - createuser pigeon-backend-test
-    - echo '{:profiles/dev {:env {:connection-uri "jdbc:postgresql://localhost/pigeon-backend?user=pigeon-backend&password=pigeon-backend"}} :profiles/test {:env {:connection-uri "jdbc:postgresql://localhost/pigeon-backend-test?user=pigeon-backend-test&password=pigeon-backend-test"}}}' > profiles.clj
+    - createdb pigeon-backend
+    - createuser pigeon-backend
+    - echo '{:profiles/dev {:env {:connection-uri "jdbc:postgresql://localhost/pigeon-backend?user=pigeon-backend&password=pigeon-backend"}}}' > profiles.clj
 test:
   override:
-    - lein with-profile +test midje
-    - lein with-profile +test cloverage
+    - lein midje
+    - lein cloverage
   post:
     - lein run -m pigeon-backend.coverage 85 95
 deployment:

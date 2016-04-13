@@ -27,8 +27,9 @@
       (map :id (get-migrations)) => (contains ["001-users"]))
     (fact "Rollback succesfully"
       (migrations/migrate)
-      (migrations/rollback)
-      (count (get-migrations)) => 0)
+      (let [migrations-count (get-migrations)]
+        (migrations/rollback)
+        migrations-count > (count (get-migrations))))
     (fact "Migrate called in main"
       (handler/-main) => irrelevant
       (provided

@@ -1,4 +1,4 @@
-{:up ["CREATE TABLE users (id int,
+{:up ["CREATE TABLE users (id SERIAL PRIMARY KEY,
                            username text unique,
                            full_name text,
                            password text,
