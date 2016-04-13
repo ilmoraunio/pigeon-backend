@@ -6,7 +6,8 @@
             [schema.core :as s]
             [pigeon-backend.dao.user-dao :refer [NewUser]]))
 
-(defn user-create! [dto] {:pre [(s/validate NewUser dto)]}
+(defn user-create! [dto] {:pre [(s/validate NewUser dto)]
+                          :post [(s/validate NewUser %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (let [user-with-hashed-password
             (assoc dto :password 
