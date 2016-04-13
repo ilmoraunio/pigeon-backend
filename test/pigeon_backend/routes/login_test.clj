@@ -7,22 +7,42 @@
             [clojure.data.json :as json]
             [pigeon-backend.dao.user-dao :refer [sql-user-get-all]]
             [pigeon-backend.test-util :refer [drop-and-create-tables
-                                              parse-body]]))
+                                              parse-body]]
+            [pigeon-backend.services.user-service :as user-service]))
 
 (def user-dto {:username "foobar" 
                :password "hunter2"})
 
-;;(deftest login-test
-;;  (facts "Route: login"
-;;    (with-state-changes [(before :facts (drop-and-create-tables))]
-;;
-;;      (fact "Success"
-;;        (let [{status :status body :body} 
-;;                ((app-with-middleware)
-;;                 (mock/content-type
-;;                  (mock/body
-;;                    (mock/request :post "/user/login")
-;;                    (json/write-str user-dto))
-;;                  "application/json"))]
-;;          status => 200
-;;          body => nil)))))
+(def user-dto-with-wrong-password {:username "foobar" 
+                                   :password "password123"})
+
+(def registration-dto {:username "foobar" 
+                       :password "hunter2"
+                       :full_name "Mr Foo Bar"})
+
+(deftest login-test
+  (facts "Route: login"
+    (with-state-changes [(before :facts (drop-and-create-tables))]
+
+      (fact "Success"
+        (user-service/user-create! registration-dto)
+        (let [{status :status body :body} 
+                ((app-with-middleware)
+                 (mock/content-type
+                  (mock/body
+                    (mock/request :post "/user/login")
+                    (json/write-str user-dto))
+                  "application/json"))]
+          status => 200
+          body => nil))
+      (fact "Unsuccess"
+        (user-service/user-create! registration-dto)
+        (let [{status :status body :body} 
+                ((app-with-middleware)
+                 (mock/content-type
+                  (mock/body
+                    (mock/request :post "/user/login")
+                    (json/write-str user-dto-with-wrong-password))
+                  "application/json"))]
+          status => 401
+          body => nil)))))

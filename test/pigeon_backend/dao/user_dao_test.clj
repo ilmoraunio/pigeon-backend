@@ -29,6 +29,5 @@
         (dao/create! db-spec (assoc user-dto :username "barfoo"))
         (dao/get-by-username db-spec get-by-username-dto) => (contains {:id 1} 
                                                                        {:username "foobar"} 
-                                                                       {:password #"^bcrypt\+sha512\$.{84}"}
                                                                        {:full_name "Foo Bar"} 
                                                                        {:password "hunter2"})))))
