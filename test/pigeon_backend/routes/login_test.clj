@@ -21,7 +21,7 @@
                        :password "hunter2"
                        :full_name "Mr Foo Bar"})
 
-(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIn0.gam31MTKYrmqZ4OlHcBUPALjMFUcQ48KIGDzRUBxBc0")
+(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIiwicm9sZXMiOlsiYXBwLWZyb250cGFnZSJdfQ.pAxX-x7zT_deUOpqi2hCmZySYMtwa-yGlocDhH_alKc")
 
 (deftest login-test
   (facts "Route: login"
@@ -47,5 +47,16 @@
                     (mock/request :post "/user/login")
                     (json/write-str user-dto-with-wrong-password))
                   "application/json"))]
+          status => 401
+          body => nil))))
+
+  (facts "Route: authenticated"
+    (with-state-changes [(before :facts (drop-and-create-tables))]
+      (fact "Is not authenticated"
+        (user-service/user-create! registration-dto)
+        (let [{status :status
+               body :body} 
+                ((app-with-middleware)
+                  (mock/request :get "/user/authenticated"))]
           status => 401
           body => nil)))))

@@ -19,7 +19,7 @@
       (if-let [has-access? (user-service/check-credentials
                             {:username username
                              :password password})]
-        (let [token (jws/sign {:user username} (env :jws-shared-secret))
+        (let [token (jws/sign {:user username :roles #{:app-frontpage}} (env :jws-shared-secret))
               response (ok {:token token})]
           (-> response
               (assoc-in [:cookies "token" :value] token)
@@ -27,4 +27,10 @@
               (assoc-in [:cookies :http-only] true)))
         (let [response (unauthorized)]
           (-> response
-              (assoc-in [:cookies :max-age] 0)))))))
+              (assoc-in [:cookies :max-age] 0)))))
+    (GET "/authenticated" [:as request]
+      :summary "Check that username is currently authenticated (based on http cookie for now). Subject to removal at a convenient later time."
+      (let [{{{token-value :value} "token"} :cookies} request]
+        (if (not (nil? token-value))
+          (ok {:token-unsigned (jws/unsign token-value (env :jws-shared-secret))})
+          (unauthorized))))))
