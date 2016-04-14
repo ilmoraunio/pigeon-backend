@@ -19,5 +19,12 @@
       (if-let [has-access? (user-service/check-credentials
                             {:username username
                              :password password})]
-        (ok {:token (jws/sign {:user username} (env :jws-shared-secret))})
-        (unauthorized)))))
+        (let [token (jws/sign {:user username} (env :jws-shared-secret))
+              response (ok {:token token})]
+          (-> response
+              (assoc-in [:cookies "token" :value] token)
+              (assoc-in [:cookies :max-age] 14400)
+              (assoc-in [:cookies :http-only] true)))
+        (let [response (unauthorized)]
+          (-> response
+              (assoc-in [:cookies :max-age] 0)))))))
