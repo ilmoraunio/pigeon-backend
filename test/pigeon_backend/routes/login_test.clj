@@ -8,7 +8,8 @@
             [pigeon-backend.dao.user-dao :refer [sql-user-get-all]]
             [pigeon-backend.test-util :refer [drop-and-create-tables
                                               parse-body]]
-            [pigeon-backend.services.user-service :as user-service]))
+            [pigeon-backend.services.user-service :as user-service]
+            [buddy.sign.jws :as jws]))
 
 (def user-dto {:username "foobar" 
                :password "hunter2"})
@@ -19,6 +20,8 @@
 (def registration-dto {:username "foobar" 
                        :password "hunter2"
                        :full_name "Mr Foo Bar"})
+
+(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIn0.gam31MTKYrmqZ4OlHcBUPALjMFUcQ48KIGDzRUBxBc0")
 
 (deftest login-test
   (facts "Route: login"
@@ -34,7 +37,7 @@
                     (json/write-str user-dto))
                   "application/json"))]
           status => 200
-          body => nil))
+          (parse-body body) => {:token test-token}))
       (fact "Unsuccess"
         (user-service/user-create! registration-dto)
         (let [{status :status body :body} 

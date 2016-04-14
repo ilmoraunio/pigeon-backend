@@ -3,7 +3,10 @@
             [ring.util.http-response :refer :all]
             [ring.util.http-status :as status]
             [schema.core :as s]
-            [pigeon-backend.services.user-service :as user-service]))
+            [pigeon-backend.services.user-service :as user-service]
+            [buddy.sign.jws :as jws]
+            [clj-time.core :as t]
+            [environ.core :refer [env]]))
 
 (def login-routes
   (context "/user" []
@@ -16,5 +19,5 @@
       (if-let [has-access? (user-service/check-credentials
                             {:username username
                              :password password})]
-        (ok)
+        (ok {:token (jws/sign {:user username} (env :jws-shared-secret))})
         (unauthorized)))))
