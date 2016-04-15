@@ -59,4 +59,9 @@
                 ((app-with-middleware)
                   (mock/request :get "/user/authenticated"))]
           status => 401
-          body => nil)))))
+          (parse-body body) => {:title "Not logged in"
+                                :cause "signature"
+                                :error-status 401}))
+      ;; TODO: Is authenticated
+      ;; TODO: Tamper token value as incorrect
+      )))
