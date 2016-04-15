@@ -36,13 +36,25 @@
     (Integer/parseInt v)
     v))
 
+(defn wrap-unsigned-exception [f]
+  (fn [request]
+    (try (f request)
+      (catch clojure.lang.ExceptionInfo e
+        (let [{cause :cause type :type} (ex-data e)]
+          (if (= (and (= :validation type)
+                      (= :signature cause)))
+            (println "caught an exception")
+            (println "didn't catch an exception")))
+        (throw e)))))
+
 (defn app-with-middleware
   ([] (-> #'app
           ; TODO: do not enable by default, but
           ; allow it to be enabled through app properties.
           wrap-reload
           wrap-cors-fn
-          wrap-cookies)))
+          wrap-cookies
+          wrap-unsigned-exception)))
 
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]
