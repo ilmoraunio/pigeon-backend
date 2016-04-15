@@ -44,4 +44,4 @@
           status => 400
           (parse-body body) => {:error-status 400,
                                 :title "Duplicate username"
-                                :detail "User foobar already exists"})))))
+                                :cause "User foobar already exists"})))))

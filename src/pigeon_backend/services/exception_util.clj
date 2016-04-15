@@ -10,17 +10,17 @@
 (defn- return-exception-message [e]
   (let [type (:type (ex-data e))
         status-code (status-code-for type)
-        detail (:detail (ex-data e))]
+        cause (:cause (ex-data e))]
     (bad-request {:error-status status-code
                   :title (.getMessage e)
-                  :detail detail})))
+                  :cause cause})))
 
 ;; public fns
 
 (s/defschema ErrorMessage
   {:error-status s/Int
    :title String
-   :detail String})
+   :cause String})
 
 (defn handle-exception-info [^Exception e data request] 
   (return-exception-message e))
