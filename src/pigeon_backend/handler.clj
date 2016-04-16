@@ -11,7 +11,8 @@
             [pigeon-backend.routes.registration :refer [registration-routes]]
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
             [pigeon-backend.routes.login :refer [login-routes]]
-            [ring.middleware.cookies :refer [wrap-cookies]])
+            [ring.middleware.cookies :refer [wrap-cookies]]
+            [buddy.sign.jws :as jws])
   (:gen-class))
 
 (defn wrap-cors-fn [handler]
@@ -38,14 +39,15 @@
 
 (defn wrap-unsigned-exception [f]
   (fn [request]
-    (try (f request)
-      (catch clojure.lang.ExceptionInfo e
-        (let [{cause :cause type :type} (ex-data e)]
-          (if (= (and (= :validation type)
-                      (= :signature cause)))
-            (println "caught an exception")
-            (println "didn't catch an exception")))
-        (throw e)))))
+    (let [{{{token-value :value} "token"} :cookies} request]
+      (if (or (empty? token-value) (>= (count token-value) 3))
+        (handle-exception-info 
+          (ex-info "Not logged in" {:type :validation
+                                    :cause :signature}) {} request)
+        (jws/unsign token-value (env :jws-shared-secret))))
+    (f request)))
+
+;; TODO: wrap-authentication
 
 (defn app-with-middleware
   ([] (-> #'app

@@ -62,6 +62,30 @@
           (parse-body body) => {:title "Not logged in"
                                 :cause "signature"
                                 :error-status 401}))
-      ;; TODO: Is authenticated
-      ;; TODO: Tamper token value as incorrect
-      )))
+
+      (fact "Is authenticated"
+        (user-service/user-create! registration-dto)
+        (let [{status :status
+               body :body}
+                ((app-with-middleware)
+                  ;; logged in
+                  (assoc-in (mock/request :get "/user/authenticated")
+                            [:cookies "token" :value]
+                            test-token))]
+          status => 200
+          (parse-body body) => {:token-unsigned {:user "foobar"
+                                                 :roles ["app-frontpage"]}}))
+
+      (fact "Tamper token value as incorrect"
+        (user-service/user-create! registration-dto)
+        (let [{status :status
+               body :body}
+                ((app-with-middleware)
+                  ;; logged in
+                  (assoc-in (mock/request :get "/user/authenticated")
+                            [:cookies "token" :value]
+                            (str test-token "DENIED")))]
+          status => 401
+          (parse-body body) => {:title "Message seems corrupt or manipulated."
+                                :cause "signature"
+                                :error-status 401})))))
