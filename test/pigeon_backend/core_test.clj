@@ -8,10 +8,14 @@
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 
+(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIiwicm9sZXMiOlsiYXBwLWZyb250cGFnZSJdfQ.pAxX-x7zT_deUOpqi2hCmZySYMtwa-yGlocDhH_alKc")
+
 (deftest core-test
   (facts "Testing /hello"
     (fact "Test GET request to /hello?name={a-name} returns expected response"
-      (let [response (app (-> (mock/request :get  "/hello?name=Stranger")))
+      (let [response (app (-> (assoc-in (mock/request :get "/hello?name=Stranger")
+                                        [:cookies "token" :value]
+                                        test-token)))
             body     (parse-body (:body response))]
         (:status response) => 200
         (:message body)    => "Terve, Stranger"))

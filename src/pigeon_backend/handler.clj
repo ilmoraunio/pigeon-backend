@@ -37,26 +37,13 @@
     (Integer/parseInt v)
     v))
 
-(defn wrap-unsigned-exception [f]
-  (fn [request]
-    (let [{{{token-value :value} "token"} :cookies} request]
-      (if (or (empty? token-value) (>= (count token-value) 3))
-        (handle-exception-info 
-          (ex-info "Not logged in" {:type :validation
-                                    :cause :signature}) {} request)
-        (jws/unsign token-value (env :jws-shared-secret))))
-    (f request)))
-
-;; TODO: wrap-authentication
-
 (defn app-with-middleware
   ([] (-> #'app
           ; TODO: do not enable by default, but
           ; allow it to be enabled through app properties.
           wrap-reload
           wrap-cors-fn
-          wrap-cookies
-          wrap-unsigned-exception)))
+          wrap-cookies)))
 
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]
