@@ -20,7 +20,9 @@
         (:status response) => 200
         (:message body)    => "Terve, Stranger"))
     (fact "Test GET request to /hello/en?name={a-name} returns expected response"
-      (let [response (app (-> (mock/request :get "/hello/en?name=Stranger")))
+      (let [response (app (-> (assoc-in (mock/request :get "/hello/en?name=Stranger")
+                                        [:cookies "token" :value]
+                                        test-token)))
             body     (parse-body (:body response))]
         (:status response) => 200
         (:message body)    => "Hello, Stranger"))))

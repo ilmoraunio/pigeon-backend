@@ -8,10 +8,10 @@
 
 (def hello-routes
   (context "/hello" []
+    :middleware [wrap-authentication]
     :tags ["hello"]
 
     (GET "/" []
-        :middleware [wrap-authentication]
         :return Message
         :query-params [name :- String]
         :summary "say hello"
