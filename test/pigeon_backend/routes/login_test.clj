@@ -57,24 +57,11 @@
         (let [{status :status
                body :body} 
                 ((app-with-middleware)
-                  (mock/request :get "/user/authenticated"))]
+                  (mock/request :get "/hello?name=foo"))]
           status => 401
           (parse-body body) => {:title "Not logged in"
                                 :cause "signature"
                                 :error-status 401}))
-
-      (fact "Is authenticated"
-        (user-service/user-create! registration-dto)
-        (let [{status :status
-               body :body}
-                ((app-with-middleware)
-                  ;; logged in
-                  (assoc-in (mock/request :get "/user/authenticated")
-                            [:cookies "token" :value]
-                            test-token))]
-          status => 200
-          (parse-body body) => {:token-unsigned {:user "foobar"
-                                                 :roles ["app-frontpage"]}}))
 
       (fact "Tamper token value as incorrect"
         (user-service/user-create! registration-dto)
@@ -82,7 +69,7 @@
                body :body}
                 ((app-with-middleware)
                   ;; logged in
-                  (assoc-in (mock/request :get "/user/authenticated")
+                  (assoc-in (mock/request :get "/hello?name=foo")
                             [:cookies "token" :value]
                             (str test-token "DENIED")))]
           status => 401

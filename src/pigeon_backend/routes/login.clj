@@ -27,11 +27,4 @@
               (assoc-in [:cookies :http-only] true)))
         (let [response (unauthorized)]
           (-> response
-              (assoc-in [:cookies :max-age] 0)))))
-    (GET "/authenticated" [:as request]
-      :summary "Check that username is currently authenticated (based on http cookie for now). Subject to removal at a convenient later time."
-      (let [{{{token-value :value} "token"} :cookies} request]
-        (if (empty? token-value)
-          (throw (ex-info "Not logged in"
-            {:type :validation :cause :signature})))
-        (ok {:token-unsigned (jws/unsign token-value (env :jws-shared-secret))})))))
+              (assoc-in [:cookies :max-age] 0)))))))
