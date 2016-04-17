@@ -17,7 +17,9 @@
 
 (defn wrap-cors-fn [handler]
   (wrap-cors handler :access-control-allow-origin [#".*"]
-                     :access-control-allow-methods [:get :put :post :delete]))
+                     :access-control-allow-methods [:get :put :post :delete]
+                     :access-control-allow-credentials "true"
+                     :access-control-allow-headers "Content-Type, *"))
 
 (def app
   (api

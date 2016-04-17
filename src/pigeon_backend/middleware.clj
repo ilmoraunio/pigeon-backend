@@ -7,10 +7,9 @@
   (fn [request]
     (let [{{{token-value :value} "token"} :cookies} request]
       (if (or (empty? token-value) (< (count token-value) 3))
-        (do
-          (handle-exception-info
+        (handle-exception-info
                   (ex-info "Not logged in" {:type :validation
-                                            :cause :signature}) {} request))
+                                            :cause :signature}) {} request)
         (do
           (jws/unsign token-value (env :jws-shared-secret))
           (handler request))))))

@@ -9,7 +9,7 @@
 (def hello-routes
   (context "/hello" []
     :middleware [wrap-authentication]
-    :tags ["hello"]
+    :tags ["test"]
 
     (GET "/" []
         :return Message
