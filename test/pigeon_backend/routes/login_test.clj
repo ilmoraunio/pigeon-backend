@@ -24,10 +24,10 @@
 (def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIiwicm9sZXMiOlsiYXBwLWZyb250cGFnZSJdfQ.pAxX-x7zT_deUOpqi2hCmZySYMtwa-yGlocDhH_alKc")
 
 (deftest login-test
-  (facts "Route: login"
+  (facts "Route: login & logout"
     (with-state-changes [(before :facts (drop-and-create-tables))]
 
-      (fact "Success"
+      (fact "Login: success"
         (user-service/user-create! registration-dto)
         (let [{status :status body :body} 
                 ((app-with-middleware)
@@ -38,7 +38,7 @@
                   "application/json"))]
           status => 200
           (parse-body body) => {:token test-token}))
-      (fact "Unsuccess"
+      (fact "Login: unsuccess"
         (user-service/user-create! registration-dto)
         (let [{status :status body :body} 
                 ((app-with-middleware)
@@ -48,7 +48,27 @@
                     (json/write-str user-dto-with-wrong-password))
                   "application/json"))]
           status => 401
-          body => nil))))
+          body => nil))
+      (fact "Login/Logout responses"
+        (user-service/user-create! registration-dto)
+        (let [login-response ((app-with-middleware)
+                               (mock/content-type
+                                (mock/body
+                                  (mock/request :post "/user/login")
+                                  (json/write-str user-dto))
+                                "application/json"))
+              logout-response ((app-with-middleware)
+                               (mock/content-type
+                                (mock/body
+                                  (mock/request :post "/user/logout")
+                                  (json/write-str user-dto))
+                                "application/json"))]
+          (first (get-in login-response [:headers "Set-Cookie"])) 
+            => (str "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIiwicm9sZXMiOlsiYXBwLWZyb250cGFnZSJdfQ.pAxX-x7zT_deUOpqi2hCmZySYMtwa-yGlocDhH_alKc;"
+                    "Max-Age=14400;"
+                    "HttpOnly;Path=/")
+          (first (get-in logout-response [:headers "Set-Cookie"]))
+            => (str "token=nil;Path=/;Expires=Thu, 01 Jan 1970 00:00:00 GMT")))))
 
   (facts "Route: authenticated"
     (with-state-changes [(before :facts (drop-and-create-tables))]
