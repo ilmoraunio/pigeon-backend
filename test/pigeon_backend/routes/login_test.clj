@@ -64,7 +64,7 @@
                                   (json/write-str user-dto))
                                 "application/json"))]
           (first (get-in login-response [:headers "Set-Cookie"])) 
-            => (str "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIiwicm9sZXMiOlsiYXBwLWZyb250cGFnZSJdfQ.pAxX-x7zT_deUOpqi2hCmZySYMtwa-yGlocDhH_alKc;"
+            => (str "token=" test-token ";"
                     "Max-Age=14400;"
                     "HttpOnly;Path=/")
           (first (get-in logout-response [:headers "Set-Cookie"]))
