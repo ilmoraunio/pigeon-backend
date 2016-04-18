@@ -16,7 +16,7 @@
     (POST "/login" []
       :body-params [username :- String,
                     password :- String]
-      :summary "Logs user in iff username and password match the database"
+      :summary "Logs user in iff username and password match the database. Sets token to http cookie"
       (if-let [has-access? (user-service/check-credentials
                             {:username username
                              :password password})]
@@ -29,4 +29,10 @@
               (assoc-in [:cookies "token" :path] "/")))
         (let [response (unauthorized)]
           (-> response
-              (assoc-in [:cookies :max-age] 0)))))))
+              (assoc-in [:cookies :max-age] 0)))))
+    (POST "/logout" request
+      :summary "Logs user out. Clears http cookie"
+      (-> (ok)
+          (assoc-in [:cookies "token"] {:value "nil"
+                                        :path "/"
+                                        :expires "Thu, 01 Jan 1970 00:00:00 GMT"})))))
