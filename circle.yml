@@ -2,7 +2,7 @@ dependencies:
   pre:
     - createdb pigeon-backend
     - createuser pigeon-backend
-    - echo '{:profiles/dev {:env {:connection-uri "jdbc:postgresql://localhost/pigeon-backend?user=pigeon-backend&password=pigeon-backend"}}}' > profiles.clj
+    - echo '{:profiles/dev {:env {:connection-uri "jdbc:postgresql://localhost/pigeon-backend?user=pigeon-backend&password=pigeon-backend" :jws-shared-secret "secret"}}}' > profiles.clj
 test:
   override:
     - lein midje
