@@ -6,9 +6,6 @@ dependencies:
 test:
   override:
     - lein midje
-    - lein cloverage
-  post:
-    - lein run -m pigeon-backend.coverage 85 95
 deployment:
   coverage:
     branch: master
