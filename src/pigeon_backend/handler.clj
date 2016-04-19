@@ -10,12 +10,16 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [pigeon-backend.routes.registration :refer [registration-routes]]
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
-            [pigeon-backend.routes.login :refer [login-routes]])
+            [pigeon-backend.routes.login :refer [login-routes]]
+            [ring.middleware.cookies :refer [wrap-cookies]]
+            [buddy.sign.jws :as jws])
   (:gen-class))
 
 (defn wrap-cors-fn [handler]
   (wrap-cors handler :access-control-allow-origin [#".*"]
-                     :access-control-allow-methods [:get :put :post :delete]))
+                     :access-control-allow-methods [:get :put :post :delete]
+                     :access-control-allow-credentials "true"
+                     :access-control-allow-headers "Content-Type, *"))
 
 (def app
   (api
@@ -40,7 +44,8 @@
           ; TODO: do not enable by default, but
           ; allow it to be enabled through app properties.
           wrap-reload
-          wrap-cors-fn)))
+          wrap-cors-fn
+          wrap-cookies)))
 
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]

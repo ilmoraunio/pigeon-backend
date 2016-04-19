@@ -43,7 +43,8 @@
 (defn get-by-username
   [tx get-by-username-dto]
   {:pre [(s/validate GetByUsername get-by-username-dto)]
-   :post [(map? %)]}
+   :post [(or (nil? %) 
+              (map? %))]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
         (let [[user-dto] (sql-get-by-username map-args {:connection tx})]

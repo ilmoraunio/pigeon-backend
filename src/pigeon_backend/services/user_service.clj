@@ -19,4 +19,6 @@
                          :post [(instance? Boolean %)]}
     (jdbc/with-db-transaction [tx db-spec]
       (let [user-model (user-dao/get-by-username tx {:username username})]
-        (hashers/check password (:password user-model)))))
+        (if (nil? user-model)
+          false
+          (hashers/check password (:password user-model))))))

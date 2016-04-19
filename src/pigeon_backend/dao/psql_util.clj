@@ -12,5 +12,5 @@
             (ex-info
               "Duplicate username"
               {:type :username-exists
-               :detail (format "User %s already exists" (:username map-args))}))))
+               :cause (format "User %s already exists" (:username map-args))}))))
       (throw (.getNextException e)))))
