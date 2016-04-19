@@ -14,7 +14,7 @@
   {:pre [(s/validate {:error-status s/Int
                       :title String
                       :cause s/Any} exception-args)]}
-  (let [{error-status :error-status :as error-status} exception-args]
+  (let [{error-status :error-status} exception-args]
     (cond
       (= error-status 401) (unauthorized exception-args)
       :else (bad-request exception-args))))

@@ -91,7 +91,7 @@
                   ;; logged in
                   (assoc-in (mock/request :get "/hello?name=foo")
                             [:cookies "token" :value]
-                            (str test-token "DENIED")))]
+                            (str test-token "CORRUPT_OR_HACKED")))]
           status => 401
           (parse-body body) => {:title "Message seems corrupt or manipulated."
                                 :cause "signature"
