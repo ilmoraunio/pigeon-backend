@@ -6,7 +6,6 @@
             [ring.server.standalone :as ring]
             [environ.core :refer [env]]
             [pigeon-backend.db.migrations :as migrations]
-            [ring.middleware.cors :refer [wrap-cors]]
             [ring.middleware.reload :refer [wrap-reload]]
             [pigeon-backend.routes.registration :refer [registration-routes]]
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
@@ -15,11 +14,13 @@
             [buddy.sign.jws :as jws])
   (:gen-class))
 
-(defn wrap-cors-fn [handler]
-  (wrap-cors handler :access-control-allow-origin [#".*"]
-                     :access-control-allow-methods [:get :put :post :delete]
-                     :access-control-allow-credentials "true"
-                     :access-control-allow-headers "Content-Type, *"))
+(defn wrap-cors [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (-> response
+          (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
+          (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")
+          (assoc-in [:headers "Access-Control-Allow-Headers"] "X-Requested-With,Content-Type,Cache-Control")))))
 
 (def app
   (api
@@ -29,6 +30,7 @@
       :data {:info {:title "Sample API"
                     :description "Compojure Api example"}
              :tags [{:name "api", :description "some apis"}]}}
+     ;; TODO: exception handler for returning schema validation errors
      :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
     hello-routes
     registration-routes
@@ -44,7 +46,7 @@
           ; TODO: do not enable by default, but
           ; allow it to be enabled through app properties.
           wrap-reload
-          wrap-cors-fn
+          wrap-cors
           wrap-cookies)))
 
 (defn -main [& args]
