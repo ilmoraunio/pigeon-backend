@@ -20,7 +20,7 @@
       (if-let [has-access? (user-service/check-credentials
                             {:username username
                              :password password})]
-        (let [token (jws/sign {:user username :roles ["app-frontpage"]} (env :jws-shared-secret))
+        (let [token (jws/sign {:user username} (env :jws-shared-secret))
               response (ok {:token token})]
           (-> response
               (assoc-in [:cookies "token" :value] token)

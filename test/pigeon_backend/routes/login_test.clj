@@ -21,7 +21,7 @@
                        :password "hunter2"
                        :full_name "Mr Foo Bar"})
 
-(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIiwicm9sZXMiOlsiYXBwLWZyb250cGFnZSJdfQ.pAxX-x7zT_deUOpqi2hCmZySYMtwa-yGlocDhH_alKc")
+(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIn0.gam31MTKYrmqZ4OlHcBUPALjMFUcQ48KIGDzRUBxBc0")
 
 (deftest login-test
   (facts "Route: login & logout"
