@@ -33,7 +33,7 @@
                 ((app-with-middleware)
                  (mock/content-type
                   (mock/body
-                    (mock/request :post "/user/login")
+                    (mock/request :post "/session")
                     (json/write-str user-dto))
                   "application/json"))]
           status => 200
@@ -44,7 +44,7 @@
                 ((app-with-middleware)
                  (mock/content-type
                   (mock/body
-                    (mock/request :post "/user/login")
+                    (mock/request :post "/session")
                     (json/write-str user-dto-with-wrong-password))
                   "application/json"))]
           status => 401
@@ -54,13 +54,13 @@
         (let [login-response ((app-with-middleware)
                                (mock/content-type
                                 (mock/body
-                                  (mock/request :post "/user/login")
+                                  (mock/request :post "/session")
                                   (json/write-str user-dto))
                                 "application/json"))
               logout-response ((app-with-middleware)
                                (mock/content-type
                                 (mock/body
-                                  (mock/request :post "/user/logout")
+                                  (mock/request :delete "/session")
                                   (json/write-str user-dto))
                                 "application/json"))]
           (first (get-in login-response [:headers "Set-Cookie"])) 
