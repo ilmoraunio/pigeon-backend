@@ -21,7 +21,7 @@
                        :password "hunter2"
                        :full_name "Mr Foo Bar"})
 
-(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIiwicm9sZXMiOlsiYXBwLWZyb250cGFnZSJdfQ.pAxX-x7zT_deUOpqi2hCmZySYMtwa-yGlocDhH_alKc")
+(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIn0.gam31MTKYrmqZ4OlHcBUPALjMFUcQ48KIGDzRUBxBc0")
 
 (deftest login-test
   (facts "Route: login & logout"
@@ -33,7 +33,7 @@
                 ((app-with-middleware)
                  (mock/content-type
                   (mock/body
-                    (mock/request :post "/user/login")
+                    (mock/request :post "/session")
                     (json/write-str user-dto))
                   "application/json"))]
           status => 200
@@ -44,7 +44,7 @@
                 ((app-with-middleware)
                  (mock/content-type
                   (mock/body
-                    (mock/request :post "/user/login")
+                    (mock/request :post "/session")
                     (json/write-str user-dto-with-wrong-password))
                   "application/json"))]
           status => 401
@@ -54,13 +54,13 @@
         (let [login-response ((app-with-middleware)
                                (mock/content-type
                                 (mock/body
-                                  (mock/request :post "/user/login")
+                                  (mock/request :post "/session")
                                   (json/write-str user-dto))
                                 "application/json"))
               logout-response ((app-with-middleware)
                                (mock/content-type
                                 (mock/body
-                                  (mock/request :post "/user/logout")
+                                  (mock/request :delete "/session")
                                   (json/write-str user-dto))
                                 "application/json"))]
           (first (get-in login-response [:headers "Set-Cookie"])) 
