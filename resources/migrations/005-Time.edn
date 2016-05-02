@@ -1,6 +1,10 @@
 {:up ["CREATE TABLE Time(RoomGroup_id integer,
                          name varchar(1000),
                          sequence_order integer NOT NULL,
+                         created timestamp default NOW(),
+                         updated timestamp default NOW(),
+                         version integer default 0,
+                         deleted boolean default false,
                          PRIMARY KEY(RoomGroup_id, name),
                          FOREIGN KEY (RoomGroup_id) REFERENCES RoomGroup(id),
                          UNIQUE(RoomGroup_id, sequence_order));"]

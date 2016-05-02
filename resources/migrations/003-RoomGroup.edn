@@ -2,7 +2,11 @@
                                Room_name varchar(1000),
                                name varchar(1000),
                                parent integer,
+                               created timestamp default NOW(),
+                               updated timestamp default NOW(),
+                               version integer default 0,
+                               deleted boolean default false,
                                FOREIGN KEY(Room_name) REFERENCES Room(name),
-                               UNIQUE(Room_name, name),
-                               FOREIGN KEY(parent) REFERENCES RoomGroup(id));"]
+                               FOREIGN KEY(parent) REFERENCES RoomGroup(id),
+                               UNIQUE(Room_name, name));"]
  :down ["DROP TABLE RoomGroup;"]}

@@ -2,5 +2,9 @@
                             Property_id integer,
                             type varchar(1000),
                             value varchar(1000),
+                            created timestamp default NOW(),
+                            updated timestamp default NOW(),
+                            version integer default 0,
+                            deleted boolean default false,
                             FOREIGN KEY (Property_id) REFERENCES Property(id));"]
  :down ["DROP TABLE Outcome;"]}

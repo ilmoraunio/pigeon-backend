@@ -1,2 +1,6 @@
-{:up ["CREATE TABLE Room (name varchar(1000) PRIMARY KEY);"]
+{:up ["CREATE TABLE Room (name varchar(1000) PRIMARY KEY,
+                          created timestamp default NOW(),
+                          updated timestamp default NOW(),
+                          version integer default 0,
+                          deleted boolean default false);"]
  :down ["DROP TABLE Room;"]}

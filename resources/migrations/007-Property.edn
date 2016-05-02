@@ -3,5 +3,9 @@
                              name varchar(1000),
                              type varchar(1000),
                              value varchar(1000),
+                             created timestamp default NOW(),
+                             updated timestamp default NOW(),
+                             version integer default 0,
+                             deleted boolean default false,
                              FOREIGN KEY (DirectedConnection_id) REFERENCES DirectedConnection(id));"]
  :down ["DROP TABLE Property;"]}
