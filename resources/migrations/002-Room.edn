@@ -1,0 +1,2 @@
+{:up ["CREATE TABLE Room (name varchar(1000) PRIMARY KEY);"]
+ :down ["DROP TABLE Room;"]}

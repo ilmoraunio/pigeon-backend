@@ -1,0 +1,11 @@
+{:up ["CREATE TABLE DirectedConnection (id SERIAL PRIMARY KEY,
+                                        origin integer NOT NULL,
+                                        recipient integer,
+                                        parent integer,
+                                        Time_RoomGroup_id integer,
+                                        Time_name varchar(1000),
+                                        FOREIGN KEY (origin) REFERENCES RoomGroup(id),
+                                        FOREIGN KEY (recipient) REFERENCES RoomGroup(id),
+                                        FOREIGN KEY (parent) REFERENCES DirectedConnection(id),
+                                        FOREIGN KEY (Time_RoomGroup_id, Time_name) REFERENCES Time(RoomGroup_id, name));"]
+ :down ["DROP TABLE DirectedConnection;"]}

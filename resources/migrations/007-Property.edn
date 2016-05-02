@@ -1,0 +1,7 @@
+{:up ["CREATE TABLE Property(id SERIAL PRIMARY KEY,
+                             DirectedConnection_id integer,
+                             name varchar(1000),
+                             type varchar(1000),
+                             value varchar(1000),
+                             FOREIGN KEY (DirectedConnection_id) REFERENCES DirectedConnection(id));"]
+ :down ["DROP TABLE Property;"]}

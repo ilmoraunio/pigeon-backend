@@ -1,0 +1,6 @@
+{:up ["CREATE TABLE Outcome(id SERIAL PRIMARY KEY,
+                            Property_id integer,
+                            type varchar(1000),
+                            value varchar(1000),
+                            FOREIGN KEY (Property_id) REFERENCES Property(id));"]
+ :down ["DROP TABLE Outcome;"]}

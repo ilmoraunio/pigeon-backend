@@ -1,0 +1,5 @@
+{:up ["CREATE TABLE GroupUser (RoomGroup_id integer,
+                               users_id integer NOT NULL,
+                               FOREIGN KEY (RoomGroup_id) REFERENCES RoomGroup(id),
+                               FOREIGN KEY (users_id) REFERENCES users(id));"]
+ :down ["DROP TABLE GroupUser;"]}

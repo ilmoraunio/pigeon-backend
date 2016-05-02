@@ -1,0 +1,7 @@
+{:up ["CREATE TABLE Time(RoomGroup_id integer,
+                         name varchar(1000),
+                         sequence_order integer NOT NULL,
+                         PRIMARY KEY(RoomGroup_id, name),
+                         FOREIGN KEY (RoomGroup_id) REFERENCES RoomGroup(id),
+                         UNIQUE(RoomGroup_id, sequence_order));"]
+ :down ["DROP TABLE Time;"]}
