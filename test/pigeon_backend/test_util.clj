@@ -9,9 +9,9 @@
             [cheshire.core :as cheshire]))
 
 (defn empty-and-create-tables []
+  (empty-all-tables db-spec)
   (if (= 0 (count (get-table-names)))
-    (migrations/migrate))
-  (empty-all-tables db-spec))
+    (migrations/migrate)))
 
 (defn drop-and-create-tables []
   (drop-all-tables db-spec)
