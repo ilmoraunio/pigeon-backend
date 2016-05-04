@@ -6,7 +6,7 @@
             [ring.mock.request :as mock]
             [clojure.data.json :as json]
             [pigeon-backend.dao.user-dao :refer [sql-user-get-all]]
-            [pigeon-backend.test-util :refer [drop-and-create-tables
+            [pigeon-backend.test-util :refer [empty-and-create-tables
                                               parse-body]]
             [pigeon-backend.services.user-service :as user-service]
             [buddy.sign.jws :as jws]))
@@ -25,7 +25,7 @@
 
 (deftest login-test
   (facts "Route: login & logout"
-    (with-state-changes [(before :facts (drop-and-create-tables))]
+    (with-state-changes [(before :facts (empty-and-create-tables))]
 
       (fact "Login: success"
         (user-service/user-create! registration-dto)
@@ -71,7 +71,7 @@
             => (str "token=nil;Path=/;Expires=Thu, 01 Jan 1970 00:00:00 GMT")))))
 
   (facts "Route: authenticated"
-    (with-state-changes [(before :facts (drop-and-create-tables))]
+    (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Is not authenticated"
         (user-service/user-create! registration-dto)
         (let [{status :status

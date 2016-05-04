@@ -7,6 +7,9 @@
 (def db-spec 
   {:connection-uri (env :connection-uri)})
 
+(defquery get-table-names-without-meta "sql/information_schema/get-table-names-without-meta.sql"
+  {:connection db-spec})
+
 (defquery get-table-names "sql/information_schema/get-table-names.sql"
   {:connection db-spec})
 

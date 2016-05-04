@@ -6,7 +6,7 @@
             [midje.sweet :refer :all]
             [pigeon-backend.services.user-service :as service]
             [schema.core :as s]
-            [pigeon-backend.test-util :refer [drop-and-create-tables]]
+            [pigeon-backend.test-util :refer [empty-and-create-tables]]
             [buddy.hashers :as hashers])
   (import org.postgresql.util.PSQLException))
 
@@ -23,7 +23,7 @@
 
 (deftest user-service-crud
   (facts "Service: user create"
-    (with-state-changes [(before :facts (drop-and-create-tables))]
+    (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (let [returned-dto (service/user-create! user-dto)]
           returned-dto => expected-user-dto
@@ -33,7 +33,7 @@
         (service/user-create! user-dto) => (throws clojure.lang.ExceptionInfo
                                                    "Duplicate username"))))
   (facts "Service: user check credentials"
-    (with-state-changes [(before :facts (drop-and-create-tables))]
+    (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Success"
         (let [returned-dto (service/user-create! user-dto)]
           (service/check-credentials credentials-dto) => true))

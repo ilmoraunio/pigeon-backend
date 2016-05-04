@@ -5,7 +5,7 @@
             [ring.mock.request :as mock]
             [clojure.data.json :as json]
             [pigeon-backend.dao.user-dao :refer [sql-user-get-all]]
-            [pigeon-backend.test-util :refer [drop-and-create-tables
+            [pigeon-backend.test-util :refer [empty-and-create-tables
                                               parse-body]]))
 
 (def user-dto {:username "foobar" 
@@ -14,7 +14,7 @@
 
 (deftest registration-test
   (facts "Route: registration"
-    (with-state-changes [(before :facts (drop-and-create-tables))]
+    (with-state-changes [(before :facts (empty-and-create-tables))]
 
       (fact "Basic case"
         (let [{status :status body :body} 
