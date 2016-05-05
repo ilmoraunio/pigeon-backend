@@ -38,7 +38,7 @@
   (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-user-create! map-args {:connection tx})
-      user) tx user))
+      map-args) tx user))
 
 (defn get-by-username
   [tx get-by-username-dto]

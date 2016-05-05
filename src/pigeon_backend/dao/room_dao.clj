@@ -13,7 +13,7 @@
   (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-room-create! map-args {:connection tx})
-      room) tx room))
+      map-args) tx room))
 
 (defn get-by-name [])
 (defn update! [])
