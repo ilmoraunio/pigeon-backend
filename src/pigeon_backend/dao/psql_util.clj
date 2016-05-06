@@ -12,5 +12,11 @@
             (ex-info
               "Duplicate username"
               {:type :username-exists
-               :cause (format "User %s already exists" (:username map-args))}))))
+               :cause (format "User %s already exists" (:username map-args))})))
+        (when-let [findings (re-find #"name.*?already exists" message)]
+          (throw
+            (ex-info
+              "Duplicate name"
+              {:type :duplicate-name
+               :cause (format "Name %s already exists" (:name map-args))}))))
       (throw (.getNextException e)))))

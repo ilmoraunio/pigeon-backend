@@ -12,4 +12,8 @@
   (facts "Dao: room create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (dao/create! db-spec room-dto) => room-dto))))
+        (dao/create! db-spec room-dto) => room-dto)
+      (fact "Duplicate room name not allowed"
+        (dao/create! db-spec room-dto)
+        (dao/create! db-spec room-dto) => (throws clojure.lang.ExceptionInfo
+                                            "Duplicate name")))))
