@@ -24,7 +24,7 @@
 (s/defschema LoginUser {:username String
                         :password String})
 
-(defquery sql-user-create! "sql/user/create.sql"
+(defquery sql-user-create<! "sql/user/create.sql"
   {:connection db-spec})
 
 (defquery sql-user-get-all "sql/user/get-all.sql"
@@ -37,7 +37,7 @@
                          :post [(s/validate NewUser %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
-      (sql-user-create! map-args {:connection tx})
+      (sql-user-create<! map-args {:connection tx})
       map-args) tx user))
 
 (defn get-by-username

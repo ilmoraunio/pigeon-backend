@@ -27,8 +27,9 @@
       (fact "Basic case"
         (dao/create! db-spec user-dto)
         (dao/create! db-spec (assoc user-dto :username "barfoo"))
-        (dao/get-by-username db-spec get-by-username-dto) => (contains {:id integer?} 
-                                                                       {:username "foobar"} 
-                                                                       {:full_name "Foo Bar"} 
-                                                                       {:password "hunter2"}
-                                                                       {:deleted false})))))
+        (dao/get-by-username db-spec get-by-username-dto) 
+          => (contains {:id integer?} 
+                       {:username "foobar"}
+                       {:full_name "Foo Bar"}
+                       {:password "hunter2"}
+                       {:deleted false})))))

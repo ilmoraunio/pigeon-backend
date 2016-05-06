@@ -6,14 +6,13 @@
 
 (s/defschema NewRoom {:name String})
 
-(defquery sql-room-create! "sql/room/create.sql"
+(defquery sql-room-create<! "sql/room/create.sql"
   {:connection db-spec})
 
 (defn create! [tx room] {:pre [(s/validate NewRoom room)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
-      (sql-room-create! map-args {:connection tx})
-      map-args) tx room))
+      (sql-room-create<! map-args {:connection tx})) tx room))
 
 (defn get-by-name [])
 (defn update! [])

@@ -6,7 +6,7 @@
   (try
     (f db-spec map-args)
     (catch Exception e
-      (let [message (-> e .getNextException .getMessage)]
+      (let [message (-> e .getMessage)]
         (when-let [findings (re-find #"username.*?already exists" message)]
           (throw
             (ex-info
