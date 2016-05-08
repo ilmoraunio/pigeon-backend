@@ -6,6 +6,7 @@
   (try
     (f db-spec map-args)
     (catch Exception e
+      ;;(prn e)
       (let [message (-> e .getMessage)]
         (when-let [findings (re-find #"username.*?already exists" message)]
           (throw
@@ -17,6 +18,13 @@
           (throw
             (ex-info
               "Duplicate name"
-              {:type :duplicate-name
-               :cause (format "Name %s already exists" (:name map-args))}))))
-      (throw (.getNextException e)))))
+              {:type :duplicate
+               :cause (format "Name %s already exists" (:name map-args))})))
+        (when-let [findings (re-find #"roomgroup_id, users_id.*?already exists" message)]
+          (throw
+            (ex-info 
+              "Duplicate group user"
+              {:type :duplicate
+               :cause (format "User %s already exists in group" (:name map-args))})))
+        (.println *err* message))
+      (throw e))))

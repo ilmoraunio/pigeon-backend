@@ -7,6 +7,7 @@
             [pigeon-backend.dao.user-dao :refer [NewUser UserModel LoginUser]]))
 
 (defn user-create! [dto] {:pre [(s/validate NewUser dto)]
+                          ;; TODO: write a coercer to remove password and post-validate
                           :post [(s/validate UserModel %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (let [user-with-hashed-password
