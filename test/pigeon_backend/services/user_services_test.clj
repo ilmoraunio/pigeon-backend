@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [deftest]]
             [pigeon-backend.migrations_test :refer [drop-all-tables]]
             [pigeon-backend.db.config :refer [db-spec]]
+            [pigeon-backend.dao.user-dao-test :refer [user-dto-expected]]
             [pigeon-backend.db.migrations :as migrations]
             [midje.sweet :refer :all]
             [pigeon-backend.services.user-service :as service]
@@ -14,9 +15,14 @@
                :full_name "Foo Bar"
                :password "hunter2"})
 
-(def expected-user-dto (contains {:username "foobar"}
+(def expected-user-dto (contains {:id integer?} 
+                                 {:username "foobar"}
                                  {:full_name "Foo Bar"}
-                                 {:password #"^bcrypt\+sha512\$.{84}"}))
+                                 {:password #"^bcrypt\+sha512\$.{84}"}
+                                 {:created #(instance? java.util.Date %)}
+                                 {:updated #(instance? java.util.Date %)}
+                                 {:version 0}
+                                 {:deleted false}))
 
 (def credentials-dto {:username "foobar" :password "hunter2"})
 (def wrong-credentials-dto {:username "foobar" :password "password123"})

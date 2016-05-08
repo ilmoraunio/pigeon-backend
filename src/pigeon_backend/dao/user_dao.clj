@@ -4,10 +4,13 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]))
 
-(s/defschema UserModel {:id s/Int 
-                        :username String 
-                        :full_name String 
-                        :password String 
+(s/defschema UserModel {:id s/Int
+                        :username String
+                        :full_name String
+                        :password String
+                        :created java.util.Date
+                        :updated java.util.Date
+                        :version s/Int
                         :deleted Boolean})
 
 (s/defschema NewUser {:username String 
@@ -34,11 +37,10 @@
   {:connection db-spec})
 
 (defn create! [tx user] {:pre [(s/validate NewUser user)]
-                         :post [(s/validate NewUser %)]}
+                         :post [(s/validate UserModel %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
-      (sql-user-create<! map-args {:connection tx})
-      map-args) tx user))
+      (sql-user-create<! map-args {:connection tx})) tx user))
 
 (defn get-by-username
   [tx get-by-username-dto]
