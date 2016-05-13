@@ -11,5 +11,6 @@
                                         FOREIGN KEY (origin) REFERENCES RoomGroup(id),
                                         FOREIGN KEY (recipient) REFERENCES RoomGroup(id),
                                         FOREIGN KEY (parent) REFERENCES DirectedConnection(id),
-                                        FOREIGN KEY (Time_Room_name, Time_name) REFERENCES Time(Room_name, name));"]
+                                        FOREIGN KEY (Time_Room_name, Time_name) REFERENCES Time(Room_name, name),
+                                        UNIQUE(origin, recipient, parent, Time_Room_name, Time_name));"]
  :down ["DROP TABLE DirectedConnection;"]}
