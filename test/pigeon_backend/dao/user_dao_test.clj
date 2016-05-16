@@ -23,6 +23,11 @@
 
 (defn user
   ([] (let [data user-dto]
+        (dao/create! db-spec data)))
+
+  ([{username :username :as input}]
+      (let [data (assoc user-dto :username
+                                 "barfoo")]
         (dao/create! db-spec data))))
 
 (deftest user-dao-test
@@ -38,6 +43,6 @@
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (user)
-        (dao/create! db-spec (assoc user-dto :username "barfoo"))
+        (user {:username "barfoo"})
         (dao/get-by-username db-spec get-by-username-dto) 
           => user-dto-expected))))

@@ -35,21 +35,25 @@
                                   {:version 0}
                                   {:deleted false}))
 
+(defn roomgroup
+  ([] (let [data roomgroup-dto]
+        (dao/create! db-spec data))))
+
 (deftest roomgroup-dao-test
   (facts "Dao: roomgroup create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (room-dao-test/room)
-        (dao/create! db-spec roomgroup-dto) => roomgroup-expected)
+        (roomgroup) => roomgroup-expected)
       (fact "Duplicate group name inside room not allowed"
         (room-dao-test/room)
-        (dao/create! db-spec roomgroup-dto)
-        (dao/create! db-spec roomgroup-dto) 
+        (roomgroup)
+        (roomgroup) 
           => (throws clojure.lang.ExceptionInfo
               "Duplicate name"))
       (fact "Tree structure with parent"
         (room-dao-test/room)
-        (let [{:keys [id]} (dao/create! db-spec roomgroup-dto)
+        (let [{:keys [id]} (roomgroup)
               roomgroup-child-dto (roomgroup-child-dto id "Room group child")]
           (dao/create! db-spec roomgroup-child-dto)
             => (roomgroup-child-expected id))))))
