@@ -11,10 +11,11 @@
                     :name "Room group"
                     :parent nil})
 
-(defn roomgroup-child-dto [parent roomgroup-name]
-                   {:room_name "Pigeon room"
-                    :name roomgroup-name
-                    :parent parent})
+(defn roomgroup-data
+  ([& {:keys [name parent]}]
+    {:room_name "Pigeon room"
+     :name name
+     :parent parent}))
 
 (def roomgroup-expected (contains {:id integer?}
                                   {:room_name "Pigeon room"}
@@ -37,7 +38,8 @@
 
 (defn roomgroup
   ([] (let [data roomgroup-dto]
-        (dao/create! db-spec data))))
+        (dao/create! db-spec data)))
+  ([data] (dao/create! db-spec data)))
 
 (deftest roomgroup-dao-test
   (facts "Dao: roomgroup create"
@@ -48,12 +50,13 @@
       (fact "Duplicate group name inside room not allowed"
         (room-dao-test/room)
         (roomgroup)
-        (roomgroup) 
+        (roomgroup)
           => (throws clojure.lang.ExceptionInfo
               "Duplicate name"))
       (fact "Tree structure with parent"
         (room-dao-test/room)
         (let [{:keys [id]} (roomgroup)
-              roomgroup-child-dto (roomgroup-child-dto id "Room group child")]
-          (dao/create! db-spec roomgroup-child-dto)
+              roomgroup-child-data (roomgroup-data :name "Room group child"
+                                                   :parent id)]
+          (roomgroup roomgroup-child-data)
             => (roomgroup-child-expected id))))))
