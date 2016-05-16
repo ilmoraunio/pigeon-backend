@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest]]
             [midje.sweet :refer :all]
             [pigeon-backend.dao.outcome-dao :as dao]
-            [pigeon-backend.dao.dao-mother :as dao-mother]
+            [pigeon-backend.dao.property-dao-test :as property-dao-test]
             [schema.core :as s]
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
@@ -26,10 +26,10 @@
   (facts "Dao: outcome create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (let [property (dao-mother/property)]
+        (let [property (property-dao-test/property)]
           (dao/create! db-spec (outcome-data (:id property)))
             => (outcome-data-expected (:id property))))
       (fact "Allow duplicates"
-        (let [property (dao-mother/property)]
+        (let [property (property-dao-test/property)]
           (dao/create! db-spec (outcome-data (:id property)))
             => (outcome-data-expected (:id property)))))))

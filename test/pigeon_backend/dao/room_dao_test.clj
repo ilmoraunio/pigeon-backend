@@ -6,6 +6,7 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
 
+
 (def room-dto {:name "Pigeon room"})
 (def room-expected (contains {:name "Pigeon room"}
                              {:created #(instance? java.util.Date %)}
@@ -13,12 +14,16 @@
                              {:version 0}
                              {:deleted false}))
 
+(defn room
+  ([] (let [data room-dto]
+        (dao/create! db-spec data))))
+
 (deftest room-dao-test
   (facts "Dao: room create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (dao/create! db-spec room-dto) => room-expected)
+        (room) => room-expected)
       (fact "Duplicate room name not allowed"
-        (dao/create! db-spec room-dto) => irrelevant
-        (dao/create! db-spec room-dto) => (throws clojure.lang.ExceptionInfo
+        (room) => irrelevant
+        (room) => (throws clojure.lang.ExceptionInfo
                                             "Duplicate name")))))

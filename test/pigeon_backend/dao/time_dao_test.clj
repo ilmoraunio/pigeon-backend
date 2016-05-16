@@ -2,8 +2,7 @@
   (:require [clojure.test :refer [deftest]]
             [midje.sweet :refer :all]
             [pigeon-backend.dao.time-dao :as dao]
-            [pigeon-backend.dao.room-dao :as room-dao]
-            [pigeon-backend.dao.room-dao-test :refer [room-dto]]
+            [pigeon-backend.dao.room-dao-test :as room-dao-test]
             [schema.core :as s]
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
@@ -26,14 +25,14 @@
   (facts "Dao: time create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (let [{room-name :name} (room-dao/create! db-spec room-dto)
+        (let [{room-name :name} (room-dao-test/room)
               {time-name :name 
                room-name :room_name 
                sequence-order :sequence_order :as returned-dto}
                 (dao/create! db-spec (time-dto "Slice of time" room-name 0))]
             returned-dto => (time-expected time-name room-name sequence-order)))
       (fact "Multiple"
-        (let [{room-name :name} (room-dao/create! db-spec room-dto)
+        (let [{room-name :name} (room-dao-test/room)
               _ (dao/create! db-spec (time-dto "Slice of time" room-name 0))
               {time-name :name 
                room-name :room_name 
@@ -41,7 +40,7 @@
                 (dao/create! db-spec (time-dto "Another slice of time" room-name 1))]
             returned-dto => (time-expected time-name room-name sequence-order)))
       (fact "Duplicate time inside room not allowed"
-        (let [{room-name :name} (room-dao/create! db-spec room-dto)]
+        (let [{room-name :name} (room-dao-test/room)]
           (dao/create! db-spec (time-dto "Slice of time" room-name 0))
           (dao/create! db-spec (time-dto "Slice of time" room-name 1))
             => (throws clojure.lang.ExceptionInfo

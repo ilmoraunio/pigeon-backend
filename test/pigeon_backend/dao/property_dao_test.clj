@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest]]
             [midje.sweet :refer :all]
             [pigeon-backend.dao.property-dao :as dao]
-            [pigeon-backend.dao.dao-mother :as dao-mother]
+            [pigeon-backend.dao.directedconnection-dao-test :as directedconnection-dao-test]
             [schema.core :as s]
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
@@ -24,15 +24,20 @@
             {:version 0}
             {:deleted false}))
 
+(defn property
+  ([] (let [directedconnection (directedconnection-dao-test/directedconnection)
+            data (property-data (:id directedconnection))]
+        (dao/create! db-spec data))))
+
 (deftest property-dao-test
   (facts "Dao: property create"
     (with-state-changes [(before :facts (empty-and-create-tables))] 
       (fact "Basic case"
-        (let [directedconnection (dao-mother/directedconnection)]
+        (let [directedconnection (directedconnection-dao-test/directedconnection)]
           (dao/create! db-spec (property-data (:id directedconnection)))
             => (property-data-expected (:id directedconnection))))
       (fact "Duplicate ok"
-        (let [directedconnection (dao-mother/directedconnection)]
+        (let [directedconnection (directedconnection-dao-test/directedconnection)]
           (dao/create! db-spec (property-data (:id directedconnection)))
           (dao/create! db-spec (property-data (:id directedconnection)))
             => (property-data-expected (:id directedconnection)))))))

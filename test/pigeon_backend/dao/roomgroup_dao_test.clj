@@ -1,8 +1,7 @@
 (ns pigeon-backend.dao.roomgroup-dao-test
   (:require [clojure.test :refer [deftest]]
             [midje.sweet :refer :all]
-            [pigeon-backend.dao.room-dao :as room-dao]
-            [pigeon-backend.dao.room-dao-test :refer [room-dto]]
+            [pigeon-backend.dao.room-dao-test :as room-dao-test]
             [pigeon-backend.dao.roomgroup-dao :as dao]
             [schema.core :as s]
             [pigeon-backend.db.config :refer [db-spec]]
@@ -40,16 +39,16 @@
   (facts "Dao: roomgroup create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (room-dao/create! db-spec room-dto)
+        (room-dao-test/room)
         (dao/create! db-spec roomgroup-dto) => roomgroup-expected)
       (fact "Duplicate group name inside room not allowed"
-        (room-dao/create! db-spec room-dto)
+        (room-dao-test/room)
         (dao/create! db-spec roomgroup-dto)
         (dao/create! db-spec roomgroup-dto) 
           => (throws clojure.lang.ExceptionInfo
               "Duplicate name"))
       (fact "Tree structure with parent"
-        (room-dao/create! db-spec room-dto)
+        (room-dao-test/room)
         (let [{:keys [id]} (dao/create! db-spec roomgroup-dto)
               roomgroup-child-dto (roomgroup-child-dto id "Room group child")]
           (dao/create! db-spec roomgroup-child-dto)

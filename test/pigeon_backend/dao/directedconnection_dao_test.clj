@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [deftest]]
             [midje.sweet :refer :all]
             [pigeon-backend.dao.room-dao :as room-dao]
+            [pigeon-backend.dao.room-dao-test :as room-dao-test]
             [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]
             [pigeon-backend.dao.time-dao :as time-dao]
             [pigeon-backend.dao.directedconnection-dao :as dao]
@@ -49,6 +50,18 @@
                 {:updated #(instance? java.util.Date %)}
                 {:version 0}
                 {:deleted false}))
+
+(defn directedconnection
+  ([] (let [_ (room-dao-test/room)
+          roomgroup-data-1 (roomgroup-dao/create! db-spec roomgroup-dto)
+          roomgroup-data-2 (roomgroup-dao/create! db-spec (assoc roomgroup-dto :name "Room group 2"))
+          _ (time-dao/create! db-spec (time-dto "Slice of time" "Pigeon room" 0))
+          data {:origin (:id roomgroup-data-1)
+                :recipient (:id roomgroup-data-2)
+                :time_room_name "Pigeon room"
+                :time_name "Slice of time"
+                :parent nil}]
+      (dao/create! db-spec data))))
 
 (deftest directedconnection-dao-test
   (facts "Dao: directedconnection create"
