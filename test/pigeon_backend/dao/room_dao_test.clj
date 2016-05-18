@@ -7,6 +7,7 @@
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
 
 (def room-dto {:name "Pigeon room"})
+
 (def room-expected (contains {:name "Pigeon room"}
                              {:created #(instance? java.util.Date %)}
                              {:updated #(instance? java.util.Date %)}

@@ -12,9 +12,10 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
 
-(defn groupuser-dto [roomgroup_id userid]
-  {:roomgroup_id roomgroup_id
-   :users_id userid})
+(defn groupuser-data
+  ([& {:keys [roomgroup_id users_id]}]
+    {:roomgroup_id roomgroup_id
+     :users_id users_id}))
 
 (defn groupuser-expected [userid]
   (contains {:roomgroup_id "Pigeon room"}
@@ -24,6 +25,9 @@
             {:version 0}
             {:deleted false}))
 
+(defn groupuser
+  ([data] (dao/create! db-spec data)))
+
 (deftest groupuser-dao-test
   (facts "Dao: groupuser create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
@@ -31,13 +35,16 @@
         (let [{userid :id} (user-dao-test/user)
               _ (room-dao-test/room)
               {roomgroup_id :id} (roomgroup-dao/create! db-spec roomgroup-dto)]
-          (dao/create! db-spec (groupuser-dto roomgroup_id userid))
+          (groupuser (groupuser-data :roomgroup_id roomgroup_id
+                                     :users_id userid))
             => groupuser-expected))
       (fact "Duplicate groupuser inside room not allowed"
         (let [{userid :id} (user-dao-test/user)
               _ (room-dao-test/room)
               {roomgroup_id :id} (roomgroup-dao/create! db-spec roomgroup-dto)]
-          (dao/create! db-spec (groupuser-dto roomgroup_id userid))
-          (dao/create! db-spec (groupuser-dto roomgroup_id userid))
+          (groupuser (groupuser-data :roomgroup_id roomgroup_id
+                                     :users_id userid))
+          (groupuser (groupuser-data :roomgroup_id roomgroup_id
+                                     :users_id userid))
             => (throws clojure.lang.ExceptionInfo
                 "Duplicate group user"))))))

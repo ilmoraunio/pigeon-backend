@@ -11,6 +11,7 @@
 (def user-dto {:username "foobar"
                :full_name "Foo Bar"
                :password "hunter2"})
+
 (def get-by-username-dto {:username "foobar"})
 (def user-dto-expected (contains {:id integer?} 
                                  {:username "foobar"}
