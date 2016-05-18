@@ -7,19 +7,24 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
 
-(defn time-dto [time-name room-name sequence-order]
-  {:room_name room-name
-   :name time-name
-   :sequence_order sequence-order})
+(defn time-data
+  ([& {:keys [room_name name sequence_order]}]
+    {:room_name room_name
+     :name name
+     :sequence_order sequence_order}))
 
-(defn time-expected [time-name room-name sequence-order]
-  (contains {:name time-name}
-            {:room_name room-name}
-            {:sequence_order sequence-order}
-            {:created #(instance? java.util.Date %)}
-            {:updated #(instance? java.util.Date %)}
-            {:version 0}
-            {:deleted false}))
+(defn time-expected 
+  ([& {:keys [time-name room-name sequence-order]}]
+    (contains {:name time-name}
+              {:room_name room-name}
+              {:sequence_order sequence-order}
+              {:created #(instance? java.util.Date %)}
+              {:updated #(instance? java.util.Date %)}
+              {:version 0}
+              {:deleted false})))
+
+(defn time
+  ([data] (dao/create! db-spec data)))
 
 (deftest time-dao-test
   (facts "Dao: time create"
@@ -29,19 +34,33 @@
               {time-name :name 
                room-name :room_name 
                sequence-order :sequence_order :as returned-dto}
-                (dao/create! db-spec (time-dto "Slice of time" room-name 0))]
-            returned-dto => (time-expected time-name room-name sequence-order)))
+                (time (time-data :name "Slice of time" 
+                                 :room_name room-name 
+                                 :sequence_order 0))]
+            returned-dto => (time-expected :time-name time-name 
+                                           :room-name room-name 
+                                           :sequence-order sequence-order)))
       (fact "Multiple"
         (let [{room-name :name} (room-dao-test/room)
-              _ (dao/create! db-spec (time-dto "Slice of time" room-name 0))
+              _ (time (time-data :name "Slice of time" 
+                                 :room_name room-name 
+                                 :sequence_order 0))
               {time-name :name 
                room-name :room_name 
                sequence-order :sequence_order :as returned-dto}
-                (dao/create! db-spec (time-dto "Another slice of time" room-name 1))]
-            returned-dto => (time-expected time-name room-name sequence-order)))
+                (time (time-data :name "Another slice of time" 
+                                 :room_name room-name 
+                                 :sequence_order 1))]
+            returned-dto => (time-expected :time-name time-name 
+                                           :room-name room-name 
+                                           :sequence-order sequence-order)))
       (fact "Duplicate time inside room not allowed"
         (let [{room-name :name} (room-dao-test/room)]
-          (dao/create! db-spec (time-dto "Slice of time" room-name 0))
-          (dao/create! db-spec (time-dto "Slice of time" room-name 1))
+          (time (time-data :name "Slice of time" 
+                                 :room_name room-name 
+                                 :sequence_order 0))
+          (time (time-data :name "Slice of time" 
+                                 :room_name room-name 
+                                 :sequence_order 1))
             => (throws clojure.lang.ExceptionInfo
                 "Duplicate name"))))))
