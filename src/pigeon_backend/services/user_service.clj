@@ -4,10 +4,11 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [buddy.hashers :as hashers]
             [schema.core :as s]
-            [pigeon-backend.dao.user-dao :refer [NewUser LoginUser]]))
+            [pigeon-backend.dao.user-dao :refer [NewUser UserModel LoginUser]]))
 
 (defn user-create! [dto] {:pre [(s/validate NewUser dto)]
-                          :post [(s/validate NewUser %)]}
+                          ;; TODO: write a coercer to remove password and post-validate
+                          :post [(s/validate UserModel %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (let [user-with-hashed-password
             (assoc dto :password 

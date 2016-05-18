@@ -1,3 +1,3 @@
-SELECT id, username, full_name, password, deleted
+SELECT id, username, full_name, password, created, updated, version, deleted
 FROM users
-WHERE username = :username AND deleted = false;
+WHERE username = (:username)::text AND deleted = false;

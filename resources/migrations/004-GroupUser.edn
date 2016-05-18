@@ -1,0 +1,10 @@
+{:up ["CREATE TABLE GroupUser (RoomGroup_id integer,
+                               users_id integer NOT NULL,
+                               created timestamp default NOW(),
+                               updated timestamp default NOW(),
+                               version integer default 0,
+                               deleted boolean default false,
+                               FOREIGN KEY (RoomGroup_id) REFERENCES RoomGroup(id),
+                               FOREIGN KEY (users_id) REFERENCES users(id),
+                               UNIQUE(RoomGroup_id, users_id));"]
+ :down ["DROP TABLE GroupUser;"]}

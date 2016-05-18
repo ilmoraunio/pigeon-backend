@@ -5,11 +5,19 @@
             [pigeon-backend.db.migrations :as migrations]
             [clojure.java.jdbc :as jdbc]
             [pigeon-backend.db.config :refer [db-spec 
-                                              get-table-names 
+                                              get-table-names
+                                              get-table-names-without-meta
                                               get-migrations]]
             [pigeon-backend.handler :as handler]
             [ring.server.standalone :as ring])
   (:import (org.postgresql.util PSQLException)))
+
+(defn empty-all-tables [conn]
+  (if-let [table-name-count (count (get-table-names-without-meta))]
+    (if (> table-name-count 0)
+      (jdbc/execute! conn [(str "TRUNCATE TABLE "
+        (clojure.string/join ", " (map :table_name (get-table-names-without-meta)))
+        " CASCADE")]))))
 
 (defn drop-all-tables [conn]
   (if-let [table-name-count (count (get-table-names))]
