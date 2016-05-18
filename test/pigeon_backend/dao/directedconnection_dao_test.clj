@@ -7,7 +7,7 @@
             [pigeon-backend.dao.time-dao :as time-dao]
             [pigeon-backend.dao.directedconnection-dao :as dao]
             [pigeon-backend.dao.room-dao-test :refer [room-dto]]
-            [pigeon-backend.dao.roomgroup-dao-test :refer [roomgroup-dto]]
+            [pigeon-backend.dao.roomgroup-dao-test :as roomgroup-dao-test]
             [pigeon-backend.dao.time-dao-test :as time-dao-test]
             [schema.core :as s]
             [pigeon-backend.db.config :refer [db-spec]]
@@ -53,8 +53,8 @@
 
 (defn directedconnection
   ([] (let [_ (room-dao-test/room)
-          roomgroup-data-1 (roomgroup-dao/create! db-spec roomgroup-dto)
-          roomgroup-data-2 (roomgroup-dao/create! db-spec (assoc roomgroup-dto :name "Room group 2"))
+          roomgroup-data-1 (roomgroup-dao-test/roomgroup)
+          roomgroup-data-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
           _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
                                                          :room_name "Pigeon room"
                                                          :sequence_order 0))
@@ -71,8 +71,8 @@
 
       (fact "Basic case"
         (let [_ (room-dao/create! db-spec room-dto)
-              roomgroup-dto-1 (roomgroup-dao/create! db-spec roomgroup-dto)
-              roomgroup-dto-2 (roomgroup-dao/create! db-spec (assoc roomgroup-dto :name "Room group 2"))
+              roomgroup-dto-1 (roomgroup-dao-test/roomgroup)
+              roomgroup-dto-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
               _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
                                                              :room_name "Pigeon room"
                                                              :sequence_order 0))]
@@ -81,8 +81,8 @@
 
       (fact "Duplicate directed connection not allowed"
         (let [_ (room-dao/create! db-spec room-dto)
-              roomgroup-dto-1 (roomgroup-dao/create! db-spec roomgroup-dto)
-              roomgroup-dto-2 (roomgroup-dao/create! db-spec (assoc roomgroup-dto :name "Room group 2"))
+              roomgroup-dto-1 (roomgroup-dao-test/roomgroup)
+              roomgroup-dto-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
               _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
                                                              :room_name "Pigeon room"
                                                              :sequence_order 0))
@@ -98,9 +98,9 @@
 
       (fact "Tree structure with parent"
         (let [_ (room-dao/create! db-spec room-dto)
-              roomgroup-dto-1 (roomgroup-dao/create! db-spec roomgroup-dto)
-              roomgroup-dto-2 (roomgroup-dao/create! db-spec (assoc roomgroup-dto :name "Room group 2"))
-              roomgroup-dto-3 (roomgroup-dao/create! db-spec (assoc roomgroup-dto :name "Room group 3"))
+              roomgroup-dto-1 (roomgroup-dao-test/roomgroup)
+              roomgroup-dto-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
+              roomgroup-dto-3 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 3"))
               _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
                                                              :room_name "Pigeon room"
                                                              :sequence_order 0))

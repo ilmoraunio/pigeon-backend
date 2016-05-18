@@ -5,7 +5,7 @@
             [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]
             [pigeon-backend.dao.user-dao-test :as user-dao-test]
             [pigeon-backend.dao.room-dao-test :refer [room-dto]]
-            [pigeon-backend.dao.roomgroup-dao-test :refer [roomgroup-dto]]
+            [pigeon-backend.dao.roomgroup-dao-test :as roomgroup-dao-test]
             [pigeon-backend.dao.user-dao :as user-dao]
             [pigeon-backend.dao.groupuser-dao :as dao]
             [schema.core :as s]
@@ -34,14 +34,14 @@
       (fact "Basic case"
         (let [{userid :id} (user-dao-test/user)
               _ (room-dao-test/room)
-              {roomgroup_id :id} (roomgroup-dao/create! db-spec roomgroup-dto)]
+              {roomgroup_id :id} (roomgroup-dao-test/roomgroup)]
           (groupuser (groupuser-data :roomgroup_id roomgroup_id
                                      :users_id userid))
             => groupuser-expected))
       (fact "Duplicate groupuser inside room not allowed"
         (let [{userid :id} (user-dao-test/user)
               _ (room-dao-test/room)
-              {roomgroup_id :id} (roomgroup-dao/create! db-spec roomgroup-dto)]
+              {roomgroup_id :id} (roomgroup-dao-test/roomgroup)]
           (groupuser (groupuser-data :roomgroup_id roomgroup_id
                                      :users_id userid))
           (groupuser (groupuser-data :roomgroup_id roomgroup_id

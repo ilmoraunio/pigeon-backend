@@ -7,9 +7,9 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
 
-(def roomgroup-dto {:room_name "Pigeon room"
-                    :name "Room group"
-                    :parent nil})
+(def ^{:private true} roomgroup-dto {:room_name "Pigeon room"
+                                     :name "Room group"
+                                     :parent nil})
 
 (defn roomgroup-data
   ([& {:keys [name parent]}]
