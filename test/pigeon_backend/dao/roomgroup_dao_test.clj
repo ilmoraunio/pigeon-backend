@@ -38,7 +38,7 @@
 
 (defn roomgroup
   ([] (let [data roomgroup-dto]
-        (dao/create! db-spec data)))
+        (roomgroup data)))
   ([data] (dao/create! db-spec data)))
 
 (deftest roomgroup-dao-test

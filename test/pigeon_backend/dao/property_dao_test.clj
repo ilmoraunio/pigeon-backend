@@ -27,17 +27,18 @@
 (defn property
   ([] (let [directedconnection (directedconnection-dao-test/directedconnection)
             data (property-data (:id directedconnection))]
-        (dao/create! db-spec data))))
+        (property data)))
+  ([data] (dao/create! db-spec data)))
 
 (deftest property-dao-test
   (facts "Dao: property create"
     (with-state-changes [(before :facts (empty-and-create-tables))] 
       (fact "Basic case"
         (let [directedconnection (directedconnection-dao-test/directedconnection)]
-          (dao/create! db-spec (property-data (:id directedconnection)))
+          (property (property-data (:id directedconnection)))
             => (property-data-expected (:id directedconnection))))
       (fact "Duplicate ok"
         (let [directedconnection (directedconnection-dao-test/directedconnection)]
-          (dao/create! db-spec (property-data (:id directedconnection)))
-          (dao/create! db-spec (property-data (:id directedconnection)))
+          (property (property-data (:id directedconnection)))
+          (property (property-data (:id directedconnection)))
             => (property-data-expected (:id directedconnection)))))))

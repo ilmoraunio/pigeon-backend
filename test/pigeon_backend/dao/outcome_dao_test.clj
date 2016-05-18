@@ -22,14 +22,17 @@
             {:version 0}
             {:deleted false}))
 
+(defn outcome
+  ([data] (dao/create! db-spec data)))
+
 (deftest outcome-dao-test
   (facts "Dao: outcome create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (let [property (property-dao-test/property)]
-          (dao/create! db-spec (outcome-data (:id property)))
+          (outcome (outcome-data (:id property)))
             => (outcome-data-expected (:id property))))
       (fact "Allow duplicates"
         (let [property (property-dao-test/property)]
-          (dao/create! db-spec (outcome-data (:id property)))
+          (outcome (outcome-data (:id property)))
             => (outcome-data-expected (:id property)))))))
