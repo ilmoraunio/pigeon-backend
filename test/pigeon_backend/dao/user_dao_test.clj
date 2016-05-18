@@ -27,8 +27,7 @@
         (dao/create! db-spec data)))
 
   ([{username :username :as input}]
-      (let [data (assoc user-data :username
-                                 "barfoo")]
+      (let [data (assoc user-data :username username)]
         (dao/create! db-spec data))))
 
 (deftest user-dao-test
