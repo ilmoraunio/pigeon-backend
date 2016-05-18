@@ -8,12 +8,12 @@
   (import java.sql.BatchUpdateException))
 
 
-(def user-dto {:username "foobar"
+(def user-data {:username "foobar"
                :full_name "Foo Bar"
                :password "hunter2"})
 
-(def get-by-username-dto {:username "foobar"})
-(def user-dto-expected (contains {:id integer?} 
+(def get-by-username-data {:username "foobar"})
+(def user-data-expected (contains {:id integer?} 
                                  {:username "foobar"}
                                  {:full_name "Foo Bar"}
                                  {:password "hunter2"}
@@ -23,11 +23,11 @@
                                  {:deleted false}))
 
 (defn user
-  ([] (let [data user-dto]
+  ([] (let [data user-data]
         (dao/create! db-spec data)))
 
   ([{username :username :as input}]
-      (let [data (assoc user-dto :username
+      (let [data (assoc user-data :username
                                  "barfoo")]
         (dao/create! db-spec data))))
 
@@ -35,7 +35,7 @@
   (facts "Dao: user create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (user) => user-dto-expected)
+        (user) => user-data-expected)
       (fact "Duplicate username entry not allowed"
         (user)
         (user) => (throws clojure.lang.ExceptionInfo 
@@ -45,5 +45,5 @@
       (fact "Basic case"
         (user)
         (user {:username "barfoo"})
-        (dao/get-by-username db-spec get-by-username-dto) 
-          => user-dto-expected))))
+        (dao/get-by-username db-spec get-by-username-data) 
+          => user-data-expected))))

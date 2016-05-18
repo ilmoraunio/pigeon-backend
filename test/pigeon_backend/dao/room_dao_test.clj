@@ -6,7 +6,7 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
 
-(def room-dto {:name "Pigeon room"})
+(def room-data {:name "Pigeon room"})
 
 (def room-expected (contains {:name "Pigeon room"}
                              {:created #(instance? java.util.Date %)}
@@ -15,7 +15,7 @@
                              {:deleted false}))
 
 (defn room
-  ([] (let [data room-dto]
+  ([] (let [data room-data]
         (dao/create! db-spec data))))
 
 (deftest room-dao-test

@@ -7,10 +7,6 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
 
-(def ^{:private true} roomgroup-dto {:room_name "Pigeon room"
-                                     :name "Room group"
-                                     :parent nil})
-
 (defn roomgroup-data
   ([& {:keys [name parent]}]
     {:room_name "Pigeon room"
@@ -37,7 +33,7 @@
                                   {:deleted false}))
 
 (defn roomgroup
-  ([] (let [data roomgroup-dto]
+  ([] (let [data (roomgroup-data :name "Room group")]
         (roomgroup data)))
   ([data] (dao/create! db-spec data)))
 

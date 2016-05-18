@@ -33,11 +33,11 @@
         (let [{room-name :name} (room-dao-test/room)
               {time-name :name 
                room-name :room_name 
-               sequence-order :sequence_order :as returned-dto}
+               sequence-order :sequence_order :as returned-data}
                 (time (time-data :name "Slice of time" 
                                  :room_name room-name 
                                  :sequence_order 0))]
-            returned-dto => (time-expected :time-name time-name 
+            returned-data => (time-expected :time-name time-name 
                                            :room-name room-name 
                                            :sequence-order sequence-order)))
       (fact "Multiple"
@@ -47,11 +47,11 @@
                                  :sequence_order 0))
               {time-name :name 
                room-name :room_name 
-               sequence-order :sequence_order :as returned-dto}
+               sequence-order :sequence_order :as returned-data}
                 (time (time-data :name "Another slice of time" 
                                  :room_name room-name 
                                  :sequence_order 1))]
-            returned-dto => (time-expected :time-name time-name 
+            returned-data => (time-expected :time-name time-name 
                                            :room-name room-name 
                                            :sequence-order sequence-order)))
       (fact "Duplicate time inside room not allowed"

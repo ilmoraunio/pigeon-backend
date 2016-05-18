@@ -4,7 +4,6 @@
             [pigeon-backend.dao.room-dao-test :as room-dao-test]
             [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]
             [pigeon-backend.dao.user-dao-test :as user-dao-test]
-            [pigeon-backend.dao.room-dao-test :refer [room-dto]]
             [pigeon-backend.dao.roomgroup-dao-test :as roomgroup-dao-test]
             [pigeon-backend.dao.user-dao :as user-dao]
             [pigeon-backend.dao.groupuser-dao :as dao]
