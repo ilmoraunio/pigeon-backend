@@ -13,57 +13,38 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
 
-(defn directedconnection-dto [origin-id recipient-id]
-    {:origin origin-id
-     :recipient recipient-id
-     :time_room_name "Pigeon room"
-     :time_name "Slice of time"
-     :parent nil})
+(defn directedconnection-data
+  ([& {:keys [origin recipient parent]}]
+   {:origin origin
+    :recipient recipient
+    :time_room_name "Pigeon room"
+    :time_name "Slice of time"
+    :parent parent}))
 
-(defn directedconnection-child-dto [origin-id recipient-id parent-id]
-     {:origin origin-id
-      :recipient recipient-id
-      :time_room_name "Pigeon room"
-      :time_name "Slice of time"
-      :parent parent-id})
-
-(defn directedconnection-expected [origin-id recipient-id]
+(defn directedconnection-expected
+  ([& {:keys [origin recipient parent]}]
       (contains {:id integer?}
-                {:origin origin-id}
-                {:recipient recipient-id}
+                {:origin origin}
+                {:recipient recipient}
                 {:time_room_name "Pigeon room"}
                 {:time_name "Slice of time"}
-                {:parent nil}
+                {:parent parent}
                 {:created #(instance? java.util.Date %)}
                 {:updated #(instance? java.util.Date %)}
                 {:version 0}
-                {:deleted false}))
-
-(defn directedconnection-child-expected [origin-id recipient-id parent-id]
-      (contains {:id integer?}
-                {:origin origin-id}
-                {:recipient recipient-id}
-                {:time_room_name "Pigeon room"}
-                {:time_name "Slice of time"}
-                {:parent parent-id}
-                {:created #(instance? java.util.Date %)}
-                {:updated #(instance? java.util.Date %)}
-                {:version 0}
-                {:deleted false}))
+                {:deleted false})))
 
 (defn directedconnection
   ([] (let [_ (room-dao-test/room)
-          roomgroup-data-1 (roomgroup-dao-test/roomgroup)
-          roomgroup-data-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
-          _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
-                                                         :room_name "Pigeon room"
-                                                         :sequence_order 0))
-          data {:origin (:id roomgroup-data-1)
-                :recipient (:id roomgroup-data-2)
-                :time_room_name "Pigeon room"
-                :time_name "Slice of time"
-                :parent nil}]
-      (dao/create! db-spec data))))
+            roomgroup-data-1 (roomgroup-dao-test/roomgroup)
+            roomgroup-data-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
+            _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
+                                                           :room_name "Pigeon room"
+                                                           :sequence_order 0))
+            data (directedconnection-data :origin (:id roomgroup-data-1)
+                                          :recipient (:id roomgroup-data-2))]
+      (directedconnection data)))
+  ([data] (dao/create! db-spec data)))
 
 (deftest directedconnection-dao-test
   (facts "Dao: directedconnection create"
@@ -76,8 +57,10 @@
               _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
                                                              :room_name "Pigeon room"
                                                              :sequence_order 0))]
-          (dao/create! db-spec (directedconnection-dto (:id roomgroup-dto-1) (:id roomgroup-dto-2)))
-            => (directedconnection-expected (:id roomgroup-dto-1) (:id roomgroup-dto-2))))
+          (directedconnection (directedconnection-data :origin (:id roomgroup-dto-1)
+                                                       :recipient (:id roomgroup-dto-2)))
+            => (directedconnection-expected :origin (:id roomgroup-dto-1)
+                                            :recipient (:id roomgroup-dto-2))))
 
       (fact "Duplicate directed connection not allowed"
         (let [_ (room-dao-test/room)
@@ -86,14 +69,14 @@
               _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
                                                              :room_name "Pigeon room"
                                                              :sequence_order 0))
-              directedconnection-dto (dao/create! db-spec (directedconnection-dto (:id roomgroup-dto-1)
-                                                                                  (:id roomgroup-dto-2)))]
-          (dao/create! db-spec (directedconnection-child-dto (:id roomgroup-dto-1)
-                                                             (:id roomgroup-dto-2)
-                                                             (:id directedconnection-dto)))
-          (dao/create! db-spec (directedconnection-child-dto (:id roomgroup-dto-1)
-                                                             (:id roomgroup-dto-2)
-                                                             (:id directedconnection-dto)))
+              directedconnection-dto (directedconnection (directedconnection-data :origin (:id roomgroup-dto-1)
+                                                                                  :recipient (:id roomgroup-dto-2)))]
+          (directedconnection (directedconnection-data :origin (:id roomgroup-dto-1)
+                                                       :recipient (:id roomgroup-dto-2)
+                                                       :parent (:id directedconnection-dto)))
+          (directedconnection (directedconnection-data :origin (:id roomgroup-dto-1)
+                                                       :recipient (:id roomgroup-dto-2)
+                                                       :parent (:id directedconnection-dto)))
             => (throws clojure.lang.ExceptionInfo "Duplicate name")))
 
       (fact "Tree structure with parent"
@@ -104,12 +87,12 @@
               _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
                                                              :room_name "Pigeon room"
                                                              :sequence_order 0))
-              directedconnection-dto (dao/create! db-spec (directedconnection-dto (:id roomgroup-dto-1)
-                                                                                  (:id roomgroup-dto-2)))]
+              directedconnection-dto (directedconnection (directedconnection-data :origin (:id roomgroup-dto-1)
+                                                                                  :recipient (:id roomgroup-dto-2)))]
               
-              (dao/create! db-spec (directedconnection-child-dto (:id roomgroup-dto-2)
-                                                                 (:id roomgroup-dto-3)
-                                                                 (:id directedconnection-dto)))
-                => (directedconnection-child-expected (:id roomgroup-dto-2)
-                                                      (:id roomgroup-dto-3)
-                                                      (:id directedconnection-dto)))))))
+              (directedconnection (directedconnection-data :origin    (:id roomgroup-dto-2)
+                                                           :recipient (:id roomgroup-dto-3)
+                                                           :parent    (:id directedconnection-dto)))
+                => (directedconnection-expected :origin (:id roomgroup-dto-2)
+                                                :recipient (:id roomgroup-dto-3)
+                                                :parent (:id directedconnection-dto)))))))
