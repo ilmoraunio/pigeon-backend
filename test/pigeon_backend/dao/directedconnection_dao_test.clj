@@ -6,7 +6,7 @@
             [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]
             [pigeon-backend.dao.time-dao :as time-dao]
             [pigeon-backend.dao.directedconnection-dao :as dao]
-            [pigeon-backend.dao.room-dao-test :refer [room-dto]]
+            [pigeon-backend.dao.room-dao-test :as room-dao-test]
             [pigeon-backend.dao.roomgroup-dao-test :as roomgroup-dao-test]
             [pigeon-backend.dao.time-dao-test :as time-dao-test]
             [schema.core :as s]
@@ -70,7 +70,7 @@
     (with-state-changes [(before :facts (empty-and-create-tables))]
 
       (fact "Basic case"
-        (let [_ (room-dao/create! db-spec room-dto)
+        (let [_ (room-dao-test/room)
               roomgroup-dto-1 (roomgroup-dao-test/roomgroup)
               roomgroup-dto-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
               _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
@@ -80,7 +80,7 @@
             => (directedconnection-expected (:id roomgroup-dto-1) (:id roomgroup-dto-2))))
 
       (fact "Duplicate directed connection not allowed"
-        (let [_ (room-dao/create! db-spec room-dto)
+        (let [_ (room-dao-test/room)
               roomgroup-dto-1 (roomgroup-dao-test/roomgroup)
               roomgroup-dto-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
               _ (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
@@ -97,7 +97,7 @@
             => (throws clojure.lang.ExceptionInfo "Duplicate name")))
 
       (fact "Tree structure with parent"
-        (let [_ (room-dao/create! db-spec room-dto)
+        (let [_ (room-dao-test/room)
               roomgroup-dto-1 (roomgroup-dao-test/roomgroup)
               roomgroup-dto-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
               roomgroup-dto-3 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 3"))
