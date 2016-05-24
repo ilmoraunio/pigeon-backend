@@ -20,11 +20,12 @@
   (facts "Service: room create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (let [data (service/room-create! {:name "Huone"})]
-          data => expected))
+        (let [input-data {:name "Huone"}
+              output-data (service/room-create! input-data)]
+          output-data => expected))
       (fact "Duplicate room entry not allowed"
         (let [input-data {:name "Huone"}]
           (service/room-create! input-data)
-          (service/room-create! input-data) => 
+          (service/room-create! input-data) =>
             (throws clojure.lang.ExceptionInfo
               "Duplicate name"))))))

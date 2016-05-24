@@ -26,4 +26,9 @@
       (fact "Duplicate room name not allowed"
         (room) => irrelevant
         (room) => (throws clojure.lang.ExceptionInfo
-                                            "Duplicate name")))))
+                                            "Duplicate name"))))
+  (facts "Dao: room get"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Get one")
+      (fact "Get all")
+      (fact "Get some"))))
