@@ -16,7 +16,8 @@
 
 (defn room
   ([] (let [data room-data]
-        (dao/create! db-spec data))))
+        (room data)))
+  ([data] (dao/create! db-spec data)))
 
 (deftest room-dao-test
   (facts "Dao: room create"
@@ -29,6 +30,16 @@
                                             "Duplicate name"))))
   (facts "Dao: room get"
     (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Get one")
-      (fact "Get all")
-      (fact "Get some"))))
+      (fact "Get one"
+        (room)
+        (dao/get-by db-spec room-data) => (contains [room-expected]))
+      (fact "Get all"
+        (room)
+        (room (assoc room-data :name "Pigeon room 2"))
+        (dao/get-by db-spec nil) => (two-of coll?))
+      (fact "Get some"
+        (room)
+        (room (assoc room-data :name "Pigeon room 2"))
+        (room (assoc room-data :name "Pigeon room 3"))
+        (dao/get-by db-spec {:name "Pigeon room 2"})
+         => (contains [(contains {:name "Pigeon room 2"})])))))

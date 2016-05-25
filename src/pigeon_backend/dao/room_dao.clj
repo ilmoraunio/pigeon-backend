@@ -2,7 +2,18 @@
   (:require [schema.core :as s]
             [yesql.core :refer [defquery]]
             [pigeon-backend.db.config :refer [db-spec]]
-            [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]))
+            [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]
+            [pigeon-backend.dao.dao-util :refer [initialize-query-data]]))
+
+(s/defschema RoomModel {:id s/Int
+                        :name String
+                        :created java.util.Date
+                        :updated java.util.Date
+                        :version s/Int
+                        :deleted Boolean})
+
+(s/defschema PersistedRoom {:id s/Int
+                            :name String})
 
 (s/defschema NewRoom {:name String})
 
@@ -18,9 +29,11 @@
       (sql-room-create<! map-args {:connection tx})) tx room))
 
 (defn get-by [tx room]
-  (execute-sql-or-handle-exception
-    (fn [tx map-args]
-      (sql-room-get map-args {:connection tx} tx room))))
-(defn get-all [tx])
-(defn update! [])
+  (let [query-data (merge (initialize-query-data RoomModel) room)]
+    (execute-sql-or-handle-exception
+      (fn [tx map-args]
+        (sql-room-get map-args {:connection tx})) tx query-data)))
+
+(defn update! [tx room])
+
 (defn delete! [])

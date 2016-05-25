@@ -5,5 +5,5 @@ WHERE ((:name)::varchar(1000) IS NULL OR Room.name = (:name)::varchar(1000))
   AND ((:updated)::timestamp IS NULL OR Room.updated = (:updated)::timestamp)
   AND ((:deleted)::boolean IS NULL OR Room.deleted = (:deleted)::boolean)
   --TODO: make ASC/DESC dynamic
-ORDER BY Room.created ASC 
+ORDER BY Room.created ASC
 LIMIT (:limit)::integer OFFSET (:offset)::integer;
