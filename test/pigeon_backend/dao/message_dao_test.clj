@@ -14,76 +14,76 @@
             [pigeon-backend.test-util :refer [empty-and-create-tables]]))
 
 (defn message-data
-  ([& {:keys [sender intended_recipient actual_recipient
-              room_name time_room_name time_name]}]
+  ([{:keys [sender
+            intended_recipient
+            actual_recipient
+            room_id
+            time_id]}]
    {:sender_roomgroup_id sender
     :intended_recipient_roomgroup_id intended_recipient
     :actual_recipient_roomgroup_id actual_recipient
     :body "Foobar"
-    :room_name room_name
-    :time_room_name time_room_name
-    :time_name time_name}))
+    :room_id room_id
+    :time_id time_id}))
 
 (defn message-data-expected
-  ([& {:keys [sender intended_recipient actual_recipient
-              room_name time_room_name time_name]}]
+  ([{:keys [sender intended_recipient actual_recipient
+              room_id time_id]}]
     (contains {:id integer?}
               {:sender_roomgroup_id sender}
               {:intended_recipient_roomgroup_id intended_recipient}
               {:actual_recipient_roomgroup_id actual_recipient}
               {:body "Foobar"}
-              {:room_name room_name}
-              {:time_room_name time_room_name}
-              {:time_name time_name}
+              {:room_id room_id}
+              {:time_id time_id}
               {:created #(instance? java.util.Date %)}
               {:updated #(instance? java.util.Date %)}
               {:version 0}
               {:deleted false})))
 
 (defn message
-  ([data] (dao/create! db-spec data)))
+  ([data] (dao/create! db-spec (message-data data))))
 
 (deftest message-dao-test
   (facts "Dao: message create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       
       (fact "Basic case"
-        (let [{room_name :name} (room-dao-test/room)
-              roomgroup-1 (roomgroup-dao-test/roomgroup)
-              roomgroup-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
-              time (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
-                                                                :room_name room_name
-                                                                :sequence_order 0))
-              data (message-data :sender (:id roomgroup-1)
-                                 :intended_recipient (:id roomgroup-2)
-                                 :actual_recipient (:id roomgroup-2)
-                                 :room_name room_name
-                                 :time_room_name room_name
-                                 :time_name "Slice of time")]
-          (message data) => (message-data-expected :sender (:id roomgroup-1)
-                                                   :intended_recipient (:id roomgroup-2)
-                                                   :actual_recipient (:id roomgroup-2)
-                                                   :room_name room_name
-                                                   :time_room_name room_name
-                                                   :time_name "Slice of time")))
+        (let [{room_id :id} (room-dao-test/room)
+              {roomgroup-1-id :id} (roomgroup-dao-test/roomgroup {:room_id room_id})
+              {roomgroup-2-id :id} (roomgroup-dao-test/roomgroup {:name "Room group 2" :room_id room_id})
+              {time_id :id} (time-dao-test/time (time-dao-test/time-data {:name "Slice of time"
+                                                                          :room_id room_id
+                                                                          :sequence_order 0}))]
+          (message {:sender roomgroup-1-id
+                    :intended_recipient roomgroup-2-id
+                    :actual_recipient roomgroup-2-id
+                    :room_id room_id
+                    :time_id time_id}) => (message-data-expected {:sender roomgroup-1-id
+                                                                  :intended_recipient roomgroup-2-id
+                                                                  :actual_recipient roomgroup-2-id
+                                                                  :room_id room_id
+                                                                  :time_id time_id})))
 
       (fact "Multiple messages OK"
-        (let [{room_name :name} (room-dao-test/room)
-              roomgroup-1 (roomgroup-dao-test/roomgroup)
-              roomgroup-2 (roomgroup-dao-test/roomgroup (roomgroup-dao-test/roomgroup-data :name "Room group 2"))
-              time (time-dao-test/time (time-dao-test/time-data :name "Slice of time"
-                                                                :room_name room_name
-                                                                :sequence_order 0))
-              data (message-data :sender (:id roomgroup-1)
-                                 :intended_recipient (:id roomgroup-2)
-                                 :actual_recipient (:id roomgroup-2)
-                                 :room_name room_name
-                                 :time_room_name room_name
-                                 :time_name "Slice of time")]
-          (message data) => irrelevant
-          (message data) => (message-data-expected :sender (:id roomgroup-1)
-                                                   :intended_recipient (:id roomgroup-2)
-                                                   :actual_recipient (:id roomgroup-2)
-                                                   :room_name room_name
-                                                   :time_room_name room_name
-                                                   :time_name "Slice of time"))))))
+        (let [{room_id :id} (room-dao-test/room)
+              {roomgroup-1-id :id} (roomgroup-dao-test/roomgroup {:room_id room_id})
+              {roomgroup-2-id :id} (roomgroup-dao-test/roomgroup {:name "Room group 2" :room_id room_id})
+              {time_id :id} (time-dao-test/time (time-dao-test/time-data {:name "Slice of time"
+                                                                          :room_id room_id
+                                                                          :sequence_order 0}))]
+          (message {:sender roomgroup-1-id
+                    :intended_recipient roomgroup-2-id
+                    :actual_recipient roomgroup-2-id
+                    :room_id room_id
+                    :time_id time_id}) => irrelevant
+
+          (message {:sender roomgroup-1-id
+                    :intended_recipient roomgroup-2-id
+                    :actual_recipient roomgroup-2-id
+                    :room_id room_id
+                    :time_id time_id}) => (message-data-expected {:sender roomgroup-1-id
+                                                                  :intended_recipient roomgroup-2-id
+                                                                  :actual_recipient roomgroup-2-id
+                                                                  :room_id room_id
+                                                                  :time_id time_id}))))))

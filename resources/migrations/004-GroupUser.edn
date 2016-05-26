@@ -1,4 +1,5 @@
-{:up ["CREATE TABLE GroupUser (RoomGroup_id integer,
+{:up ["CREATE TABLE GroupUser (id bigserial PRIMARY KEY,
+                               RoomGroup_id bigint,
                                users_id integer NOT NULL,
                                created timestamp default NOW(),
                                updated timestamp default NOW(),

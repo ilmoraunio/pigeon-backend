@@ -1,5 +1,5 @@
-{:up ["CREATE TABLE Property(id SERIAL PRIMARY KEY,
-                             DirectedConnection_id integer,
+{:up ["CREATE TABLE Property(id bigserial PRIMARY KEY,
+                             DirectedConnection_id bigint,
                              name varchar(1000),
                              type varchar(1000),
                              value varchar(1000),

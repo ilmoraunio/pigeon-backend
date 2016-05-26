@@ -8,7 +8,8 @@
 
 (def room-data {:name "Pigeon room"})
 
-(def room-expected (contains {:name "Pigeon room"}
+(def room-expected (contains {:id integer?}
+                             {:name "Pigeon room"}
                              {:created #(instance? java.util.Date %)}
                              {:updated #(instance? java.util.Date %)}
                              {:version 0}
@@ -42,4 +43,11 @@
         (room (assoc room-data :name "Pigeon room 2"))
         (room (assoc room-data :name "Pigeon room 3"))
         (dao/get-by db-spec {:name "Pigeon room 2"})
-         => (contains [(contains {:name "Pigeon room 2"})])))))
+         => (contains [(contains {:name "Pigeon room 2"})]))))
+  (facts "Dao: room update"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{id :name} (room)]
+          (dao/update! db-spec {:id id
+                                :name "Updated pigeon room 1"})
+           => (contains {:name "Updated pigeon room 1"}))))))

@@ -4,7 +4,7 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]))
 
-(s/defschema NewTime {:room_name String
+(s/defschema NewTime {:room_id s/Int
                       :name String
                       :sequence_order s/Int})
 

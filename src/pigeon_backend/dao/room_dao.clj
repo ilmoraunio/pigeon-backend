@@ -5,14 +5,13 @@
             [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]
             [pigeon-backend.dao.dao-util :refer [initialize-query-data]]))
 
-(s/defschema RoomModel {:id s/Int
-                        :name String
+(s/defschema RoomModel {:name String
                         :created java.util.Date
                         :updated java.util.Date
                         :version s/Int
                         :deleted Boolean})
 
-(s/defschema PersistedRoom {:id s/Int
+(s/defschema PersistedRoom {:id String
                             :name String})
 
 (s/defschema NewRoom {:name String})
@@ -21,6 +20,9 @@
   {:connection db-spec})
 
 (defquery sql-room-get "sql/room/get.sql"
+  {:connection db-spec})
+
+(defquery sql-room-update<! "sql/room/update.sql"
   {:connection db-spec})
 
 (defn create! [tx room] {:pre [(s/validate NewRoom room)]}
@@ -34,6 +36,9 @@
       (fn [tx map-args]
         (sql-room-get map-args {:connection tx})) tx query-data)))
 
-(defn update! [tx room])
+(defn update! [tx room] {:pre [(s/validate PersistedRoom room)]}
+  (execute-sql-or-handle-exception
+    (fn [tx map-args]
+      (sql-room-update<! map-args {:connection tx})) tx room))
 
 (defn delete! [])

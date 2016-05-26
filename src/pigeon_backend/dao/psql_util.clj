@@ -25,5 +25,11 @@
               "Duplicate group user"
               {:type :duplicate
                :cause (format "User %s already exists in group" (:name map-args))})))
+        (when-let [findings (re-find #"origin, recipient, parent, time_id.*?already exists" message)]
+          (throw
+            (ex-info 
+              "Duplicate connection"
+              {:type :duplicate
+               :cause "Connection already exists"})))
         (.println *err* message))
       (throw e))))
