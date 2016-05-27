@@ -16,6 +16,8 @@
 
 (s/defschema NewRoom {:name String})
 
+(s/defschema DeleteModel {:id s/Int})
+
 (defquery sql-room-create<! "sql/room/create.sql"
   {:connection db-spec})
 
@@ -23,6 +25,9 @@
   {:connection db-spec})
 
 (defquery sql-room-update<! "sql/room/update.sql"
+  {:connection db-spec})
+
+(defquery sql-room-delete<! "sql/room/delete.sql"
   {:connection db-spec})
 
 (defn create! [tx room] {:pre [(s/validate NewRoom room)]}
@@ -41,4 +46,7 @@
     (fn [tx map-args]
       (sql-room-update<! map-args {:connection tx})) tx room))
 
-(defn delete! [])
+(defn delete! [tx room] {:pre [(s/validate DeleteModel room)]}
+  (execute-sql-or-handle-exception
+    (fn [tx map-args]
+      (sql-room-delete<! map-args {:connection tx})) tx room))

@@ -50,4 +50,10 @@
         (let [{id :id} (room)]
           (dao/update! db-spec {:id id
                                 :name "Updated pigeon room 1"})
-           => (contains {:name "Updated pigeon room 1"}))))))
+           => (contains {:name "Updated pigeon room 1"})))))
+  (facts "Dao: room delete"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{id :id} (room)]
+          (dao/delete! db-spec {:id id})
+          (dao/get-by db-spec nil) => [])))))
