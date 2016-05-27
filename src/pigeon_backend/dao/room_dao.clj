@@ -11,7 +11,7 @@
                         :version s/Int
                         :deleted Boolean})
 
-(s/defschema PersistedRoom {:id String
+(s/defschema PersistedRoom {:id s/Int
                             :name String})
 
 (s/defschema NewRoom {:name String})

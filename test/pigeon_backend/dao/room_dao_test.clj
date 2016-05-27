@@ -47,7 +47,7 @@
   (facts "Dao: room update"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (let [{id :name} (room)]
+        (let [{id :id} (room)]
           (dao/update! db-spec {:id id
                                 :name "Updated pigeon room 1"})
            => (contains {:name "Updated pigeon room 1"}))))))
