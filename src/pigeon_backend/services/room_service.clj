@@ -4,10 +4,8 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [buddy.hashers :as hashers]
             [schema.core :as s]
-            [pigeon-backend.dao.room-dao :refer [NewRoom]]))
+            [pigeon-backend.dao.room-dao :refer [Input Model]]))
 
-(defn room-create! [dto] {:pre [(s/validate NewRoom dto)]
-                          ;;:post TODO add returning UserModel
-                          }
+(s/defn room-create! [data :- Input] {:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
-    (room-dao/create! tx dto)))
+    (room-dao/create! tx data)))

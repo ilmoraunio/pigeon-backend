@@ -3,20 +3,16 @@
             [yesql.core :refer [defquery]]
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]
-            [pigeon-backend.dao.dao-util :refer [initialize-query-data]]))
+            [pigeon-backend.dao.dao-util :refer [initialize-query-data]]
+            [pigeon-backend.dao.model :as model]))
 
-(s/defschema RoomModel {:name String
-                        :created java.util.Date
-                        :updated java.util.Date
-                        :version s/Int
-                        :deleted Boolean})
+(s/defschema Input (into model/Input
+                         {(s/optional-key :name) (s/maybe String)}))
 
-(s/defschema PersistedRoom {:id s/Int
-                            :name String})
+(s/defschema Model (into model/Model
+                         {:name String}))
 
-(s/defschema NewRoom {:name String})
-
-(s/defschema DeleteModel {:id s/Int})
+(s/defschema QueryResult [(s/maybe Model)])
 
 (defquery sql-room-create<! "sql/room/create.sql"
   {:connection db-spec})
@@ -30,23 +26,23 @@
 (defquery sql-room-delete<! "sql/room/delete.sql"
   {:connection db-spec})
 
-(defn create! [tx room] {:pre [(s/validate NewRoom room)]}
+(s/defn create! [tx room :- Input] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-room-create<! map-args {:connection tx})) tx room))
 
-(defn get-by [tx room]
-  (let [query-data (merge (initialize-query-data RoomModel) room)]
+(s/defn get-by [tx room :- (s/maybe Input)] {:post [(s/validate QueryResult %)]}
+  (let [query-data (merge (initialize-query-data Model) room)]
     (execute-sql-or-handle-exception
       (fn [tx map-args]
         (sql-room-get map-args {:connection tx})) tx query-data)))
 
-(defn update! [tx room] {:pre [(s/validate PersistedRoom room)]}
+(s/defn update! [tx room :- Input] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-room-update<! map-args {:connection tx})) tx room))
 
-(defn delete! [tx room] {:pre [(s/validate DeleteModel room)]}
+(s/defn delete! [tx room :- Input] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-room-delete<! map-args {:connection tx})) tx room))
