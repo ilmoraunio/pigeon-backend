@@ -6,11 +6,16 @@
             [pigeon-backend.dao.dao-util :refer [initialize-query-data]]
             [pigeon-backend.dao.model :as model]))
 
-(s/defschema Input (into model/Input
-                         {(s/optional-key :name) (s/maybe String)}))
+(s/defschema New {:name String})
+
+(s/defschema Existing (into model/Existing 
+                            {:name String}))
 
 (s/defschema Model (into model/Model
                          {:name String}))
+
+(s/defschema QueryInput (s/maybe (into model/QueryInput
+                                       {(s/optional-key :name) (s/maybe String)})))
 
 (s/defschema QueryResult [(s/maybe Model)])
 
@@ -26,23 +31,23 @@
 (defquery sql-room-delete<! "sql/room/delete.sql"
   {:connection db-spec})
 
-(s/defn create! [tx room :- Input] {:post [(s/validate Model %)]}
+(s/defn create! [tx room :- New] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-room-create<! map-args {:connection tx})) tx room))
 
-(s/defn get-by [tx room :- (s/maybe Input)] {:post [(s/validate QueryResult %)]}
+(s/defn get-by [tx room :- QueryInput] {:post [(s/validate QueryResult %)]}
   (let [query-data (merge (initialize-query-data Model) room)]
     (execute-sql-or-handle-exception
       (fn [tx map-args]
         (sql-room-get map-args {:connection tx})) tx query-data)))
 
-(s/defn update! [tx room :- Input] {:post [(s/validate Model %)]}
+(s/defn update! [tx room :- Existing] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-room-update<! map-args {:connection tx})) tx room))
 
-(s/defn delete! [tx room :- Input] {:post [(s/validate Model %)]}
+(s/defn delete! [tx room :- model/Existing] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-room-delete<! map-args {:connection tx})) tx room))
