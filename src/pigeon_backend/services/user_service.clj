@@ -4,15 +4,17 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [buddy.hashers :as hashers]
             [schema.core :as s]
-            [pigeon-backend.dao.user-dao :refer [New Model LoginUser]]))
+            [pigeon-backend.dao.model :as model]
+            [schema-tools.core :as st]
+            [pigeon-backend.dao.user-dao :refer [New Existing ModelStripped LoginUser]]))
 
-(s/defn user-create! [dto :- New] {;; TODO: write a coercer to remove password and post-validate
-                                       :post [(s/validate Model %)]}
+(s/defn user-create! [dto :- New] {:post [(s/validate ModelStripped %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (let [user-with-hashed-password
             (assoc dto :password 
                        (hashers/derive (:password dto)))]
-      (user-dao/create! tx user-with-hashed-password))))
+      (st/select-schema (user-dao/create! tx user-with-hashed-password) 
+                        ModelStripped))))
 
 (s/defn check-credentials [{username :username password :password :as dto} :- LoginUser]
                           {:post [(instance? Boolean %)]}
@@ -21,3 +23,15 @@
         (if (nil? user-model)
           false
           (hashers/check password (:password user-model))))))
+
+(s/defn user-update! [user :- Existing]
+  {:post [(s/validate ModelStripped %)]}
+  (st/select-schema (jdbc/with-db-transaction [tx db-spec]
+                      (user-dao/update! tx user)) 
+                    ModelStripped))
+
+(s/defn user-delete! [user :- model/Existing]
+  {:post [(s/validate ModelStripped %)]}
+  (st/select-schema (jdbc/with-db-transaction [tx db-spec]
+                      (user-dao/delete! tx user))
+                    ModelStripped))

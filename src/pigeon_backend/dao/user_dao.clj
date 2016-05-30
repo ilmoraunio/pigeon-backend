@@ -14,6 +14,8 @@
 
 (s/defschema Model (into model/Model New))
 
+(s/defschema ModelStripped (dissoc Model :password))
+
 (s/defschema QueryInput (s/maybe (into model/QueryInput
                                        {(s/optional-key :username) (s/maybe String)
                                         (s/optional-key :full_name) (s/maybe String)
@@ -60,7 +62,7 @@
     (fn [tx map-args]
       (sql-user-update<! map-args {:connection tx})) tx user))
 
-(s/defn delete! [tx user :- model/Existing]
+(s/defn delete! [tx user :- model/Existing] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
       (sql-user-delete<! map-args {:connection tx})) tx user))
