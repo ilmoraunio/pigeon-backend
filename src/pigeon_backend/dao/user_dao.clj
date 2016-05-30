@@ -40,6 +40,9 @@
 (defquery sql-get-by-username "sql/user/get-by-username.sql"
   {:connection db-spec})
 
+(defquery sql-user-delete<! "sql/user/delete.sql"
+  {:connection db-spec})
+
 
 (s/defn create! [tx user :- New] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
@@ -57,4 +60,7 @@
     (fn [tx map-args]
       (sql-user-update<! map-args {:connection tx})) tx user))
 
-(defn delete! [])
+(s/defn delete! [tx user :- model/Existing]
+  (execute-sql-or-handle-exception
+    (fn [tx map-args]
+      (sql-user-delete<! map-args {:connection tx})) tx user))

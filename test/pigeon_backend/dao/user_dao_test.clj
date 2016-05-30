@@ -53,4 +53,10 @@
                                 :username "barfoo"
                                 :full_name "Bar Foo"
                                 :password "hunter2"}) 
-            => (contains {:username "barfoo"}))))))
+            => (contains {:username "barfoo"})))))
+  (facts "Dao: user delete"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{id :id} (user)]
+           (dao/delete! db-spec {:id id}) => (contains {:deleted true})
+           (dao/get-by db-spec nil) => [])))))

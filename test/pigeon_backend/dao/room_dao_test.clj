@@ -55,5 +55,5 @@
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (let [{id :id} (room)]
-          (dao/delete! db-spec {:id id})
+          (dao/delete! db-spec {:id id}) => (contains {:deleted true})
           (dao/get-by db-spec nil) => [])))))
