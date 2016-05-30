@@ -34,6 +34,9 @@
 (defquery sql-user-get "sql/user/get.sql"
   {:connection db-spec})
 
+(defquery sql-user-update<! "sql/user/update.sql"
+  {:connection db-spec})
+
 (defquery sql-get-by-username "sql/user/get-by-username.sql"
   {:connection db-spec})
 
@@ -49,6 +52,9 @@
       (fn [tx map-args]
         (sql-user-get map-args {:connection tx})) tx query-data)))
 
-(defn update! [])
+(s/defn update! [tx user :- Existing] {:post [s/validate Model %]}
+  (execute-sql-or-handle-exception
+    (fn [tx map-args]
+      (sql-user-update<! map-args {:connection tx})) tx user))
 
 (defn delete! [])

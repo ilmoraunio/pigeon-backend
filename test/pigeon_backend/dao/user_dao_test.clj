@@ -44,4 +44,13 @@
         (user)
         (user {:username "barfoo"})
         (dao/get-by db-spec {:username "foobar"})
-          => (contains [(contains {:username "foobar"})])))))
+          => (contains [(contains {:username "foobar"})]))))
+  (facts "Dao: user update"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{id :id} (user)]
+          (dao/update! db-spec {:id id
+                                :username "barfoo"
+                                :full_name "Bar Foo"
+                                :password "hunter2"}) 
+            => (contains {:username "barfoo"}))))))
