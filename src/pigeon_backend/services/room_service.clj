@@ -6,7 +6,7 @@
             [schema.core :as s]
             [pigeon-backend.dao.model :as model]
             [schema-tools.core :as st]
-            [pigeon-backend.dao.room-dao :refer [New Model Existing]]))
+            [pigeon-backend.dao.room-dao :refer [New Model Existing ServiceQueryInput QueryResult]]))
 
 (s/defn room-create! [data :- New] {:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
@@ -16,6 +16,11 @@
   {:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (room-dao/update! tx room)))
+
+(s/defn room-get-by [room :- ServiceQueryInput]
+  {:post [(s/validate QueryResult %)]}
+  (jdbc/with-db-transaction [tx db-spec]
+    (room-dao/get-by tx room)))
 
 (s/defn room-delete! [room :- model/Existing]
   {:post [(s/validate Model %)]}

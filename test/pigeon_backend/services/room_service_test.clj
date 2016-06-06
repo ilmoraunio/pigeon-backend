@@ -7,7 +7,8 @@
             [pigeon-backend.services.room-service :as service]
             [schema.core :as s]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]
-            [buddy.hashers :as hashers])
+            [buddy.hashers :as hashers]
+            [pigeon-backend.dao.room-dao-test :as room-dao])
   (import org.postgresql.util.PSQLException))
 
 (def expected (contains {:name "Huone"}
@@ -29,6 +30,18 @@
           (service/room-create! input-data) =>
             (throws clojure.lang.ExceptionInfo
               "Duplicate name")))))
+  (facts "Service: room read"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+        (fact "Get one"
+          (let [{id1 :id room-name-1 :name} (room-dao/room)]
+            (service/room-get-by {:name room-name-1}) => (contains [(contains {:name room-name-1})])))
+        (fact "Get multiple"
+          (let [{id1 :id room-name-1 :name} (room-dao/room)
+                {id2 :id room-name-2 :name} (room-dao/room {:name "Pigeon room 2"})]
+            (service/room-get-by nil) => (two-of coll?)))
+        (fact "Get none"
+          (let [_ (room-dao/room)]
+            (service/room-get-by {:name "wrong name"}) => []))))
   (facts "Service: room update"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Success"
@@ -39,5 +52,4 @@
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Success"
         (let [{id :id} (service/room-create! {:name "Huone"})]
-          (prn id)
           (service/room-delete! {:id id}))))))
