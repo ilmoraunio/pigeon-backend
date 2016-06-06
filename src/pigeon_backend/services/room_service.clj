@@ -16,3 +16,8 @@
   {:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (room-dao/update! tx room)))
+
+(s/defn room-delete! [room :- model/Existing]
+  {:post [(s/validate Model %)]}
+  (jdbc/with-db-transaction [tx db-spec]
+    (room-dao/delete! tx room)))

@@ -32,6 +32,12 @@
   (facts "Service: room update"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Success"
-        (let [{id :id :as room-data} (service/room-create! {:name "enouH"})]
+        (let [{id :id} (service/room-create! {:name "enouH"})]
             (service/room-update! {:id id :name "Huone"})
-            => expected)))))
+            => expected))))
+  (facts "Service: room delete"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Success"
+        (let [{id :id} (service/room-create! {:name "Huone"})]
+          (prn id)
+          (service/room-delete! {:id id}))))))
