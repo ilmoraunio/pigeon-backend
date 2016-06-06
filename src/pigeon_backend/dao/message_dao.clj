@@ -8,9 +8,8 @@
                          :intended_recipient_roomgroup_id s/Int
                          :actual_recipient_roomgroup_id s/Int
                          :body String
-                         :room_name String
-                         :time_room_name String
-                         :time_name String})
+                         :room_id s/Int
+                         :time_id s/Int})
 
 (defquery sql-message-create<! "sql/message/create.sql"
   {:connection db-spec})

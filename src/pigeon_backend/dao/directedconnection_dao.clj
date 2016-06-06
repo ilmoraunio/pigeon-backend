@@ -6,8 +6,7 @@
 
 (s/defschema NewDirectedconnection {:origin s/Int
                                     :recipient s/Int
-                                    :time_room_name String
-                                    :time_name String
+                                    :time_id s/Int
                                     :parent (s/maybe s/Int)})
 
 (defquery sql-directedconnection-create<! "sql/directedconnection/create.sql"

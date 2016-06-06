@@ -1,5 +1,5 @@
-{:up ["CREATE TABLE Outcome(id SERIAL PRIMARY KEY,
-                            Property_id integer,
+{:up ["CREATE TABLE Outcome(id bigserial PRIMARY KEY,
+                            Property_id bigint,
                             type varchar(1000),
                             value varchar(1000),
                             created timestamp default NOW(),

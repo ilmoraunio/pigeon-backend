@@ -32,15 +32,15 @@
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (let [{userid :id} (user-dao-test/user)
-              _ (room-dao-test/room)
-              {roomgroup_id :id} (roomgroup-dao-test/roomgroup)]
+              {room_id :id} (room-dao-test/room)
+              {roomgroup_id :id} (roomgroup-dao-test/roomgroup {:room_id room_id})]
           (groupuser (groupuser-data :roomgroup_id roomgroup_id
                                      :users_id userid))
             => groupuser-expected))
       (fact "Duplicate groupuser inside room not allowed"
         (let [{userid :id} (user-dao-test/user)
-              _ (room-dao-test/room)
-              {roomgroup_id :id} (roomgroup-dao-test/roomgroup)]
+              {room_id :id} (room-dao-test/room)
+              {roomgroup_id :id} (roomgroup-dao-test/roomgroup {:room_id room_id})]
           (groupuser (groupuser-data :roomgroup_id roomgroup_id
                                      :users_id userid))
           (groupuser (groupuser-data :roomgroup_id roomgroup_id

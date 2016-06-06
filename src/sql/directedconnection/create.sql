@@ -1,2 +1,2 @@
-INSERT INTO DirectedConnection (origin, recipient, parent, Time_Room_name, Time_name)
-VALUES ((:origin)::integer, (:recipient)::integer, (:parent)::integer, (:time_room_name)::varchar(1000), (:time_name)::varchar(1000));
+INSERT INTO DirectedConnection (origin, recipient, parent, Time_id)
+VALUES ((:origin)::bigint, (:recipient)::bigint, (:parent)::bigint, (:time_id)::bigint);

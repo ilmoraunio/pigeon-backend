@@ -17,7 +17,6 @@
 (def expected-user-dto (contains {:id integer?} 
                                  {:username "foobar"}
                                  {:full_name "Foo Bar"}
-                                 {:password #"^bcrypt\+sha512\$.{84}"}
                                  {:created #(instance? java.util.Date %)}
                                  {:updated #(instance? java.util.Date %)}
                                  {:version 0}
@@ -32,7 +31,7 @@
       (fact "Basic case"
         (let [returned-dto (service/user-create! user-dto)]
           returned-dto => expected-user-dto
-          (hashers/check "hunter2" (:password returned-dto)) => true))
+          (:password returned-dto) => nil))
       (fact "Duplicate username entry not allowed"
         (service/user-create! user-dto)
         (service/user-create! user-dto) => (throws clojure.lang.ExceptionInfo
@@ -44,4 +43,16 @@
           (service/check-credentials credentials-dto) => true))
       (fact "Unsuccess!"
         (let [returned-dto (service/user-create! user-dto)]
-          (service/check-credentials wrong-credentials-dto) => false)))))
+          (service/check-credentials wrong-credentials-dto) => false))))
+  (facts "Service: update user"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Success"
+        (let [{id :id} (service/user-create! user-dto)]
+          (service/user-update! (assoc user-dto :id id
+                                                :username "barfoo"))
+          => (contains {:username "barfoo"})))))
+  (facts "Service: delete user"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Success"
+        (let [{id :id} (service/user-create! user-dto)]
+          (service/user-delete! (assoc user-dto :id id)))))))

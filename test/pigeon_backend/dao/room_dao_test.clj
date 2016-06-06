@@ -8,7 +8,8 @@
 
 (def room-data {:name "Pigeon room"})
 
-(def room-expected (contains {:name "Pigeon room"}
+(def room-expected (contains {:id integer?}
+                             {:name "Pigeon room"}
                              {:created #(instance? java.util.Date %)}
                              {:updated #(instance? java.util.Date %)}
                              {:version 0}
@@ -16,7 +17,8 @@
 
 (defn room
   ([] (let [data room-data]
-        (dao/create! db-spec data))))
+        (room data)))
+  ([data] (dao/create! db-spec data)))
 
 (deftest room-dao-test
   (facts "Dao: room create"
@@ -26,4 +28,32 @@
       (fact "Duplicate room name not allowed"
         (room) => irrelevant
         (room) => (throws clojure.lang.ExceptionInfo
-                                            "Duplicate name")))))
+                                            "Duplicate name"))))
+  (facts "Dao: room get"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Get one"
+        (room)
+        (dao/get-by db-spec room-data) => (contains [room-expected]))
+      (fact "Get all"
+        (room)
+        (room (assoc room-data :name "Pigeon room 2"))
+        (dao/get-by db-spec nil) => (two-of coll?))
+      (fact "Get some"
+        (room)
+        (room (assoc room-data :name "Pigeon room 2"))
+        (room (assoc room-data :name "Pigeon room 3"))
+        (dao/get-by db-spec {:name "Pigeon room 2"})
+         => (contains [(contains {:name "Pigeon room 2"})]))))
+  (facts "Dao: room update"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{id :id} (room)]
+          (dao/update! db-spec {:id id
+                                :name "Updated pigeon room 1"})
+           => (contains {:name "Updated pigeon room 1"})))))
+  (facts "Dao: room delete"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{id :id} (room)]
+          (dao/delete! db-spec {:id id}) => (contains {:deleted true})
+          (dao/get-by db-spec nil) => [])))))

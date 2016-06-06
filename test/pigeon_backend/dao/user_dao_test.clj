@@ -12,7 +12,6 @@
                :full_name "Foo Bar"
                :password "hunter2"})
 
-(def get-by-username-data {:username "foobar"})
 (def user-data-expected (contains {:id integer?} 
                                  {:username "foobar"}
                                  {:full_name "Foo Bar"}
@@ -44,5 +43,20 @@
       (fact "Basic case"
         (user)
         (user {:username "barfoo"})
-        (dao/get-by-username db-spec get-by-username-data) 
-          => user-data-expected))))
+        (dao/get-by db-spec {:username "foobar"})
+          => (contains [(contains {:username "foobar"})]))))
+  (facts "Dao: user update"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{id :id} (user)]
+          (dao/update! db-spec {:id id
+                                :username "barfoo"
+                                :full_name "Bar Foo"
+                                :password "hunter2"}) 
+            => (contains {:username "barfoo"})))))
+  (facts "Dao: user delete"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{id :id} (user)]
+           (dao/delete! db-spec {:id id}) => (contains {:deleted true})
+           (dao/get-by db-spec nil) => [])))))

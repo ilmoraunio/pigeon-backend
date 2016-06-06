@@ -4,7 +4,7 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]))
 
-(s/defschema NewRoomGroup {:room_name String
+(s/defschema NewRoomGroup {:room_id s/Int
                            :name String
                            :parent (s/maybe s/Int)})
 

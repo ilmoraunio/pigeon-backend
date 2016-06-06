@@ -1,10 +1,11 @@
-{:up ["CREATE TABLE Time(Room_name varchar(1000),
+{:up ["CREATE TABLE Time(id bigserial PRIMARY KEY,
+                         Room_id bigint,
                          name varchar(1000),
                          sequence_order integer NOT NULL,
                          created timestamp default NOW(),
                          updated timestamp default NOW(),
                          version integer default 0,
                          deleted boolean default false,
-                         PRIMARY KEY(Room_name, name),
-                         FOREIGN KEY (Room_name) REFERENCES Room(name));"]
+                         UNIQUE(Room_id, name),
+                         FOREIGN KEY (Room_id) REFERENCES Room(id));"]
  :down ["DROP TABLE Time;"]}
