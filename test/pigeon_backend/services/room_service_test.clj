@@ -28,4 +28,10 @@
           (service/room-create! input-data)
           (service/room-create! input-data) =>
             (throws clojure.lang.ExceptionInfo
-              "Duplicate name"))))))
+              "Duplicate name")))))
+  (facts "Service: room update"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Success"
+        (let [{id :id :as room-data} (service/room-create! {:name "enouH"})]
+            (service/room-update! {:id id :name "Huone"})
+            => expected)))))
