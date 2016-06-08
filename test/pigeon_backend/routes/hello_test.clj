@@ -3,26 +3,21 @@
             [cheshire.core :as cheshire]
             [midje.sweet :refer :all]
             [pigeon-backend.handler :refer :all]
-            [ring.mock.request :as mock]))
+            [ring.mock.request :as mock]
+            [pigeon-backend.test-util :refer [login-as-test-user]]))
 
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 
-(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIn0.gam31MTKYrmqZ4OlHcBUPALjMFUcQ48KIGDzRUBxBc0")
-
 (deftest hello-test
   (facts "Testing /hello"
     (fact "Test GET request to /hello?name={a-name} returns expected response"
-      (let [response (app (-> (assoc-in (mock/request :get "/hello?name=Stranger")
-                                        [:cookies "token" :value]
-                                        test-token)))
+      (let [response (app (-> (login-as-test-user (mock/request :get "/hello?name=Stranger"))))
             body     (parse-body (:body response))]
         (:status response) => 200
         (:message body)    => "Terve, Stranger"))
     (fact "Test GET request to /hello/en?name={a-name} returns expected response"
-      (let [response (app (-> (assoc-in (mock/request :get "/hello/en?name=Stranger")
-                                        [:cookies "token" :value]
-                                        test-token)))
+      (let [response (app (-> (login-as-test-user (mock/request :get "/hello/en?name=Stranger"))))
             body     (parse-body (:body response))]
         (:status response) => 200
         (:message body)    => "Hello, Stranger"))))
