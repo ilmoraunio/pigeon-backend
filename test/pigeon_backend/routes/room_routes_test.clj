@@ -25,6 +25,18 @@
                 "application/json"))]
           status => 200
           (parse-body body) => (contains {:name "Huone"})))
+      (fact "Read"
+        (dotimes [n 2]
+          (room-service/room-create! {:name (str "Huone " n)}))
+        (let [{status :status body :body}
+              ((app-with-middleware)
+               (mock/content-type
+                (mock/body
+                  (mock/request :get "/room")
+                  (json/write-str {:name "Huone 1"}))
+                "application/json"))]
+          status => 200
+          (parse-body body) => (contains [(contains {:name "Huone 1"})])))
       (fact "Update"
         (let [{id :id} (room-service/room-create! room-data)
               {status :status body :body}
