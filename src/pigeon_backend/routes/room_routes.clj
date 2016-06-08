@@ -8,7 +8,8 @@
             [clj-time.core :as t]
             [environ.core :refer [env]]
             [pigeon-backend.middleware :refer [wrap-authentication]]
-            [pigeon-backend.dao.room-dao :as user-dao]))
+            [pigeon-backend.dao.room-dao :as user-dao]
+            [pigeon-backend.dao.model :as model]))
 
 (def room-routes
   (context "/room" []
@@ -24,4 +25,9 @@
       :return user-dao/Model
       :body [room user-dao/Existing]
       :summary "Update room"
-      (ok (room-service/room-update! room)))))
+      (ok (room-service/room-update! room)))
+    (DELETE "/" []
+      :return user-dao/Model
+      :body [room model/Existing]
+      :summary "Delete room"
+      (ok (room-service/room-delete! room)))))

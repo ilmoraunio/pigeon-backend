@@ -36,4 +36,16 @@
                                    :name "Huone 2"}))
                 "application/json"))]
           status => 200
-          (parse-body body) => (contains {:name "Huone 2"}))))))
+          (parse-body body) => (contains {:name "Huone 2"})))
+      (fact "Delete"
+        (let [{id :id} (room-service/room-create! room-data)
+              {status :status body :body}
+              ((app-with-middleware)
+               (mock/content-type
+                (mock/body
+                  (mock/request :delete "/room")
+                  (json/write-str {:id id}))
+                "application/json"))]
+          status => 200
+          (parse-body body) => (contains {:name "Huone"}
+                                         {:deleted true}))))))
