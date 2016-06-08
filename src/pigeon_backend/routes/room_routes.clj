@@ -13,7 +13,7 @@
 
 (def room-routes
   (context "/room" []
-    ;;:middleware [wrap-authentication]
+    :middleware [wrap-authentication]
     :tags ["room"]
 
     (POST "/" []

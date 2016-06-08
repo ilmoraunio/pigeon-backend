@@ -8,7 +8,8 @@
             [pigeon-backend.test-util :refer [empty-and-create-tables
                                               parse-body]]
             [pigeon-backend.services.room-service :as room-service]
-            [buddy.sign.jws :as jws]))
+            [buddy.sign.jws :as jws]
+            [pigeon-backend.test-util :refer [login-as-test-user]]))
 
 (def room-data {:name "Huone"})
 
@@ -20,7 +21,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (mock/request :post "/room")
+                  (login-as-test-user (mock/request :post "/room"))
                   (json/write-str room-data))
                 "application/json"))]
           status => 200
@@ -32,7 +33,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (mock/request :get "/room")
+                  (login-as-test-user (mock/request :get "/room"))
                   (json/write-str {:name "Huone 1"}))
                 "application/json"))]
           status => 200
@@ -43,7 +44,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (mock/request :put "/room")
+                  (login-as-test-user (mock/request :put "/room"))
                   (json/write-str {:id id
                                    :name "Huone 2"}))
                 "application/json"))]
@@ -55,7 +56,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (mock/request :delete "/room")
+                  (login-as-test-user (mock/request :delete "/room"))
                   (json/write-str {:id id}))
                 "application/json"))]
           status => 200
