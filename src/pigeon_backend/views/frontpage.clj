@@ -3,4 +3,7 @@
             [pigeon-backend.views.layout :as layout]))
 
 (defn index []
-  (layout/common "frontpage" "Hello world!"))
+  (layout/common 
+    "frontpage"
+    [:div [:p [:a {:href "/Registration"} "Sign up"]]
+          [:p [:a {:href "/login"} "Login"]]]))
