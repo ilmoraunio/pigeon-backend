@@ -33,7 +33,7 @@
                 ((app-with-middleware)
                  (mock/content-type
                   (mock/body
-                    (mock/request :post "/session")
+                    (mock/request :post "/api/v0/session")
                     (json/write-str user-dto))
                   "application/json"))]
           status => 200
@@ -44,7 +44,7 @@
                 ((app-with-middleware)
                  (mock/content-type
                   (mock/body
-                    (mock/request :post "/session")
+                    (mock/request :post "/api/v0/session")
                     (json/write-str user-dto-with-wrong-password))
                   "application/json"))]
           status => 401
@@ -54,13 +54,13 @@
         (let [login-response ((app-with-middleware)
                                (mock/content-type
                                 (mock/body
-                                  (mock/request :post "/session")
+                                  (mock/request :post "/api/v0/session")
                                   (json/write-str user-dto))
                                 "application/json"))
               logout-response ((app-with-middleware)
                                (mock/content-type
                                 (mock/body
-                                  (mock/request :delete "/session")
+                                  (mock/request :delete "/api/v0/session")
                                   (json/write-str user-dto))
                                 "application/json"))]
           (first (get-in login-response [:headers "Set-Cookie"])) 
@@ -77,7 +77,7 @@
         (let [{status :status
                body :body} 
                 ((app-with-middleware)
-                  (mock/request :get "/hello?name=foo"))]
+                  (mock/request :get "/api/v0/hello?name=foo"))]
           status => 401
           (parse-body body) => {:title "Not logged in"
                                 :cause "signature"
@@ -89,7 +89,7 @@
                body :body}
                 ((app-with-middleware)
                   ;; logged in
-                  (assoc-in (mock/request :get "/hello?name=foo")
+                  (assoc-in (mock/request :get "/api/v0/hello?name=foo")
                             [:cookies "token" :value]
                             (str test-token "CORRUPT_OR_HACKED")))]
           status => 401

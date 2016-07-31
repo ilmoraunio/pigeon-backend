@@ -21,7 +21,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :post "/room"))
+                  (login-as-test-user (mock/request :post "/api/v0/room"))
                   (json/write-str room-data))
                 "application/json"))]
           status => 200
@@ -33,7 +33,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :get "/room"))
+                  (login-as-test-user (mock/request :get "/api/v0/room"))
                   (json/write-str {:name "Huone 1"}))
                 "application/json"))]
           status => 200
@@ -44,7 +44,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :put "/room"))
+                  (login-as-test-user (mock/request :put "/api/v0/room"))
                   (json/write-str {:id id
                                    :name "Huone 2"}))
                 "application/json"))]
@@ -56,7 +56,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :delete "/room"))
+                  (login-as-test-user (mock/request :delete "/api/v0/room"))
                   (json/write-str {:id id}))
                 "application/json"))]
           status => 200

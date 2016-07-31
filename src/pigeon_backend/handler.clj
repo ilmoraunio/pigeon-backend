@@ -1,5 +1,6 @@
 (ns pigeon-backend.handler
   (:require [compojure.api.sweet :refer :all]
+            [compojure.route :as route]
             [ring.util.http-response :refer :all]
             [schema.core :as s]
             [pigeon-backend.routes.hello :refer [hello-routes]]
@@ -12,7 +13,9 @@
             [pigeon-backend.routes.login :refer [login-routes]]
             [pigeon-backend.routes.room-routes :refer [room-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
-            [buddy.sign.jws :as jws])
+            [buddy.sign.jws :as jws]
+            [pigeon-backend.web-routes.frontpage :as frontpage]
+            [pigeon-backend.views.layout :as layout])
   (:gen-class))
 
 (defn wrap-cors [handler]
@@ -23,20 +26,27 @@
           (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")
           (assoc-in [:headers "Access-Control-Allow-Headers"] "X-Requested-With,Content-Type,Cache-Control")))))
 
+(defroutes web-routes
+  (frontpage/routes)
+  (route/resources "/")
+  (route/not-found (layout/error-page)))
+
 (def app
   (api
     {:swagger
-     {:ui "/"
+     {:ui "/api"
       :spec "/swagger.json"
       :data {:info {:title "Sample API"
                     :description "Compojure Api example"}
              :tags [{:name "api", :description "some apis"}]}}
      ;; TODO: exception handler for returning schema validation errors
      :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
-    hello-routes
-    registration-routes
-    login-routes
-    room-routes))
+    (context "/api/v0" []
+          hello-routes
+          registration-routes
+          login-routes
+          room-routes)
+    web-routes))
 
 (defn coerce-to-integer [v]
   (if (string? v)
