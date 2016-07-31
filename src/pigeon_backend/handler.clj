@@ -41,12 +41,12 @@
              :tags [{:name "api", :description "some apis"}]}}
      ;; TODO: exception handler for returning schema validation errors
      :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
-    web-routes
     (context "/api/v0" []
           hello-routes
           registration-routes
           login-routes
-          room-routes)))
+          room-routes)
+    web-routes))
 
 (defn coerce-to-integer [v]
   (if (string? v)

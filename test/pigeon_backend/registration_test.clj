@@ -21,7 +21,7 @@
                 ((app-with-middleware)
                  (mock/content-type
                   (mock/body
-                    (mock/request :put "/user")
+                    (mock/request :put "/api/v0/user")
                     (json/write-str user-dto))
                   "application/json"))]
           status => 201
@@ -31,14 +31,14 @@
         (let [_ ((app-with-middleware)
                   (mock/content-type
                     (mock/body
-                      (mock/request :put "/user")
+                      (mock/request :put "/api/v0/user")
                       (json/write-str user-dto))
                     "application/json"))
               {status :status body :body}
                 ((app-with-middleware)
                  (mock/content-type
                    (mock/body
-                     (mock/request :put "/user")
+                     (mock/request :put "/api/v0/user")
                      (json/write-str user-dto))
                    "application/json"))]
           status => 400
