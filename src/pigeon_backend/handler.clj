@@ -13,9 +13,7 @@
             [pigeon-backend.routes.login :refer [login-routes]]
             [pigeon-backend.routes.room-routes :refer [room-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
-            [buddy.sign.jws :as jws]
-            [pigeon-backend.web-routes.frontpage :as frontpage]
-            [pigeon-backend.views.layout :as layout])
+            [buddy.sign.jws :as jws])
   (:gen-class))
 
 (defn wrap-cors [handler]
@@ -25,11 +23,6 @@
           (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
           (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")
           (assoc-in [:headers "Access-Control-Allow-Headers"] "X-Requested-With,Content-Type,Cache-Control")))))
-
-(defroutes web-routes
-  (frontpage/routes)
-  (route/resources "/")
-  (route/not-found (layout/error-page)))
 
 (def app
   (api
@@ -45,8 +38,7 @@
           hello-routes
           registration-routes
           login-routes
-          room-routes)
-    web-routes))
+          room-routes)))
 
 (defn coerce-to-integer [v]
   (if (string? v)
