@@ -37,7 +37,7 @@
                     (json/write-str user-dto))
                   "application/json"))]
           status => 200
-          (parse-body body) => {:token test-token}))
+          (parse-body body) => {:session {:token test-token}}))
       (fact "Login: unsuccess"
         (user-service/user-create! registration-dto)
         (let [{status :status body :body} 
