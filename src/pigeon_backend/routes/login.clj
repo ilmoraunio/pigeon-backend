@@ -21,7 +21,7 @@
                             {:username username
                              :password password})]
         (let [token (jws/sign {:user username} (env :jws-shared-secret))
-              response (ok {:token token})]
+              response (ok {:session {:token token}})]
           (-> response
               (assoc-in [:cookies "token" :value] token)
               (assoc-in [:cookies "token" :max-age] 14400)
