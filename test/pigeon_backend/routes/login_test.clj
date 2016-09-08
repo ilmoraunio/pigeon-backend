@@ -72,14 +72,12 @@
                body :body}
                 ((app-with-middleware)
                   ;; logged in
-                  (assoc-in (mock/request :get (str "/api/v0/hello?name=foo" 
-                                                    "&api_key=" 
-                                                    (create-login-token "foobar"
-                                                      (str (t/plus (t/now) (t/hours 4)))
-                                                      (env :jws-shared-secret))
-                                                    "CORRUPT_OR_HACKED"))
-                            [:cookies "token" :value]
-                            (str test-token "CORRUPT_OR_HACKED")))]
+                  (mock/request :get (str "/api/v0/hello?name=foo" 
+                                          "&api_key=" 
+                                          (create-login-token "foobar"
+                                            (str (t/plus (t/now) (t/hours 4)))
+                                            (env :jws-shared-secret))
+                                          "CORRUPT_OR_HACKED")))]
           status => 401
           (parse-body body) => {:title "Message seems corrupt or manipulated."
                                 :cause "signature"
