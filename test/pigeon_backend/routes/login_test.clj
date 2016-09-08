@@ -30,7 +30,6 @@
 (deftest login-test
   (facts "Route: login & logout"
     (with-state-changes [(before :facts (empty-and-create-tables))]
-
       (fact "Login: success"
         (user-service/user-create! registration-dto)
         (let [{status :status body :body} 
@@ -52,29 +51,9 @@
                     (json/write-str user-dto-with-wrong-password))
                   "application/json"))]
           status => 401
-          body => nil))
-      (fact "Login/Logout responses"
-        (user-service/user-create! registration-dto)
-        (let [login-response ((app-with-middleware)
-                               (mock/content-type
-                                (mock/body
-                                  (mock/request :post "/api/v0/session")
-                                  (json/write-str user-dto))
-                                "application/json"))
-              logout-response ((app-with-middleware)
-                               (mock/content-type
-                                (mock/body
-                                  (mock/request :delete "/api/v0/session")
-                                  (json/write-str user-dto))
-                                "application/json"))]
-          (first (get-in login-response [:headers "Set-Cookie"])) 
-            => (str "token=" test-token ";"
-                    "Max-Age=14400;"
-                    "HttpOnly;Path=/")
-          (first (get-in logout-response [:headers "Set-Cookie"]))
-            => (str "token=nil;Path=/;Expires=Thu, 01 Jan 1970 00:00:00 GMT")))))
+          body => nil))))
 
-  (facts "Route: authenticated"
+  (facts "Route: authentication failures"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Is not authenticated"
         (user-service/user-create! registration-dto)

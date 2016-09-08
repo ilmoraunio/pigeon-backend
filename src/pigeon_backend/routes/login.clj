@@ -20,16 +20,9 @@
       (if-let [has-access? (user-service/check-credentials
                             {:username username
                              :password password})]
-        (let [token (jws/sign {:user username} (env :jws-shared-secret))
-              response (ok {:session {:token token}})]
-          (-> response
-              (assoc-in [:cookies "token" :value] token)
-              (assoc-in [:cookies "token" :max-age] 14400)
-              (assoc-in [:cookies "token" :http-only] true)
-              (assoc-in [:cookies "token" :path] "/")))
-        (let [response (unauthorized)]
-          (-> response
-              (assoc-in [:cookies :max-age] 0)))))
+        (let [token (jws/sign {:user username} (env :jws-shared-secret))]
+          (ok {:session {:token token}}))
+        (unauthorized)))
     (DELETE "/" request
       :summary "Delete session. Clears http cookie."
       (-> (ok)
