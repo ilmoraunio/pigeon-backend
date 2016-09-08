@@ -21,10 +21,4 @@
                              :password password})]
         (let [token (jws/sign {:user username} (env :jws-shared-secret))]
           (ok {:session {:token token}}))
-        (unauthorized)))
-    (DELETE "/" request
-      :summary "Delete session. Clears http cookie."
-      (-> (ok)
-          (assoc-in [:cookies "token"] {:value "nil"
-                                        :path "/"
-                                        :expires "Thu, 01 Jan 1970 00:00:00 GMT"})))))
+        (unauthorized)))))
