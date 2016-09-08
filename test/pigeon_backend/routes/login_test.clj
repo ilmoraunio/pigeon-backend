@@ -7,9 +7,13 @@
             [clojure.data.json :as json]
             [pigeon-backend.dao.user-dao :refer [sql-user-get-all]]
             [pigeon-backend.test-util :refer [empty-and-create-tables
-                                              parse-body]]
+                                              parse-body
+                                              create-login-token
+                                              clj-timestamp]]
             [pigeon-backend.services.user-service :as user-service]
-            [buddy.sign.jws :as jws]))
+            [buddy.sign.jws :as jws]
+            [clj-time.core :as t]
+            [environ.core :refer [env]]))
 
 (def user-dto {:username "foobar" 
                :password "hunter2"})
@@ -89,7 +93,12 @@
                body :body}
                 ((app-with-middleware)
                   ;; logged in
-                  (assoc-in (mock/request :get "/api/v0/hello?name=foo")
+                  (assoc-in (mock/request :get (str "/api/v0/hello?name=foo" 
+                                                    "&api_key=" 
+                                                    (create-login-token "foobar"
+                                                      (str (t/plus (t/now) (t/hours 4)))
+                                                      (env :jws-shared-secret))
+                                                    "CORRUPT_OR_HACKED"))
                             [:cookies "token" :value]
                             (str test-token "CORRUPT_OR_HACKED")))]
           status => 401

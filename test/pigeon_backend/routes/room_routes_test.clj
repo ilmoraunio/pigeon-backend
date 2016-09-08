@@ -6,7 +6,8 @@
             [ring.mock.request :as mock]
             [clojure.data.json :as json]
             [pigeon-backend.test-util :refer [empty-and-create-tables
-                                              parse-body]]
+                                              parse-body
+                                              create-test-login-token]]
             [pigeon-backend.services.room-service :as room-service]
             [buddy.sign.jws :as jws]
             [pigeon-backend.test-util :refer [login-as-test-user]]))
@@ -21,7 +22,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :post "/api/v0/room"))
+                  (login-as-test-user (mock/request :post (str "/api/v0/room?api_key=" (create-test-login-token))))
                   (json/write-str room-data))
                 "application/json"))]
           status => 200
@@ -33,7 +34,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :get "/api/v0/room"))
+                  (login-as-test-user (mock/request :get (str "/api/v0/room?api_key=" (create-test-login-token))))
                   (json/write-str {:name "Huone 1"}))
                 "application/json"))]
           status => 200
@@ -44,7 +45,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :put "/api/v0/room"))
+                  (login-as-test-user (mock/request :put (str "/api/v0/room?api_key=" (create-test-login-token))))
                   (json/write-str {:id id
                                    :name "Huone 2"}))
                 "application/json"))]
@@ -56,7 +57,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :delete "/api/v0/room"))
+                  (login-as-test-user (mock/request :delete (str "/api/v0/room?api_key=" (create-test-login-token))))
                   (json/write-str {:id id}))
                 "application/json"))]
           status => 200
