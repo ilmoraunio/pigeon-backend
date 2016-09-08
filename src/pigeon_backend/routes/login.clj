@@ -6,8 +6,7 @@
             [pigeon-backend.services.user-service :as user-service]
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
-            [environ.core :refer [env]]
-            [pigeon-backend.middleware :refer [wrap-authentication]]))
+            [environ.core :refer [env]]))
 
 (def login-routes
   (context "/session" []

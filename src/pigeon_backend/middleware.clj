@@ -5,17 +5,6 @@
 
 (defn wrap-authentication [handler]
   (fn [request]
-    (let [{{{token-value :value} "token"} :cookies} request]
-      (if (or (empty? token-value) (< (count token-value) 3))
-        (handle-exception-info
-                  (ex-info "Not logged in" {:type :validation
-                                            :cause :signature}) {} request)
-        (do
-          (jws/unsign token-value (env :jws-shared-secret))
-          (handler request))))))
-
-(defn wrap-stateless-authentication [handler]
-  (fn [request]
     (if (not (contains? (:query-params request) "api_key"))
       (handle-exception-info
         (ex-info "Not logged in" {:type :validation

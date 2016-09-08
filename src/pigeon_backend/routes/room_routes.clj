@@ -7,14 +7,13 @@
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
             [environ.core :refer [env]]
-            [pigeon-backend.middleware :refer [wrap-authentication
-                                               wrap-stateless-authentication]]
+            [pigeon-backend.middleware :refer [wrap-authentication]]
             [pigeon-backend.dao.room-dao :as user-dao]
             [pigeon-backend.dao.model :as model]))
 
 (def room-routes
   (context "/room" []
-    :middleware [wrap-stateless-authentication]
+    :middleware [wrap-authentication]
     :tags ["room"]
 
     (POST "/" []
