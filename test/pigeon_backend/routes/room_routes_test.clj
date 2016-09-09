@@ -22,7 +22,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :post (str "/api/v0/room?api_key=" (create-test-login-token))))
+                  (login-as-test-user (mock/request :post "/api/v0/room"))
                   (json/write-str room-data))
                 "application/json"))]
           status => 200

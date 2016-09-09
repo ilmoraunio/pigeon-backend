@@ -17,14 +17,12 @@
   (facts "Testing /hello"
     (fact "Test GET request to /hello?name={a-name} returns expected response"
 
-      (let [response (app (-> (login-as-test-user (mock/request :get (str "/api/v0/hello?name=Stranger&api_key=" 
-                                                                          (create-test-login-token))))))
+      (let [response (app (-> (login-as-test-user (mock/request :get "/api/v0/hello?name=Stranger"))))
             body     (parse-body (:body response))]
         (:status response) => 200
         (:message body)    => "Terve, Stranger"))
     (fact "Test GET request to /hello/en?name={a-name} returns expected response"
-      (let [response (app (-> (login-as-test-user (mock/request :get (str "/api/v0/hello/en?name=Stranger&api_key="
-                                                                          (create-test-login-token))))))
+      (let [response (app (-> (login-as-test-user (mock/request :get "/api/v0/hello/en?name=Stranger"))))
             body     (parse-body (:body response))]
         (:status response) => 200
         (:message body)    => "Hello, Stranger"))))
