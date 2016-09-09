@@ -9,6 +9,7 @@
             [pigeon-backend.test-util :refer [empty-and-create-tables
                                               parse-body
                                               create-login-token
+                                              create-test-login-token
                                               clj-timestamp]]
             [pigeon-backend.services.user-service :as user-service]
             [buddy.sign.jws :as jws]
@@ -60,7 +61,8 @@
         (let [{status :status
                body :body} 
                 ((app-with-middleware)
-                  (mock/request :get "/api/v0/hello?name=foo"))]
+                  (mock/header (mock/request :get "/api/v0/hello?name=foo")
+                    "Authorization" (str "Bearer " (create-test-login-token))))]
           status => 401
           (parse-body body) => {:title "Not logged in"
                                 :cause "signature"
@@ -72,12 +74,14 @@
                body :body}
                 ((app-with-middleware)
                   ;; logged in
-                  (mock/request :get (str "/api/v0/hello?name=foo" 
-                                          "&api_key=" 
-                                          (create-login-token "foobar"
-                                            (str (t/plus (t/now) (t/hours 4)))
-                                            (env :jws-shared-secret))
-                                          "CORRUPT_OR_HACKED")))]
+                  (mock/header 
+                    (mock/request :get (str "/api/v0/hello?name=foo" 
+                                            "&api_key=" 
+                                            (create-login-token "foobar"
+                                              (str (t/plus (t/now) (t/hours 4)))
+                                              (env :jws-shared-secret))
+                                            "CORRUPT_OR_HACKED"))
+                    "Authorization" (str "Bearer " (create-test-login-token) "CORRUPT_OR_HACKED")))]
           status => 401
           (parse-body body) => {:title "Message seems corrupt or manipulated."
                                 :cause "signature"

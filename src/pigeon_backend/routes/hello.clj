@@ -2,13 +2,13 @@
   (:require [compojure.api.sweet :refer :all]
             [ring.util.http-response :refer :all]
             [schema.core :as s]
-            [pigeon-backend.middleware :refer [wrap-authentication]]))
+            [pigeon-backend.middleware :refer [wrap-auth wrap-authentication]]))
 
 (s/defschema Message {:message String})
 
 (def hello-routes
   (context "/hello" []
-    :middleware [wrap-authentication]
+    :middleware [wrap-auth wrap-authentication]
     :tags ["test"]
 
     (GET "/" []
