@@ -5,11 +5,19 @@
 
 (defn wrap-authentication [handler]
   (fn [request]
-    (if (not (contains? (:query-params request) "api_key"))
+
+    (prn "uri" (:uri request))
+    (prn "params" (:query-params request))
+    (prn (contains? (:query-params request) "api_key"))
+
+    (if-not (contains? (:query-params request) "api_key")
       (handle-exception-info
-        (ex-info "Not logged in" {:type :validation
-                                  :cause :signature}) {} request))
-    (let [token (get (:query-params request) "api_key")]
+          (ex-info "Not logged in" {:type :validation
+                                    :cause :signature}) {} request))
+
+    (let [api-key {:key "api_key"
+                   :value (get (:query-params request) "api_key")}
+          token (:value api-key)]
       (if (or (empty? token) (< (count token) 3))
         (handle-exception-info
           (ex-info "Not logged in" {:type :validation

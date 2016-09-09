@@ -9,8 +9,7 @@
                                               parse-body
                                               create-test-login-token]]
             [pigeon-backend.services.room-service :as room-service]
-            [buddy.sign.jws :as jws]
-            [pigeon-backend.test-util :refer [login-as-test-user]]))
+            [buddy.sign.jws :as jws]))
 
 (def room-data {:name "Huone"})
 
@@ -22,7 +21,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :post "/api/v0/room"))
+                  (mock/request :post (str "/api/v0/room?api_key=" (create-test-login-token)))
                   (json/write-str room-data))
                 "application/json"))]
           status => 200
@@ -34,7 +33,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :get (str "/api/v0/room?api_key=" (create-test-login-token))))
+                  (mock/request :get (str "/api/v0/room?api_key=" (create-test-login-token)))
                   (json/write-str {:name "Huone 1"}))
                 "application/json"))]
           status => 200
@@ -45,7 +44,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :put (str "/api/v0/room?api_key=" (create-test-login-token))))
+                  (mock/request :put (str "/api/v0/room?api_key=" (create-test-login-token)))
                   (json/write-str {:id id
                                    :name "Huone 2"}))
                 "application/json"))]
@@ -57,7 +56,7 @@
               ((app-with-middleware)
                (mock/content-type
                 (mock/body
-                  (login-as-test-user (mock/request :delete (str "/api/v0/room?api_key=" (create-test-login-token))))
+                  (mock/request :delete (str "/api/v0/room?api_key=" (create-test-login-token)))
                   (json/write-str {:id id}))
                 "application/json"))]
           status => 200
