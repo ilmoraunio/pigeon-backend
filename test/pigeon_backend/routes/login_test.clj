@@ -61,8 +61,7 @@
         (let [{status :status
                body :body} 
                 ((app-with-middleware)
-                  (mock/header (mock/request :get "/api/v0/hello?name=foo")
-                    "Authorization" (str "Bearer " (create-test-login-token))))]
+                  (mock/request :get "/api/v0/hello?name=foo"))]
           status => 401
           (parse-body body) => {:title "Not logged in"
                                 :cause "signature"
