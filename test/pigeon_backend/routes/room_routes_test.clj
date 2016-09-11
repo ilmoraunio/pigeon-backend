@@ -6,10 +6,10 @@
             [ring.mock.request :as mock]
             [clojure.data.json :as json]
             [pigeon-backend.test-util :refer [empty-and-create-tables
-                                              parse-body]]
+                                              parse-body
+                                              create-test-login-token]]
             [pigeon-backend.services.room-service :as room-service]
-            [buddy.sign.jws :as jws]
-            [pigeon-backend.test-util :refer [login-as-test-user]]))
+            [buddy.sign.jws :as jws]))
 
 (def room-data {:name "Huone"})
 
@@ -20,9 +20,11 @@
         (let [{status :status body :body}
               ((app-with-middleware)
                (mock/content-type
-                (mock/body
-                  (login-as-test-user (mock/request :post "/api/v0/room"))
-                  (json/write-str room-data))
+                (mock/header
+                  (mock/body
+                    (mock/request :post (str "/api/v0/room?api_key=" (create-test-login-token)))
+                    (json/write-str room-data))
+                  "Authorization" (str "Bearer " (create-test-login-token)))
                 "application/json"))]
           status => 200
           (parse-body body) => (contains {:name "Huone"})))
@@ -32,9 +34,11 @@
         (let [{status :status body :body}
               ((app-with-middleware)
                (mock/content-type
-                (mock/body
-                  (login-as-test-user (mock/request :get "/api/v0/room"))
-                  (json/write-str {:name "Huone 1"}))
+                (mock/header
+                  (mock/body
+                    (mock/request :get (str "/api/v0/room?api_key=" (create-test-login-token)))
+                    (json/write-str {:name "Huone 1"}))
+                  "Authorization" (str "Bearer " (create-test-login-token)))
                 "application/json"))]
           status => 200
           (parse-body body) => (contains [(contains {:name "Huone 1"})])))
@@ -43,10 +47,12 @@
               {status :status body :body}
               ((app-with-middleware)
                (mock/content-type
-                (mock/body
-                  (login-as-test-user (mock/request :put "/api/v0/room"))
-                  (json/write-str {:id id
-                                   :name "Huone 2"}))
+                (mock/header
+                  (mock/body
+                    (mock/request :put (str "/api/v0/room?api_key=" (create-test-login-token)))
+                    (json/write-str {:id id
+                                     :name "Huone 2"}))
+                  "Authorization" (str "Bearer " (create-test-login-token)))
                 "application/json"))]
           status => 200
           (parse-body body) => (contains {:name "Huone 2"})))
@@ -55,9 +61,11 @@
               {status :status body :body}
               ((app-with-middleware)
                (mock/content-type
-                (mock/body
-                  (login-as-test-user (mock/request :delete "/api/v0/room"))
-                  (json/write-str {:id id}))
+                (mock/header
+                  (mock/body
+                    (mock/request :delete (str "/api/v0/room?api_key=" (create-test-login-token)))
+                    (json/write-str {:id id}))
+                  "Authorization" (str "Bearer " (create-test-login-token)))
                 "application/json"))]
           status => 200
           (parse-body body) => (contains {:name "Huone"}

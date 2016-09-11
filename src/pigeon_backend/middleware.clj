@@ -3,13 +3,24 @@
            [pigeon-backend.services.exception-util :refer [handle-exception-info]]
            [environ.core :refer [env]]))
 
-(defn wrap-authentication [handler]
+(defn wrap-auth [handler]
   (fn [request]
-    (let [{{{token-value :value} "token"} :cookies} request]
-      (if (or (empty? token-value) (< (count token-value) 3))
+    (let [headers (:headers request)]
+
+      (if-not (contains? headers "authorization")
         (handle-exception-info
-                  (ex-info "Not logged in" {:type :validation
-                                            :cause :signature}) {} request)
-        (do
-          (jws/unsign token-value (env :jws-shared-secret))
-          (handler request))))))
+          (ex-info "Not logged in" {:type :validation
+                                    :cause :signature}) {} request))
+
+      (if (nil? (get headers "authorization"))
+        (handle-exception-info
+          (ex-info "Not logged in" {:type :validation
+                                    :cause :signature}) {} request)
+        (let [token (second (re-find #"Bearer (.*?)$" (get headers "authorization")))]
+          (if (or (empty? token) (< (count token) 3))
+            (handle-exception-info
+              (ex-info "Not logged in" {:type :validation
+                                        :cause :signature}) {} request)
+            (do
+              (jws/unsign token (env :jws-shared-secret))
+              (handler request))))))))

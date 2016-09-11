@@ -6,8 +6,7 @@
             [pigeon-backend.services.user-service :as user-service]
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
-            [environ.core :refer [env]]
-            [pigeon-backend.middleware :refer [wrap-authentication]]))
+            [environ.core :refer [env]]))
 
 (def login-routes
   (context "/session" []
@@ -20,19 +19,6 @@
       (if-let [has-access? (user-service/check-credentials
                             {:username username
                              :password password})]
-        (let [token (jws/sign {:user username} (env :jws-shared-secret))
-              response (ok {:session {:token token}})]
-          (-> response
-              (assoc-in [:cookies "token" :value] token)
-              (assoc-in [:cookies "token" :max-age] 14400)
-              (assoc-in [:cookies "token" :http-only] true)
-              (assoc-in [:cookies "token" :path] "/")))
-        (let [response (unauthorized)]
-          (-> response
-              (assoc-in [:cookies :max-age] 0)))))
-    (DELETE "/" request
-      :summary "Delete session. Clears http cookie."
-      (-> (ok)
-          (assoc-in [:cookies "token"] {:value "nil"
-                                        :path "/"
-                                        :expires "Thu, 01 Jan 1970 00:00:00 GMT"})))))
+        (let [token (jws/sign {:user username} (env :jws-shared-secret))]
+          (ok {:session {:token token}}))
+        (unauthorized)))))

@@ -7,9 +7,14 @@
             [clojure.data.json :as json]
             [pigeon-backend.dao.user-dao :refer [sql-user-get-all]]
             [pigeon-backend.test-util :refer [empty-and-create-tables
-                                              parse-body]]
+                                              parse-body
+                                              create-login-token
+                                              create-test-login-token
+                                              clj-timestamp]]
             [pigeon-backend.services.user-service :as user-service]
-            [buddy.sign.jws :as jws]))
+            [buddy.sign.jws :as jws]
+            [clj-time.core :as t]
+            [environ.core :refer [env]]))
 
 (def user-dto {:username "foobar" 
                :password "hunter2"})
@@ -26,7 +31,6 @@
 (deftest login-test
   (facts "Route: login & logout"
     (with-state-changes [(before :facts (empty-and-create-tables))]
-
       (fact "Login: success"
         (user-service/user-create! registration-dto)
         (let [{status :status body :body} 
@@ -48,29 +52,9 @@
                     (json/write-str user-dto-with-wrong-password))
                   "application/json"))]
           status => 401
-          body => nil))
-      (fact "Login/Logout responses"
-        (user-service/user-create! registration-dto)
-        (let [login-response ((app-with-middleware)
-                               (mock/content-type
-                                (mock/body
-                                  (mock/request :post "/api/v0/session")
-                                  (json/write-str user-dto))
-                                "application/json"))
-              logout-response ((app-with-middleware)
-                               (mock/content-type
-                                (mock/body
-                                  (mock/request :delete "/api/v0/session")
-                                  (json/write-str user-dto))
-                                "application/json"))]
-          (first (get-in login-response [:headers "Set-Cookie"])) 
-            => (str "token=" test-token ";"
-                    "Max-Age=14400;"
-                    "HttpOnly;Path=/")
-          (first (get-in logout-response [:headers "Set-Cookie"]))
-            => (str "token=nil;Path=/;Expires=Thu, 01 Jan 1970 00:00:00 GMT")))))
+          body => nil))))
 
-  (facts "Route: authenticated"
+  (facts "Route: authentication failures"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Is not authenticated"
         (user-service/user-create! registration-dto)
@@ -89,9 +73,14 @@
                body :body}
                 ((app-with-middleware)
                   ;; logged in
-                  (assoc-in (mock/request :get "/api/v0/hello?name=foo")
-                            [:cookies "token" :value]
-                            (str test-token "CORRUPT_OR_HACKED")))]
+                  (mock/header 
+                    (mock/request :get (str "/api/v0/hello?name=foo" 
+                                            "&api_key=" 
+                                            (create-login-token "foobar"
+                                              (str (t/plus (t/now) (t/hours 4)))
+                                              (env :jws-shared-secret))
+                                            "CORRUPT_OR_HACKED"))
+                    "Authorization" (str "Bearer " (create-test-login-token) "CORRUPT_OR_HACKED")))]
           status => 401
           (parse-body body) => {:title "Message seems corrupt or manipulated."
                                 :cause "signature"

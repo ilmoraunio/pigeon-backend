@@ -31,7 +31,8 @@
       :spec "/swagger.json"
       :data {:info {:title "Sample API"
                     :description "Compojure Api example"}
-             :tags [{:name "api", :description "some apis"}]}}
+             :tags [{:name "api", :description "some apis"}]
+             :securityDefinitions {"Bearer" {:type "apiKey" :name "Authorization" :in "header"}}}}
      ;; TODO: exception handler for returning schema validation errors
      :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
     (context "/api/v0" []
