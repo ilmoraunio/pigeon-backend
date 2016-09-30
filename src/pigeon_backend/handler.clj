@@ -12,6 +12,7 @@
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
             [pigeon-backend.routes.login :refer [login-routes]]
             [pigeon-backend.routes.room-routes :refer [room-routes]]
+            [pigeon-backend.routes.roomgroup-routes :refer [roomgroup-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [buddy.sign.jws :as jws])
   (:gen-class))
@@ -39,7 +40,8 @@
           hello-routes
           registration-routes
           login-routes
-          room-routes)))
+          room-routes
+          roomgroup-routes)))
 
 (defn coerce-to-integer [v]
   (if (string? v)

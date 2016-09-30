@@ -12,12 +12,14 @@
      :or {name "Room group" parent nil}}]
     {:room_id room_id
      :name name
-     :parent parent}))
+     :parent parent
+     :users_id nil}))
 
 (def roomgroup-expected (contains {:id integer?}
                                   {:room_id integer?}
                                   {:name "Room group"}
                                   {:parent nil}
+                                  {:users_id nil}
                                   {:created #(instance? java.util.Date %)}
                                   {:updated #(instance? java.util.Date %)}
                                   {:version 0}
@@ -28,6 +30,7 @@
                                   {:room_id integer?}
                                   {:name "Room group child"}
                                   {:parent id}
+                                  {:users_id nil}
                                   {:created #(instance? java.util.Date %)}
                                   {:updated #(instance? java.util.Date %)}
                                   {:version 0}
