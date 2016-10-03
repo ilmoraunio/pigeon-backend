@@ -8,7 +8,7 @@
             [clj-time.core :as t]
             [environ.core :refer [env]]
             [pigeon-backend.middleware :refer [wrap-auth]]
-            [pigeon-backend.dao.room-dao :as roomgroup-dao]
+            [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]
             [pigeon-backend.dao.model :as model]))
 
 (def roomgroup-routes

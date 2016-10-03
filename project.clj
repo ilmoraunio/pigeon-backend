@@ -13,7 +13,8 @@
                  [ring-cors "0.1.7"]
                  [buddy/buddy-hashers "0.14.0"]
                  [buddy/buddy-auth "0.12.0"]
-                 [metosin/schema-tools "0.9.0"]]
+                 [metosin/schema-tools "0.9.0"]
+                 [prismatic/schema-generators "0.1.0"]]
   :plugins       [[lein-environ "0.4.0"]]
   :ring {:handler pigeon-backend.handler/app}
   :uberjar-name "server.jar"

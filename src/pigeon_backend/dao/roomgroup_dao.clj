@@ -11,21 +11,21 @@
              :parent (s/maybe s/Int)
              :users_id (s/maybe s/Int)})
 
-(s/defschema New common)
+(def New common)
 
-(s/defschema Existing (into model/Existing common))
+(def Existing (into model/Existing common))
 
-(s/defschema Model (into model/Model common))
+(def Model (into model/Model common))
 
-(s/defschema ServiceQueryInput {(s/optional-key :id) (s/maybe s/Int)
-                                (s/optional-key :name) (s/maybe String)
-                                (s/optional-key :parent) (s/maybe s/Int)
-                                (s/optional-key :users_id) (s/maybe s/Int)})
+(def ^{:private true} QueryInput {(s/optional-key :room_id) (s/maybe s/Int)
+                                  (s/optional-key :name) (s/maybe String)
+                                  (s/optional-key :parent) (s/maybe s/Int)
+                                  (s/optional-key :users_id) (s/maybe s/Int)})
 
-(s/defschema QueryInput (s/maybe (into model/QueryInput
-                                       ServiceQueryInput)))
+(def QueryInput (s/maybe (into model/QueryInput
+                               QueryInput)))
 
-(s/defschema QueryResult [(s/maybe Model)])
+(def QueryResult [(s/maybe Model)])
 
 (defquery sql-roomgroup-create<! "sql/roomgroup/create.sql"
   {:connection db-spec})

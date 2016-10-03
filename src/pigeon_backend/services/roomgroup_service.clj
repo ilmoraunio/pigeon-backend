@@ -6,23 +6,23 @@
             [schema.core :as s]
             [pigeon-backend.dao.model :as model]
             [schema-tools.core :as st]
-            [pigeon-backend.dao.roomgroup-dao :refer [New Model Existing ServiceQueryInput QueryResult]]))
+            [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]))
 
-(s/defn roomgroup-create! [data :- New] {:post [(s/validate Model %)]}
+(s/defn roomgroup-create! [data :- roomgroup-dao/New] {:post [(s/validate roomgroup-dao/Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (roomgroup-dao/create! tx data)))
 
-(s/defn roomgroup-update! [roomgroup :- Existing]
-  {:post [(s/validate Model %)]}
+(s/defn roomgroup-update! [roomgroup :- roomgroup-dao/Existing]
+  {:post [(s/validate roomgroup-dao/Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (roomgroup-dao/update! tx roomgroup)))
 
-(s/defn roomgroup-get-by [roomgroup :- ServiceQueryInput]
-  {:post [(s/validate QueryResult %)]}
+(s/defn roomgroup-get-by [roomgroup :- roomgroup-dao/QueryInput]
+  {:post [(s/validate roomgroup-dao/QueryResult %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (roomgroup-dao/get-by tx roomgroup)))
 
 (s/defn roomgroup-delete! [roomgroup :- model/Existing]
-  {:post [(s/validate Model %)]}
+  {:post [(s/validate roomgroup-dao/Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (roomgroup-dao/delete! tx roomgroup)))
