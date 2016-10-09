@@ -56,6 +56,13 @@
           (roomgroup {:room_id room_id
                       :name "Room group child"
                       :parent id}) => (roomgroup-child-expected id)))))
+  (facts "Dao: roomgroup update"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{room_id :id} (room-dao-test/room)
+              created-roomgroup (roomgroup {:room_id room_id})
+              edited-roomgroup (assoc created-roomgroup :name "Edited room group")]
+          (dao/update! db-spec edited-roomgroup)))))
   (facts "Dao: roomgroup delete"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
