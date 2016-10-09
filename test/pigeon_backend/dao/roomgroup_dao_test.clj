@@ -10,10 +10,10 @@
 (defn roomgroup-data
   ([{:keys [room_id name parent]
      :or {name "Room group" parent nil}}]
-    {:room_id room_id
-     :name name
-     :parent parent
-     :users_id nil}))
+   {:room_id room_id
+    :name name
+    :parent parent
+    :users_id nil}))
 
 (def roomgroup-expected (contains {:id integer?}
                                   {:room_id integer?}
@@ -47,12 +47,18 @@
           (roomgroup {:room_id room_id}) => roomgroup-expected))
       (fact "Duplicate group name inside room not allowed"
         (let [{room_id :id} (room-dao-test/room)]
-        (roomgroup {:room_id room_id})
-        (roomgroup {:room_id room_id})
-          => (throws clojure.lang.ExceptionInfo "Duplicate name")))
+         (roomgroup {:room_id room_id})
+         (roomgroup {:room_id room_id})
+         => (throws clojure.lang.ExceptionInfo "Duplicate name")))
       (fact "Tree structure with parent"
         (let [{room_id :id} (room-dao-test/room)
               {:keys [id]} (roomgroup (roomgroup-data {:room_id room_id}))]
           (roomgroup {:room_id room_id
                       :name "Room group child"
-                      :parent id}) => (roomgroup-child-expected id))))))
+                      :parent id}) => (roomgroup-child-expected id)))))
+  (facts "Dao: roomgroup delete"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Basic case"
+        (let [{room_id :id} (room-dao-test/room)
+              {roomgroup_id :id} (roomgroup {:room_id room_id})]
+          (dao/delete! db-spec {:id roomgroup_id}))))))
