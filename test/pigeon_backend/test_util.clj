@@ -9,7 +9,8 @@
             [cheshire.core :as cheshire]
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojure.java.jdbc :as jdbc]))
 
 (defn empty-and-create-tables []
   (empty-all-tables db-spec)
@@ -19,6 +20,12 @@
 (defn drop-and-create-tables []
   (drop-all-tables db-spec)
   (migrations/migrate))
+
+(defn disable-fks-in-postgres [tx]
+  (jdbc/execute! tx ["SET session_replication_role = replica"]))
+
+(defn enable-fks-in-postgres [tx]
+  (jdbc/execute! tx ["SET session_replication_role = DEFAULT"]))
 
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))

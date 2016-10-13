@@ -8,7 +8,7 @@ SELECT RoomGroup.id,
        RoomGroup.version,
        RoomGroup.deleted
 FROM RoomGroup
-WHERE ((:Room_id)::bigint IS NULL OR RoomGroup.Room_id = (:Room_id)::bigint)
+WHERE ((:room_id)::bigint IS NULL OR RoomGroup.Room_id = (:room_id)::bigint)
   AND ((:name)::varchar(1000) IS NULL OR RoomGroup.name = (:name)::varchar(1000))
   AND ((:parent)::bigint IS NULL OR RoomGroup.parent = (:parent)::bigint)
   AND ((:users_id)::bigint IS NULL OR RoomGroup.users_id = (:users_id)::bigint)
