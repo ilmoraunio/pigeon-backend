@@ -34,7 +34,7 @@
         (when-let [findings (re-find #"roomgroup_room_id_fkey.*?\n.*?Key.*?not present in table" message)]
           (throw
             (ex-info
-              "Missing"
+              "Room missing"
               {:type :missing
                :cause "Room does not exist"})))
         (.println *err* message))
