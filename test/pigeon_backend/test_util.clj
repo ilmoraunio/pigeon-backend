@@ -21,6 +21,19 @@
   (drop-all-tables db-spec)
   (migrations/migrate))
 
+(defmacro foobar [spec & body]
+  `(jdbc/with-db-transaction [tx# ~spec]
+     (jdbc/execute! tx# ["SET session_replication_role = replica"])
+     (let [result# (do ~@body)] ;; --> body contains reference to regular tx var instead of gensym tx
+       (jdbc/execute! tx# ["SET session_replication_role = DEFAULT"])
+       result#)))
+
+(defmacro barfoo [tx & body]
+  `(jdbc/execute! tx# ["SET session_replication_role = replica"])
+  `(let [result# (do ~@body)]
+     (jdbc/execute! tx# ["SET session_replication_role = DEFAULT"])
+     result#))
+
 (defn disable-fks-in-postgres [tx]
   (jdbc/execute! tx ["SET session_replication_role = replica"]))
 
