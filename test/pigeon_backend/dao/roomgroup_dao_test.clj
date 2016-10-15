@@ -7,7 +7,8 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables
                                               enable-fks-in-postgres
-                                              disable-fks-in-postgres]]
+                                              disable-fks-in-postgres
+                                              without-fk-constraints]]
             [clojure.java.jdbc :as jdbc]))
 
 (defn roomgroup-data
@@ -64,10 +65,9 @@
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (jdbc/with-db-transaction [tx db-spec]
-          (disable-fks-in-postgres tx)
-          (roomgroup tx {:room_id 1})
-          (dao/get-by tx {:room_id 1}) => (contains [roomgroup-expected])
-          (enable-fks-in-postgres tx)))))
+          (without-fk-constraints tx
+            (roomgroup tx {:room_id 1})
+            (dao/get-by tx {:room_id 1}) => (contains [roomgroup-expected]))))))
   (facts "Dao: roomgroup update"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"

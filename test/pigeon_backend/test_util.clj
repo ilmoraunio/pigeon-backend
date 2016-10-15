@@ -23,9 +23,9 @@
 
 (defmacro without-fk-constraints [tx & body]
   `(do
-    (jdbc/execute! ~tx ["SET session_replication_role = replica"])
+    (disable-fks-in-postgres ~tx)
     (let [result# (do ~@body)]
-      (jdbc/execute! ~tx ["SET session_replication_role = DEFAULT"])
+      (enable-fks-in-postgres ~tx)
       result#)))
 
 (defn disable-fks-in-postgres [tx]
