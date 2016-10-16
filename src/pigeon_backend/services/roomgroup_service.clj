@@ -8,7 +8,8 @@
             [schema-tools.core :as st]
             [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]))
 
-(s/defn roomgroup-create! [data :- roomgroup-dao/New] {:post [(s/validate roomgroup-dao/Model %)]}
+(s/defn roomgroup-create! [data :- roomgroup-dao/New]
+  {:post [(s/validate roomgroup-dao/Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (roomgroup-dao/create! tx data)))
 

@@ -28,6 +28,10 @@
       (enable-fks-in-postgres ~tx)
       result#)))
 
+(defn fetch-input-schema-from-dao-fn [ns fn-var]
+  (let [[[_ _ _ schema]] (:raw-arglists (meta fn-var))]
+    (->> schema (ns-resolve ns) var-get)))
+
 (defn disable-fks-in-postgres [tx]
   (jdbc/execute! tx ["SET session_replication_role = replica"]))
 
