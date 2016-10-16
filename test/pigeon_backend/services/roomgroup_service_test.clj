@@ -18,7 +18,6 @@
   (facts "Roomgroup service: create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
-        ; generate returnable map out of dao schema
         (let [input (g/generate roomgroup-dao/New)
               output (c/complete input roomgroup-dao/Model)
               expected output]
