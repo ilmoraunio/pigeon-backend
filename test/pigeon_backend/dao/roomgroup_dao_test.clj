@@ -67,7 +67,20 @@
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
             (roomgroup tx {:room_id 1})
-            (dao/get-by tx {:room_id 1}) => (contains [roomgroup-expected]))))))
+            (dao/get-by tx {:room_id 1}) => (contains [roomgroup-expected]))))
+      (fact "Multiple of same"
+        (jdbc/with-db-transaction [tx db-spec]
+          (without-fk-constraints tx
+            (dotimes [n 2]
+              (roomgroup tx {:room_id 1
+                             :name (str "foobar" n)}))
+            (dao/get-by tx {:room_id 1}) => (two-of coll?))))
+      (fact "Filtering"
+        (jdbc/with-db-transaction [tx db-spec]
+          (without-fk-constraints tx
+            (roomgroup tx {:room_id 1})
+            (roomgroup tx {:room_id 2})
+            (dao/get-by tx {:room_id 1}) => (contains [(contains {:room_id 1})]))))))
   (facts "Dao: roomgroup update"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
