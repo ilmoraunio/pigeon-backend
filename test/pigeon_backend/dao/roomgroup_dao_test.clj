@@ -63,7 +63,7 @@
                       :parent id}) => (roomgroup-child-expected id)))))
   (facts "Dao: roomgroup get"
     (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Basic case"
+      (fact
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
             (roomgroup tx {:room_id 1})
@@ -74,7 +74,7 @@
             (dotimes [n 2]
               (roomgroup tx {:room_id 1
                              :name (str "foobar" n)}))
-            (dao/get-by tx {:room_id 1}) => (two-of coll?))))
+            (dao/get-by tx nil) => (two-of coll?))))
       (fact "Filtering"
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
