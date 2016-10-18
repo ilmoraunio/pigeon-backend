@@ -28,8 +28,9 @@
       (enable-fks-in-postgres ~tx)
       result#)))
 
-(defn fetch-input-schema-from-dao-fn [ns fn-var]
-  (let [[[_ _ _ schema]] (:raw-arglists (meta fn-var))]
+(defn fetch-input-schema-from-dao-fn [fn-var]
+  (let [ns (:ns (meta fn-var))
+        [[_ _ _ schema]] (:raw-arglists (meta fn-var))]
     (->> schema (ns-resolve ns) var-get)))
 
 (defn disable-fks-in-postgres [tx]

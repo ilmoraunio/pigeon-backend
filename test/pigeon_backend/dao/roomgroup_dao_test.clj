@@ -16,7 +16,7 @@
      :or {name "Room group" parent nil}}]
    {:room_id room_id
     :name name
-    :parent parent
+    :parent parent ;; TODO: remove parent key from model
     :users_id nil}))
 
 (def roomgroup-expected (contains {:id integer?}

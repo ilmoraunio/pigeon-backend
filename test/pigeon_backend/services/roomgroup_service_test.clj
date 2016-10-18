@@ -14,13 +14,12 @@
             [schema-generators.complete :as c])
   (import org.postgresql.util.PSQLException))
 
-;; TODO: rename roomgroup to alias
+;; TODO: rename roomgroup to participant
 (deftest roomgroup-service-crud
   (facts "Roomgroup service: create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
-        (let [input (g/generate (fetch-input-schema-from-dao-fn 'pigeon-backend.dao.roomgroup-dao
-                                                                #'roomgroup-dao/create!))
+        (let [input (g/generate (fetch-input-schema-from-dao-fn #'roomgroup-dao/create!))
               output (c/complete input roomgroup-dao/Model)
               expected output]
           (with-redefs [roomgroup-dao/create! (fn [_ _] output)]
