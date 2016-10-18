@@ -28,6 +28,12 @@
       (enable-fks-in-postgres ~tx)
       result#)))
 
+;; TODO: refactor together with fetch-input-schema-from-dao-fn
+(defn fetch-input-schema-from-service-fn [fn-var]
+  (let [ns (:ns (meta fn-var))
+        [[_ _ schema]] (:raw-arglists (meta fn-var))]
+    (->> schema (ns-resolve ns) var-get)))
+
 (defn fetch-input-schema-from-dao-fn [fn-var]
   (let [ns (:ns (meta fn-var))
         [[_ _ _ schema]] (:raw-arglists (meta fn-var))]

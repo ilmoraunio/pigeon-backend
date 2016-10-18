@@ -23,4 +23,12 @@
               output (c/complete input roomgroup-dao/Model)
               expected output]
           (with-redefs [roomgroup-dao/create! (fn [_ _] output)]
-            (service/roomgroup-create! input) => expected))))))
+            (service/roomgroup-create! input) => expected)))))
+  (facts "Roomgroup service: update"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact
+        (let [input (g/generate (fetch-input-schema-from-dao-fn #'roomgroup-dao/update!))
+              output (c/complete input roomgroup-dao/Model)
+              expected output]
+          (with-redefs [roomgroup-dao/update! (fn [_ _] output)]
+            (service/roomgroup-update! input) => expected))))))
