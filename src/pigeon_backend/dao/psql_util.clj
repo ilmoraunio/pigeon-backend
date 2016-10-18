@@ -2,6 +2,7 @@
   (import java.sql.BatchUpdateException)
   (import org.postgresql.util.PSQLException))
 
+;; TODO: as macro for cleaner forms on dao layer
 (defn execute-sql-or-handle-exception [f db-spec map-args]
   (try
     (f db-spec map-args)
