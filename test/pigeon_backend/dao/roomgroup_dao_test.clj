@@ -87,10 +87,10 @@
         (let [{room_id :id} (room-dao-test/room)
               created-roomgroup (roomgroup {:room_id room_id})
               edited-roomgroup (assoc created-roomgroup :name "Edited room group")]
-          (dao/update! db-spec edited-roomgroup)))))
+          (dao/update! db-spec edited-roomgroup) => (contains {:name "Edited room group"})))))
   (facts "Dao: roomgroup delete"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (let [{room_id :id} (room-dao-test/room)
               {roomgroup_id :id} (roomgroup {:room_id room_id})]
-          (dao/delete! db-spec {:id roomgroup_id}))))))
+          (dao/delete! db-spec {:id roomgroup_id}) => (contains {:deleted true}))))))
