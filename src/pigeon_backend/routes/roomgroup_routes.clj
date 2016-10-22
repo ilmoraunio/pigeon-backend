@@ -25,11 +25,6 @@
       :body [roomgroup roomgroup-dao/QueryInput]
       :summary "Get roomgroups with arguments defined by input schema"
       (ok (roomgroup-service/roomgroup-get-by roomgroup)))
-    (PUT "/" []
-      :return roomgroup-dao/Model
-      :body [roomgroup roomgroup-dao/Existing]
-      :summary "Update roomgroup"
-      (ok (roomgroup-service/roomgroup-update! roomgroup)))
     (DELETE "/" []
       :return roomgroup-dao/Model
       :body [roomgroup model/Existing]
