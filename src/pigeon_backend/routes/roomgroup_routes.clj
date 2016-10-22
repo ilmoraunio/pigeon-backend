@@ -17,16 +17,21 @@
     :tags ["roomgroup"]
 
     (POST "/" []
-      :return roomgroup-dao/Model
-      :body [roomgroup roomgroup-dao/New]
-      :summary "Create a roomgroup"
-      (ok (roomgroup-service/roomgroup-create! roomgroup)))
+      ;;:return roomgroup-service/Model
+      ;;:body [roomgroup roomgroup-service/New]
+      :summary "Join a room"
+      (not-implemented))
     (GET "/" []
-      :body [roomgroup roomgroup-dao/QueryInput]
-      :summary "Get roomgroups with arguments defined by input schema"
-      (ok (roomgroup-service/roomgroup-get-by roomgroup)))
+      ;;:body [roomgroup roomgroup-service/QueryInput]
+      :summary "Show participants in room or rooms"
+      (not-implemented))
+    (PUT "/" []
+      ;;:return roomgroup-service/Model
+      ;;:body [room room-dao/Existing]
+      :summary "Update alias name"
+      (not-implemented))
     (DELETE "/" []
-      :return roomgroup-dao/Model
-      :body [roomgroup model/Existing]
-      :summary "Delete roomgroup"
-      (ok (roomgroup-service/roomgroup-delete! roomgroup)))))
+      ;;:return roomgroup-service/Model
+      ;;:body [roomgroup model/Existing]
+      :summary "Leave room"
+      (not-implemented))))

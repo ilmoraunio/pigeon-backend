@@ -1,7 +1,6 @@
 SELECT RoomGroup.id,
        RoomGroup.Room_id,
        RoomGroup.name,
-       RoomGroup.parent,
        RoomGroup.users_id,
        RoomGroup.created,
        RoomGroup.updated,
@@ -10,7 +9,6 @@ SELECT RoomGroup.id,
 FROM RoomGroup
 WHERE ((:room_id)::bigint IS NULL OR RoomGroup.Room_id = (:room_id)::bigint)
   AND ((:name)::varchar(1000) IS NULL OR RoomGroup.name = (:name)::varchar(1000))
-  AND ((:parent)::bigint IS NULL OR RoomGroup.parent = (:parent)::bigint)
   AND ((:users_id)::bigint IS NULL OR RoomGroup.users_id = (:users_id)::bigint)
   AND ((:created)::timestamp IS NULL OR RoomGroup.created = (:created)::timestamp)
   AND ((:updated)::timestamp IS NULL OR RoomGroup.updated = (:updated)::timestamp)

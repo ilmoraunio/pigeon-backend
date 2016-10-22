@@ -8,7 +8,6 @@
 
 (def common {:room_id s/Int
              :name String
-             :parent (s/maybe s/Int)
              :users_id (s/maybe s/Int)})
 
 (def New common)
@@ -19,7 +18,6 @@
 
 (def ^{:private true} QueryInput {(s/optional-key :room_id) (s/maybe s/Int)
                                   (s/optional-key :name) (s/maybe String)
-                                  (s/optional-key :parent) (s/maybe s/Int)
                                   (s/optional-key :users_id) (s/maybe s/Int)})
 
 (def QueryInput (s/maybe (into model/QueryInput

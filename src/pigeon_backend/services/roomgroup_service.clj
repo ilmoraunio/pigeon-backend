@@ -8,22 +8,13 @@
             [schema-tools.core :as st]
             [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]))
 
-(s/defn roomgroup-create! [data :- roomgroup-dao/New]
-  {:post [(s/validate roomgroup-dao/Model %)]}
-  (jdbc/with-db-transaction [tx db-spec]
-    (roomgroup-dao/create! tx data)))
+(def AddRoomgroup {:room_id s/Int
+                   :name String
+                   :users_id s/Int})
 
-(s/defn roomgroup-update! [roomgroup :- roomgroup-dao/Existing]
-  {:post [(s/validate roomgroup-dao/Model %)]}
-  (jdbc/with-db-transaction [tx db-spec]
-    (roomgroup-dao/update! tx roomgroup)))
+(def Model roomgroup-dao/Model)
 
-(s/defn roomgroup-get-by [roomgroup :- roomgroup-dao/QueryInput]
-  {:post [(s/validate roomgroup-dao/QueryResult %)]}
+(s/defn add-roomgroup! [add-roomgroup-data :- AddRoomgroup]
+  {:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
-    (roomgroup-dao/get-by tx roomgroup)))
-
-(s/defn roomgroup-delete! [roomgroup :- model/Existing]
-  {:post [(s/validate roomgroup-dao/Model %)]}
-  (jdbc/with-db-transaction [tx db-spec]
-    (roomgroup-dao/delete! tx roomgroup)))
+    (roomgroup-dao/create! tx add-roomgroup-data)))

@@ -10,17 +10,15 @@
             [clojure.java.jdbc :as jdbc]))
 
 (defn roomgroup-data
-  ([{:keys [room_id name users_id parent]
-     :or {name "Room group" users_id 1 parent nil}}]
+  ([{:keys [room_id name users_id]
+     :or {name "Room group" users_id 1}}]
    {:room_id room_id
     :name name
-    :parent parent ;; TODO: remove parent key from model
     :users_id users_id}))
 
 (def roomgroup-expected (contains {:id integer?}
                                   {:room_id integer?}
                                   {:name "Room group"}
-                                  {:parent nil}
                                   {:users_id 1}
                                   {:created #(instance? java.util.Date %)}
                                   {:updated #(instance? java.util.Date %)}
