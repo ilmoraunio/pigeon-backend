@@ -1,6 +1,0 @@
-{:up ["ALTER TABLE users ADD created timestamp default NOW(),
-                         ADD updated timestamp default NOW(),
-                         ADD version integer default 0;"]
- :down ["ALTER TABLE users DROP created,
-                           DROP updated,
-                           DROP version;"]}
