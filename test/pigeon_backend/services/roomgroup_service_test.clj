@@ -37,5 +37,4 @@
               expected output]
           (with-redefs [roomgroup-dao/create! (fn [_ _] output)]
             (service/add-roomgroup! input) => expected)))))
-  (facts "User should be able to remove himself from room")
-  (facts "User should be able to see all existing aliases in room"))
+  (facts "User should be able to remove himself from room")) ;; todo next
