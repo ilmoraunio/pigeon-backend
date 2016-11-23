@@ -1,4 +1,4 @@
-(ns pigeon-backend.usecases.roomgroup-service-test
+(ns pigeon-backend.services.roomgroup-service-test
   (:require [clojure.test :refer [deftest]]
             [cheshire.core :as cheshire]
             [midje.sweet :refer :all]
@@ -26,8 +26,7 @@
             [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]
             [schema-generators.generators :as g]
             [schema-generators.complete :as c]
-            [pigeon-backend.services.room-service :as room-service]
-            [pigeon-backend.routes.room-routes-test :as room-routes-test]))
+            [pigeon-backend.services.room-service :as room-service]))
 
 (deftest roomgroup-test
   (facts "User should be able to add himself to room"
