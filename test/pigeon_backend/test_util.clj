@@ -9,7 +9,8 @@
             [cheshire.core :as cheshire]
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojure.java.jdbc :as jdbc]))
 
 (defn empty-and-create-tables []
   (empty-all-tables db-spec)
@@ -19,6 +20,30 @@
 (defn drop-and-create-tables []
   (drop-all-tables db-spec)
   (migrations/migrate))
+
+(defmacro without-fk-constraints [tx & body]
+  `(do
+    (disable-fks-in-postgres ~tx)
+    (let [result# (do ~@body)]
+      (enable-fks-in-postgres ~tx)
+      result#)))
+
+;; TODO: refactor together with fetch-input-schema-from-dao-fn
+(defn fetch-input-schema-from-service-fn [fn-var]
+  (let [ns (:ns (meta fn-var))
+        [[_ _ schema]] (:raw-arglists (meta fn-var))]
+    (->> schema (ns-resolve ns) var-get)))
+
+(defn fetch-input-schema-from-dao-fn [fn-var]
+  (let [ns (:ns (meta fn-var))
+        [[_ _ _ schema]] (:raw-arglists (meta fn-var))]
+    (->> schema (ns-resolve ns) var-get)))
+
+(defn disable-fks-in-postgres [tx]
+  (jdbc/execute! tx ["SET session_replication_role = replica"]))
+
+(defn enable-fks-in-postgres [tx]
+  (jdbc/execute! tx ["SET session_replication_role = DEFAULT"]))
 
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))

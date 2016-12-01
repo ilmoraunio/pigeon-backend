@@ -8,7 +8,7 @@
             [clj-time.core :as t]
             [environ.core :refer [env]]
             [pigeon-backend.middleware :refer [wrap-auth]]
-            [pigeon-backend.dao.room-dao :as user-dao]
+            [pigeon-backend.dao.room-dao :as room-dao]
             [pigeon-backend.dao.model :as model]))
 
 (def room-routes
@@ -17,21 +17,21 @@
     :tags ["room"]
 
     (POST "/" []
-      :return user-dao/Model
-      :body [room user-dao/New]
+      :return room-dao/Model
+      :body [room room-dao/New]
       :summary "Create a room"
       (ok (room-service/room-create! room)))
     (GET "/" []
-      :body [room user-dao/QueryInput]
+      :body [room room-dao/QueryInput]
       :summary "Get rooms with arguments defined by input schema"
       (ok (room-service/room-get-by room)))
     (PUT "/" []
-      :return user-dao/Model
-      :body [room user-dao/Existing]
+      :return room-dao/Model
+      :body [room room-dao/Existing]
       :summary "Update room"
       (ok (room-service/room-update! room)))
     (DELETE "/" []
-      :return user-dao/Model
+      :return room-dao/Model
       :body [room model/Existing]
       :summary "Delete room"
       (ok (room-service/room-delete! room)))))

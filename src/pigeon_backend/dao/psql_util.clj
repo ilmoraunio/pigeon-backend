@@ -2,6 +2,7 @@
   (import java.sql.BatchUpdateException)
   (import org.postgresql.util.PSQLException))
 
+;; TODO: as macro for cleaner forms on dao layer
 (defn execute-sql-or-handle-exception [f db-spec map-args]
   (try
     (f db-spec map-args)
@@ -31,5 +32,11 @@
               "Duplicate connection"
               {:type :duplicate
                :cause "Connection already exists"})))
+        (when-let [findings (re-find #"roomgroup_room_id_fkey.*?\n.*?Key.*?not present in table" message)]
+          (throw
+            (ex-info
+              "Room missing"
+              {:type :missing
+               :cause "Room does not exist"})))
         (.println *err* message))
       (throw e))))
