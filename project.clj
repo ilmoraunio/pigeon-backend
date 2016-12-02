@@ -39,4 +39,4 @@
    :aliases {"migrate" ["run" "-m" "pigeon-backend.db.migrations/migrate"]
              "rollback" ["run" "-m" "pigeon-backend.db.migrations/rollback"]}
    :main pigeon-backend.handler
-   :min-lein-version "2.6.1")
+   :min-lein-version "2.5.3")
