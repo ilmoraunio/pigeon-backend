@@ -1,1 +1,1 @@
-web: java $JVM_OPTS -jar server.jar
+web: java $JVM_OPTS -jar target/server.jar
