@@ -31,12 +31,6 @@
 (defquery sql-participant-get "sql/participant/get.sql"
   {:connection db-spec})
 
-(defquery sql-participant-update<! "sql/participant/update.sql"
-  {:connection db-spec})
-
-(defquery sql-participant-delete<! "sql/participant/delete.sql"
-  {:connection db-spec})
-
 (s/defn create! [tx participant :- New] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
@@ -47,13 +41,3 @@
     (execute-sql-or-handle-exception
       (fn [tx map-args]
         (sql-participant-get map-args {:connection tx})) tx query-data)))
-
-(s/defn update! [tx participant :- Existing] {:post [(s/validate Model %)]}
-  (execute-sql-or-handle-exception
-    (fn [tx map-args]
-      (sql-participant-update<! map-args {:connection tx})) tx participant))
-
-(s/defn delete! [tx participant :- model/Existing] {:post [(s/validate Model %)]}
-  (execute-sql-or-handle-exception
-    (fn [tx map-args]
-      (sql-participant-delete<! map-args {:connection tx})) tx participant))

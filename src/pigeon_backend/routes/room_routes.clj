@@ -23,15 +23,5 @@
       (ok (room-service/room-create! room)))
     (GET "/" []
       :body [room room-dao/QueryInput]
-      :summary "Get rooms with arguments defined by input schema"
-      (ok (room-service/room-get-by room)))
-    (PUT "/" []
-      :return room-dao/Model
-      :body [room room-dao/Existing]
-      :summary "Update room"
-      (ok (room-service/room-update! room)))
-    (DELETE "/" []
-      :return room-dao/Model
-      :body [room model/Existing]
-      :summary "Delete room"
-      (ok (room-service/room-delete! room)))))
+      :summary "Get rooms"
+      (ok (room-service/room-get-by room)))))

@@ -43,17 +43,4 @@
         (room (assoc room-data :name "Pigeon room 2"))
         (room (assoc room-data :name "Pigeon room 3"))
         (dao/get-by db-spec {:name "Pigeon room 2"})
-         => (contains [(contains {:name "Pigeon room 2"})]))))
-  (facts "Dao: room update"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Basic case"
-        (let [{id :id} (room)]
-          (dao/update! db-spec {:id id
-                                :name "Updated pigeon room 1"})
-           => (contains {:name "Updated pigeon room 1"})))))
-  (facts "Dao: room delete"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Basic case"
-        (let [{id :id} (room)]
-          (dao/delete! db-spec {:id id}) => (contains {:deleted true})
-          (dao/get-by db-spec nil) => [])))))
+         => (contains [(contains {:name "Pigeon room 2"})])))))
