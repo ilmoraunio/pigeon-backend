@@ -2,7 +2,7 @@
   :description "FIXME: write description"
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [clj-time "0.9.0"] ; required due to bug in lein-ring
-                 [metosin/compojure-api "1.1.8" :exclusions [clj-time metosin/ring-http-response cheshire joda-time ring/ring-core com.fasterxml.jackson.dataformat/jackson-dataformat-smile ring/ring-codec commons-codec commons-io]]
+                 [metosin/compojure-api "1.1.5" :exclusions [clj-time metosin/ring-http-response cheshire joda-time ring/ring-core com.fasterxml.jackson.dataformat/jackson-dataformat-smile ring/ring-codec commons-codec commons-io]]
                  [metosin/ring-http-response "0.6.5"]
                  [ring-server "0.4.0"]
                  [environ "1.0.1"]
