@@ -20,7 +20,7 @@
               "Duplicate name"
               {:type :duplicate
                :cause (format "Name %s already exists" (:name map-args))})))
-        (when-let [findings (re-find #"roomgroup_id, users_id.*?already exists" message)]
+        (when-let [findings (re-find #"participant_id, users_id.*?already exists" message)]
           (throw
             (ex-info 
               "Duplicate group user"
@@ -32,7 +32,7 @@
               "Duplicate connection"
               {:type :duplicate
                :cause "Connection already exists"})))
-        (when-let [findings (re-find #"roomgroup_room_id_fkey.*?\n.*?Key.*?not present in table" message)]
+        (when-let [findings (re-find #"participant_room_id_fkey.*?\n.*?Key.*?not present in table" message)]
           (throw
             (ex-info
               "Room missing"

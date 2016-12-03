@@ -1,22 +1,22 @@
-(ns pigeon-backend.dao.roomgroup-dao-test
+(ns pigeon-backend.dao.participant-dao-test
   (:require [clojure.test :refer [deftest]]
             [midje.sweet :refer :all]
             [pigeon-backend.dao.room-dao-test :as room-dao-test]
-            [pigeon-backend.dao.roomgroup-dao :as dao]
+            [pigeon-backend.dao.participant-dao :as dao]
             [schema.core :as s]
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables
                                               without-fk-constraints]]
             [clojure.java.jdbc :as jdbc]))
 
-(defn roomgroup-data
+(defn participant-data
   ([{:keys [room_id name users_id]
      :or {name "Room group" users_id 1}}]
    {:room_id room_id
     :name name
     :users_id users_id}))
 
-(def roomgroup-expected (contains {:id integer?}
+(def participant-expected (contains {:id integer?}
                                   {:room_id integer?}
                                   {:name "Room group"}
                                   {:users_id 1}
@@ -25,55 +25,55 @@
                                   {:version 0}
                                   {:deleted false}))
 
-(defn roomgroup
-  ([input] (roomgroup db-spec input))
-  ([tx input] (dao/create! tx (roomgroup-data input))))
+(defn participant
+  ([input] (participant db-spec input))
+  ([tx input] (dao/create! tx (participant-data input))))
 
-(deftest roomgroup-dao-test
-  (facts "Dao: roomgroup create"
+(deftest participant-dao-test
+  (facts "Dao: participant create"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
-            (roomgroup tx {:room_id 1}) => roomgroup-expected)))
+            (participant tx {:room_id 1}) => participant-expected)))
       (fact "Duplicate group name inside room not allowed"
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
-            (roomgroup tx {:room_id 1})
-            (roomgroup tx {:room_id 1})) => (throws clojure.lang.ExceptionInfo "Duplicate name")))))
-  (facts "Dao: roomgroup get"
+            (participant tx {:room_id 1})
+            (participant tx {:room_id 1})) => (throws clojure.lang.ExceptionInfo "Duplicate name")))))
+  (facts "Dao: participant get"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
-            (roomgroup tx {:room_id 1})
-            (dao/get-by tx {:room_id 1}) => (contains [roomgroup-expected]))))
+            (participant tx {:room_id 1})
+            (dao/get-by tx {:room_id 1}) => (contains [participant-expected]))))
       (fact "Multiple of same"
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
             (dotimes [n 2]
-              (roomgroup tx {:room_id 1
+              (participant tx {:room_id 1
                              :name (str "foobar" n)}))
             (dao/get-by tx nil) => (two-of coll?))))
       (fact "Filtering"
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
-            (roomgroup tx {:room_id 1})
-            (roomgroup tx {:room_id 2})
+            (participant tx {:room_id 1})
+            (participant tx {:room_id 2})
             (dao/get-by tx {:room_id 1}) => (contains [(contains {:room_id 1})]))))))
-  (facts "Dao: roomgroup update"
+  (facts "Dao: participant update"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
-            (let [created-roomgroup (roomgroup tx {:room_id 1})
-                  edited-roomgroup (assoc created-roomgroup :name "Edited room group")]
-              (dao/update! tx edited-roomgroup) => (contains {:name "Edited room group"})))))))
-  (facts "Dao: roomgroup delete"
+            (let [created-participant (participant tx {:room_id 1})
+                  edited-participant (assoc created-participant :name "Edited room group")]
+              (dao/update! tx edited-participant) => (contains {:name "Edited room group"})))))))
+  (facts "Dao: participant delete"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
-            (let [{roomgroup_id :id} (roomgroup tx {:room_id 1})]
-              (dao/delete! tx {:id roomgroup_id}) => (contains {:deleted true}
+            (let [{participant_id :id} (participant tx {:room_id 1})]
+              (dao/delete! tx {:id participant_id}) => (contains {:deleted true}
                                                                {:users_id 1}))))))))
