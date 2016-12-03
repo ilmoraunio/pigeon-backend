@@ -19,19 +19,19 @@
     (POST "/" []
       ;;:return participant-service/Model
       ;;:body [participant participant-service/New]
-      :summary "Join a room"
+      :summary "Join a room (not implemented)"
       (not-implemented))
     (GET "/" []
       ;;:body [participant participant-service/QueryInput]
-      :summary "Show participants in room or rooms"
+      :summary "Show participants in room or rooms (not implemented)"
       (not-implemented))
     (PUT "/" []
       ;;:return participant-service/Model
       ;;:body [room room-dao/Existing]
-      :summary "Update alias name"
+      :summary "Update alias name (not implemented)"
       (not-implemented))
     (DELETE "/" []
       ;;:return participant-service/Model
       ;;:body [participant model/Existing]
-      :summary "Leave room"
+      :summary "Leave room (not implemented)"
       (not-implemented))))
