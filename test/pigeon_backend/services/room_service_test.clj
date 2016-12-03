@@ -41,15 +41,4 @@
             (service/room-get-by nil) => (two-of coll?)))
         (fact "Get none"
           (let [_ (room-dao/room)]
-            (service/room-get-by {:name "wrong name"}) => []))))
-  (facts "Service: room update"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Success"
-        (let [{id :id} (service/room-create! {:name "enouH"})]
-            (service/room-update! {:id id :name "Huone"})
-            => expected))))
-  (facts "Service: room delete"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Success"
-        (let [{id :id} (service/room-create! {:name "Huone"})]
-          (service/room-delete! {:id id}))))))
+            (service/room-get-by {:name "wrong name"}) => [])))))

@@ -28,12 +28,6 @@
 (defquery sql-room-get "sql/room/get.sql"
   {:connection db-spec})
 
-(defquery sql-room-update<! "sql/room/update.sql"
-  {:connection db-spec})
-
-(defquery sql-room-delete<! "sql/room/delete.sql"
-  {:connection db-spec})
-
 (s/defn create! [tx room :- New] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
@@ -44,13 +38,3 @@
     (execute-sql-or-handle-exception
       (fn [tx map-args]
         (sql-room-get map-args {:connection tx})) tx query-data)))
-
-(s/defn update! [tx room :- Existing] {:post [(s/validate Model %)]}
-  (execute-sql-or-handle-exception
-    (fn [tx map-args]
-      (sql-room-update<! map-args {:connection tx})) tx room))
-
-(s/defn delete! [tx room :- model/Existing] {:post [(s/validate Model %)]}
-  (execute-sql-or-handle-exception
-    (fn [tx map-args]
-      (sql-room-delete<! map-args {:connection tx})) tx room))

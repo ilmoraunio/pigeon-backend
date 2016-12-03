@@ -12,17 +12,7 @@
   (jdbc/with-db-transaction [tx db-spec]
     (room-dao/create! tx data)))
 
-(s/defn room-update! [room :- Existing]
-  {:post [(s/validate Model %)]}
-  (jdbc/with-db-transaction [tx db-spec]
-    (room-dao/update! tx room)))
-
 (s/defn room-get-by [room :- ServiceQueryInput]
   {:post [(s/validate QueryResult %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (room-dao/get-by tx room)))
-
-(s/defn room-delete! [room :- model/Existing]
-  {:post [(s/validate Model %)]}
-  (jdbc/with-db-transaction [tx db-spec]
-    (room-dao/delete! tx room)))

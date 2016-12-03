@@ -36,5 +36,4 @@
               output (c/complete input service/Model)
               expected output]
           (with-redefs [participant-dao/create! (fn [_ _] output)]
-            (service/add-participant! input) => expected)))))
-  (facts "User should be able to remove himself from room")) ;; todo next
+            (service/add-participant! input) => expected))))))
