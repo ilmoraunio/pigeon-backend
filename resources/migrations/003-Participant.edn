@@ -1,4 +1,4 @@
-{:up ["CREATE TABLE RoomGroup (id bigserial PRIMARY KEY,
+{:up ["CREATE TABLE Participant (id bigserial PRIMARY KEY,
                                Room_id bigint,
                                name varchar(1000),
                                users_id bigint,
@@ -9,4 +9,4 @@
                                FOREIGN KEY(Room_id) REFERENCES Room(id),
                                FOREIGN KEY(users_id) REFERENCES users(id),
                                UNIQUE(Room_id, name));"]
- :down ["DROP TABLE RoomGroup;"]}
+ :down ["DROP TABLE Participant;"]}

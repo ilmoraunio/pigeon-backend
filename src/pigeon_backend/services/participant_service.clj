@@ -1,20 +1,20 @@
-(ns pigeon-backend.services.roomgroup-service
-  (:require [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]
+(ns pigeon-backend.services.participant-service
+  (:require [pigeon-backend.dao.participant-dao :as participant-dao]
             [clojure.java.jdbc :as jdbc]
             [pigeon-backend.db.config :refer [db-spec]]
             [buddy.hashers :as hashers]
             [schema.core :as s]
             [pigeon-backend.dao.model :as model]
             [schema-tools.core :as st]
-            [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]))
+            [pigeon-backend.dao.participant-dao :as participant-dao]))
 
-(def AddRoomgroup {:room_id s/Int
+(def AddParticipant {:room_id s/Int
                    :name String
                    :users_id s/Int})
 
-(def Model roomgroup-dao/Model)
+(def Model participant-dao/Model)
 
-(s/defn add-roomgroup! [add-roomgroup-data :- AddRoomgroup]
+(s/defn add-participant! [add-participant-data :- AddParticipant]
   {:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
-    (roomgroup-dao/create! tx add-roomgroup-data)))
+    (participant-dao/create! tx add-participant-data)))

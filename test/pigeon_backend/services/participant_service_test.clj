@@ -1,4 +1,4 @@
-(ns pigeon-backend.services.roomgroup-service-test
+(ns pigeon-backend.services.participant-service-test
   (:require [clojure.test :refer [deftest]]
             [cheshire.core :as cheshire]
             [midje.sweet :refer :all]
@@ -20,21 +20,21 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.db.migrations :as migrations]
             [midje.sweet :refer :all]
-            [pigeon-backend.services.roomgroup-service :as service]
+            [pigeon-backend.services.participant-service :as service]
             [schema.core :as s]
             [buddy.hashers :as hashers]
-            [pigeon-backend.dao.roomgroup-dao :as roomgroup-dao]
+            [pigeon-backend.dao.participant-dao :as participant-dao]
             [schema-generators.generators :as g]
             [schema-generators.complete :as c]
             [pigeon-backend.services.room-service :as room-service]))
 
-(deftest roomgroup-test
+(deftest participant-test
   (facts "User should be able to add himself to room"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
-        (let [input (g/generate service/AddRoomgroup)
+        (let [input (g/generate service/AddParticipant)
               output (c/complete input service/Model)
               expected output]
-          (with-redefs [roomgroup-dao/create! (fn [_ _] output)]
-            (service/add-roomgroup! input) => expected)))))
+          (with-redefs [participant-dao/create! (fn [_ _] output)]
+            (service/add-participant! input) => expected)))))
   (facts "User should be able to remove himself from room")) ;; todo next
