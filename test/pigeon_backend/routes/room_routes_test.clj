@@ -18,7 +18,7 @@
   (facts
     (with-state-changes [(before :facts (empty-and-create-tables))]
 
-      (fact ":post"
+      (fact "Create a room"
         (let [room     {:name "Room!"}
               response (new-room room)
               body     (parse-body (:body response))]
@@ -26,7 +26,7 @@
           body => (contains room
                             {:id integer?})))
 
-      (fact ":get nothing"
+      (fact "Get rooms (no rooms created)"
         (let [search-criteria nil
               response        (app (-> (mock/request :get "/api/v0/room")
                                        ;; TODO: shouldn't all search criteria be in the URL...?
@@ -37,7 +37,7 @@
           (:status response) => 200
           body => (contains [])))
 
-      (fact ":get one"
+      (fact "Get rooms (one room created)"
         (let [room            {:name "Room!"}
               _               (new-room room)
               search-criteria nil
@@ -51,7 +51,7 @@
           body => (contains [(contains room
                                        {:id integer?})])))
 
-      (fact ":get many"
+      (fact "Get rooms (many rooms created)"
         (let [room1           {:name "Room1!"}
               room2           {:name "Room2!"}
               _               (new-room room1)
