@@ -28,18 +28,18 @@
 
       (fact ":get nothing"
         (let [search-criteria nil
-              response (app (-> (mock/request :get "/api/v0/room")
-                                ;; TODO: shouldn't all search criteria be in the URL...?
-                                (mock/content-type "application/json")
-                                (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                                (mock/body (cheshire/generate-string search-criteria))))
-              body     (parse-body (:body response))]
+              response        (app (-> (mock/request :get "/api/v0/room")
+                                       ;; TODO: shouldn't all search criteria be in the URL...?
+                                       (mock/content-type "application/json")
+                                       (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
+                                       (mock/body (cheshire/generate-string search-criteria))))
+              body            (parse-body (:body response))]
           (:status response) => 200
           body => (contains [])))
 
       (fact ":get one"
-        (let [room {:name "Room!"}
-              _ (new-room room)
+        (let [room            {:name "Room!"}
+              _               (new-room room)
               search-criteria nil
               response        (app (-> (mock/request :get "/api/v0/room")
                                        (mock/content-type "application/json")
@@ -49,4 +49,20 @@
           (:status response) => 200
           body => (one-of coll?)
           body => (contains [(contains room
-                                       {:id integer?})]))))))
+                                       {:id integer?})])))
+
+      (fact ":get many"
+        (let [room1           {:name "Room1!"}
+              room2           {:name "Room2!"}
+              _               (new-room room1)
+              _               (new-room room2)
+              search-criteria nil
+              response        (app (-> (mock/request :get "/api/v0/room")
+                                       (mock/content-type "application/json")
+                                       (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
+                                       (mock/body (cheshire/generate-string search-criteria))))
+              body            (parse-body (:body response))]
+          (:status response) => 200
+          body => (two-of coll?)
+          body => (contains [(contains room1)
+                             (contains room2)]))))))
