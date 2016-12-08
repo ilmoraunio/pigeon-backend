@@ -12,6 +12,7 @@
             [pigeon-backend.dao.model :as model]))
 
 (def NewParticipant {:username String
+                     :name String
                      :room_id s/Int})
 
 (def participant-routes
@@ -25,11 +26,12 @@
       :summary "Join a room (not implemented)"
 
       (let [user (user-service/get-by-username
-                   (:username participant))]
-        (ok (-> participant
-              (dissoc :username)
-              (assoc :id 1)
-              (assoc :users_id (:id user))))))
+                   (:username participant))
+            arguments (-> participant
+                          (dissoc :username)
+                          (assoc :users_id (:id user)))
+            participant (participant-service/add-participant! arguments)]
+        (ok participant)))
     (GET "/" []
       ;;:body [participant participant-service/QueryInput]
       :summary "Show participants in room or rooms (not implemented)"

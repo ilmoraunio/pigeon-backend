@@ -22,6 +22,7 @@
         (let [_           (new-account)
               room        (parse-body (:body (new-room)))
               participant {:room_id  (:id room)
+                           :name "Participant!"
                            :username "Username!"}
               response    (new-participant participant)
               body        (parse-body (:body response))]
