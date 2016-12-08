@@ -7,7 +7,10 @@
             [pigeon-backend.services.user-service :as service]
             [schema.core :as s]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]
-            [buddy.hashers :as hashers])
+            [buddy.hashers :as hashers]
+            [schema-generators.generators :as g]
+            [schema-generators.complete :as c]
+            [pigeon-backend.dao.user-dao :as user-dao])
   (import org.postgresql.util.PSQLException))
 
 (def user-dto {:username "foobar"
@@ -44,6 +47,14 @@
       (fact "Unsuccess!"
         (let [returned-dto (service/user-create! user-dto)]
           (service/check-credentials wrong-credentials-dto) => false))))
+  (facts "Get-by-username"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact
+        (let [username (g/generate String)
+              output (c/complete {:username username} service/Model)
+              expected output]
+          (with-redefs [user-dao/get-by-username (fn [_ _] output)]
+            (service/get-by-username username) => expected)))))
   (facts "Service: update user"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Success"
