@@ -21,9 +21,9 @@
     :tags ["participant"]
 
     (POST "/" []
-      ;;:return participant-service/Model
+      :return participant-service/Model
       :body [participant NewParticipant]
-      :summary "Join a room (not implemented)"
+      :summary "Join a room"
 
       (let [user (user-service/get-by-username
                    (:username participant))
@@ -34,7 +34,7 @@
         (ok participant)))
     (GET "/" []
       ;;:body [participant participant-service/QueryInput]
-      :summary "Show participants in room or rooms (not implemented)"
+      :summary "Show participant(s) in room (not implemented)"
       (not-implemented))
     (PUT "/" []
       ;;:return participant-service/Model
