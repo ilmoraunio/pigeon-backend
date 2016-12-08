@@ -52,6 +52,7 @@
       (sql-user-create<! map-args {:connection tx})) tx user))
 
 (s/defn get-by-username [tx username :- String]
+  {:post [(s/validate Model %)]}
   (let [arguments {:username username}]
     (first
       (execute-sql-or-handle-exception
