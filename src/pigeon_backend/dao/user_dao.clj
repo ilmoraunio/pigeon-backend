@@ -51,6 +51,14 @@
     (fn [tx map-args]
       (sql-user-create<! map-args {:connection tx})) tx user))
 
+(s/defn get-by-username [tx username :- String]
+  {:post [(s/validate Model %)]}
+  (let [arguments {:username username}]
+    (first
+      (execute-sql-or-handle-exception
+        (fn [tx map-args]
+          (sql-get-by-username map-args {:connection tx})) tx arguments))))
+
 (s/defn get-by [tx user :- QueryInput] {:post [(s/validate QueryResult %)]}
   (let [query-data (merge (initialize-query-data Model) user)]
     (execute-sql-or-handle-exception

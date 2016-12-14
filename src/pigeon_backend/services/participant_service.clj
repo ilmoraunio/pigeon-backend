@@ -9,8 +9,8 @@
             [pigeon-backend.dao.participant-dao :as participant-dao]))
 
 (def AddParticipant {:room_id s/Int
-                   :name String
-                   :users_id s/Int})
+                     :name String
+                     :users_id s/Int})
 
 (def Model participant-dao/Model)
 

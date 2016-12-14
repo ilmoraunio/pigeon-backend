@@ -20,5 +20,6 @@
                             {:username username
                              :password password})]
         (let [token (jws/sign {:user username} (env :jws-shared-secret))]
-          (ok {:session {:token token}}))
+          (ok {:session {:token token
+                         :username username}}))
         (unauthorized)))))

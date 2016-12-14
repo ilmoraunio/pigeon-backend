@@ -8,6 +8,8 @@
             [schema-tools.core :as st]
             [pigeon-backend.dao.user-dao :refer [New Existing ModelStripped LoginUser]]))
 
+(def Model user-dao/Model)
+
 (s/defn user-create! [dto :- New] {:post [(s/validate ModelStripped %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (let [user-with-hashed-password
@@ -23,6 +25,11 @@
         (if (nil? user-model)
           false
           (hashers/check password (:password user-model))))))
+
+(s/defn get-by-username [username :- String]
+  {:post [(s/validate Model %)]}
+  (jdbc/with-db-transaction [tx db-spec]
+    (user-dao/get-by-username tx username)))
 
 (s/defn user-update! [user :- Existing]
   {:post [(s/validate ModelStripped %)]}

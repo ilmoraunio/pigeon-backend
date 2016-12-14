@@ -4,12 +4,16 @@
             [ring.util.http-status :as status]
             [schema.core :as s]
             [pigeon-backend.services.participant-service :as participant-service]
+            [pigeon-backend.services.user-service :as user-service]
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
             [environ.core :refer [env]]
             [pigeon-backend.middleware :refer [wrap-auth]]
-            [pigeon-backend.dao.participant-dao :as participant-dao]
             [pigeon-backend.dao.model :as model]))
+
+(def NewParticipant {:username String
+                     :name String
+                     :room_id s/Int})
 
 (def participant-routes
   (context "/participant" []
@@ -17,13 +21,20 @@
     :tags ["participant"]
 
     (POST "/" []
-      ;;:return participant-service/Model
-      ;;:body [participant participant-service/New]
-      :summary "Join a room (not implemented)"
-      (not-implemented))
+      :return participant-service/Model
+      :body [participant NewParticipant]
+      :summary "Join a room"
+
+      (let [user (user-service/get-by-username
+                   (:username participant))
+            arguments (-> participant
+                          (dissoc :username)
+                          (assoc :users_id (:id user)))
+            participant (participant-service/add-participant! arguments)]
+        (ok participant)))
     (GET "/" []
       ;;:body [participant participant-service/QueryInput]
-      :summary "Show participants in room or rooms (not implemented)"
+      :summary "Show participant(s) in room (not implemented)"
       (not-implemented))
     (PUT "/" []
       ;;:return participant-service/Model
