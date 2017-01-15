@@ -65,4 +65,15 @@
           (:status response) => 200
           body => (two-of coll?)
           body => (contains [(contains room1)
-                             (contains room2)]))))))
+                             (contains room2)])))
+
+      (fact "Not joined to room by default"
+        (let [_               (new-room {:name "Room!"})
+              search-criteria nil
+              response        (app (-> (mock/request :get "/api/v0/room")
+                                     (mock/content-type "application/json")
+                                     (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
+                                     (mock/body (cheshire/generate-string search-criteria))))
+              body            (parse-body (:body response))]
+          (:status response) => 200
+          body => (contains [(contains {:joined false})]))))))
