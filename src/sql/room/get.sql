@@ -7,7 +7,8 @@ SELECT Room.id,
        (EXISTS (SELECT Users.username FROM Participant
                 INNER JOIN Users
                 ON Users.id = Participant.users_id
-                WHERE ((:username)::text IS NULL OR Users.username = (:username)::text))) AS joined
+                WHERE Room.id = Participant.room_id
+                  AND Users.username = (:username)::text)) AS joined
 FROM Room
 WHERE ((:name)::varchar(1000) IS NULL OR Room.name = (:name)::varchar(1000))
   AND ((:created)::timestamp IS NULL OR Room.created = (:created)::timestamp)
