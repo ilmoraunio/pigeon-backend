@@ -69,4 +69,19 @@
                                      (mock/body (cheshire/generate-string search-criteria))))
               body            (parse-body (:body response))]
           (:status response) => 200
-          body => (contains [(contains {:joined false})]))))))
+          body => (contains [(contains {:joined false})])))
+
+      (fact "Joined to room when participant related to room exists"
+        (let [_                  (new-account)
+              room               (new-room {:name "Room!"})
+              _                  (new-participant {:room_id  (:id room)
+                                                   :name "Participant!"
+                                                   :username "Username!"})
+              search-criteria    nil
+              response           (app (-> (mock/request :get "/api/v0/room")
+                                          (mock/content-type "application/json")
+                                          (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
+                                          (mock/body (cheshire/generate-string search-criteria))))
+              body               (parse-body (:body response))]
+          (:status response) => 200
+          body => (contains [(contains {:joined true})]))))))
