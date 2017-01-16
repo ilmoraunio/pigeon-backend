@@ -7,14 +7,6 @@
             [midje.sweet :refer :all]
             [schema.core :as s]))
 
-(defn new-account
-  ([input] (app (-> (mock/request :put "/api/v0/user")
-                    (mock/content-type "application/json")
-                    (mock/body (cheshire/generate-string input)))))
-  ([] (new-account {:username "Username!"
-                    :password "hunter2"
-                    :full_name "Real name!"})))
-
 (deftest registration-routes-test
   (facts
     (with-state-changes [(before :facts (empty-and-create-tables))]

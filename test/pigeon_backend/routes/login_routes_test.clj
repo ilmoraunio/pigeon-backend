@@ -5,8 +5,7 @@
             [ring.mock.request :as mock]
             [pigeon-backend.test-util :refer :all]
             [midje.sweet :refer :all]
-            [schema.core :as s]
-            [pigeon-backend.routes.registration-routes-test :refer [new-account]]))
+            [schema.core :as s]))
 
 (deftest login-routes-test
   (facts

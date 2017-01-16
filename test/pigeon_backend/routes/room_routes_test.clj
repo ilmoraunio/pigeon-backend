@@ -7,13 +7,6 @@
             [midje.sweet :refer :all]
             [schema.core :as s]))
 
-(defn new-room
-  ([input] (app (-> (mock/request :post "/api/v0/room")
-                    (mock/content-type "application/json")
-                    (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                    (mock/body (cheshire/generate-string input)))))
-  ([] (new-room {:name "Room!"})))
-
 (deftest room-routes-test
   (facts
     (with-state-changes [(before :facts (empty-and-create-tables))]

@@ -10,7 +10,9 @@
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
             [environ.core :refer [env]]
-            [clojure.java.jdbc :as jdbc]))
+            [clojure.java.jdbc :as jdbc]
+            [ring.mock.request :as mock]
+            [pigeon-backend.handler :refer [app]]))
 
 (defn empty-and-create-tables []
   (empty-all-tables db-spec)
@@ -61,3 +63,26 @@
                       (env :jws-shared-secret)))
 
 (def clj-timestamp #"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{1,3}Z")
+
+;; route requests: new
+
+(defn new-room
+  ([input] (app (-> (mock/request :post "/api/v0/room")
+                  (mock/content-type "application/json")
+                  (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
+                  (mock/body (cheshire/generate-string input)))))
+  ([] (new-room {:name "Room!"})))
+
+(defn new-account
+  ([input] (app (-> (mock/request :put "/api/v0/user")
+                  (mock/content-type "application/json")
+                  (mock/body (cheshire/generate-string input)))))
+  ([] (new-account {:username "Username!"
+                    :password "hunter2"
+                    :full_name "Real name!"})))
+
+(defn new-participant
+  ([input] (app (-> (mock/request :post "/api/v0/participant")
+                  (mock/content-type "application/json")
+                  (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
+                  (mock/body (cheshire/generate-string input))))))
