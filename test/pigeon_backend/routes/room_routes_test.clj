@@ -73,11 +73,11 @@
 
       (fact "Joined to room when participant related to room exists"
         (let [_                  (new-account)
-              room               (new-room {:name "Room!"})
+              room               (parse-body (:body (new-room {:name "Room!"})))
               _                  (new-participant {:room_id  (:id room)
                                                    :name "Participant!"
                                                    :username "Username!"})
-              search-criteria    nil
+              search-criteria    {:username "Username!"}
               response           (app (-> (mock/request :get "/api/v0/room")
                                           (mock/content-type "application/json")
                                           (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
