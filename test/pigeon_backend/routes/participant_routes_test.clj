@@ -5,15 +5,7 @@
             [ring.mock.request :as mock]
             [pigeon-backend.test-util :refer :all]
             [midje.sweet :refer :all]
-            [schema.core :as s]
-            [pigeon-backend.routes.room-routes-test :refer [new-room]]
-            [pigeon-backend.routes.registration-routes-test :refer [new-account]]))
-
-(defn new-participant
-  ([input] (app (-> (mock/request :post "/api/v0/participant")
-                    (mock/content-type "application/json")
-                    (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                    (mock/body (cheshire/generate-string input))))))
+            [schema.core :as s]))
 
 (deftest participant-routes-test
   (facts

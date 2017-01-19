@@ -14,13 +14,14 @@
 (s/defschema Model (into model/Model
                          {:name String}))
 
-(s/defschema ServiceQueryInput {(s/optional-key :id) (s/maybe s/Int)
-                                (s/optional-key :name) (s/maybe String)})
+(s/defschema ServiceQueryInput {(s/optional-key :id)       (s/maybe s/Int)
+                                (s/optional-key :name)     (s/maybe String)
+                                (s/optional-key :username) (s/maybe String)})
 
 (s/defschema QueryInput (s/maybe (into model/QueryInput
                                        ServiceQueryInput)))
 
-(s/defschema QueryResult [(s/maybe Model)])
+(s/defschema QueryResult [(s/maybe (into Model {:joined Boolean}))])
 
 (defquery sql-room-create<! "sql/room/create.sql"
   {:connection db-spec})
