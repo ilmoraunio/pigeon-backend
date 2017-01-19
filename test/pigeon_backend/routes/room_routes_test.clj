@@ -20,12 +20,10 @@
                             {:id integer?})))
 
       (fact "Get rooms (no rooms created)"
-        (let [search-criteria nil
-              response        (app (-> (mock/request :get "/api/v0/room")
+        (let [response        (app (-> (mock/request :get "/api/v0/room")
                                        ;; TODO: shouldn't all search criteria be in the URL...?
                                        (mock/content-type "application/json")
-                                       (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                                       (mock/body (cheshire/generate-string search-criteria))))
+                                       (mock/header "Authorization" (str "Bearer " (create-test-login-token)))))
               body            (parse-body (:body response))]
           (:status response) => 200
           body => (contains [])))
@@ -33,11 +31,9 @@
       (fact "Get rooms (one room created)"
         (let [room            {:name "Room!"}
               _               (new-room room)
-              search-criteria nil
               response        (app (-> (mock/request :get "/api/v0/room")
                                        (mock/content-type "application/json")
-                                       (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                                       (mock/body (cheshire/generate-string search-criteria))))
+                                       (mock/header "Authorization" (str "Bearer " (create-test-login-token)))))
               body            (parse-body (:body response))]
           (:status response) => 200
           body => (one-of coll?)
@@ -49,11 +45,9 @@
               room2           {:name "Room2!"}
               _               (new-room room1)
               _               (new-room room2)
-              search-criteria nil
               response        (app (-> (mock/request :get "/api/v0/room")
                                        (mock/content-type "application/json")
-                                       (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                                       (mock/body (cheshire/generate-string search-criteria))))
+                                       (mock/header "Authorization" (str "Bearer " (create-test-login-token)))))
               body            (parse-body (:body response))]
           (:status response) => 200
           body => (two-of coll?)
@@ -62,11 +56,9 @@
 
       (fact "Not joined to room by default"
         (let [_               (new-room {:name "Room!"})
-              search-criteria nil
               response        (app (-> (mock/request :get "/api/v0/room")
                                      (mock/content-type "application/json")
-                                     (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                                     (mock/body (cheshire/generate-string search-criteria))))
+                                     (mock/header "Authorization" (str "Bearer " (create-test-login-token)))))
               body            (parse-body (:body response))]
           (:status response) => 200
           body => (contains [(contains {:joined false})])))
@@ -77,11 +69,9 @@
               _                  (new-participant {:room_id  (:id room)
                                                    :name "Participant!"
                                                    :username "Username!"})
-              search-criteria    {:username "Username!"}
-              response           (app (-> (mock/request :get "/api/v0/room")
+              response           (app (-> (mock/request :get "/api/v0/room?username=Username!")
                                           (mock/content-type "application/json")
-                                          (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                                          (mock/body (cheshire/generate-string search-criteria))))
+                                          (mock/header "Authorization" (str "Bearer " (create-test-login-token)))))
               body               (parse-body (:body response))]
           (:status response) => 200
           body => (contains [(contains {:joined true})]))))))
