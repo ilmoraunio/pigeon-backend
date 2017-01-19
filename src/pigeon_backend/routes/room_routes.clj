@@ -22,6 +22,6 @@
       :summary "Create a room"
       (ok (room-service/room-create! room)))
     (GET "/" []
-      :body [room room-dao/QueryInput]
+      :query [room room-dao/QueryInput]
       :summary "Get rooms"
       (ok (room-service/room-get-by room)))))
