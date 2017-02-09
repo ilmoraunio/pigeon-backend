@@ -55,6 +55,16 @@
               (participant tx {:room_id 1
                              :name (str "foobar" n)}))
             (dao/get-by tx nil) => (two-of coll?))))
+      (fact "Multiple from same room (excluding rest)"
+        (jdbc/with-db-transaction [tx db-spec]
+          (without-fk-constraints tx
+            (participant tx {:room_id 1
+                             :name "foobar 1"})
+            (participant tx {:room_id 1
+                             :name "foobar 2"})
+            (participant tx {:room_id 2
+                             :name "foobar 3"})
+            (dao/get-by tx {:room_id 1}) => (two-of coll?))))
       (fact "Filtering"
         (jdbc/with-db-transaction [tx db-spec]
           (without-fk-constraints tx
