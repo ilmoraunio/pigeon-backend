@@ -6,9 +6,9 @@
             [pigeon-backend.dao.dao-util :refer [initialize-query-data]]
             [pigeon-backend.dao.model :as model]))
 
-(def common {:room_id s/Int
+(def common {:room_id String
              :name String
-             :users_id (s/maybe s/Int)})
+             :username (s/maybe String)})
 
 (def New common)
 
@@ -16,9 +16,9 @@
 
 (def Model (into model/Model common))
 
-(def ^{:private true} QueryInput {(s/optional-key :room_id) (s/maybe s/Int)
+(def ^{:private true} QueryInput {(s/optional-key :room_id) (s/maybe String)
                                   (s/optional-key :name) (s/maybe String)
-                                  (s/optional-key :users_id) (s/maybe s/Int)})
+                                  (s/optional-key :username) (s/maybe String)})
 
 (def QueryInput (s/maybe (into model/QueryInput
                                QueryInput)))

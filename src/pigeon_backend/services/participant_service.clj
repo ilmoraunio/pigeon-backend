@@ -8,9 +8,9 @@
             [schema-tools.core :as st]
             [pigeon-backend.dao.participant-dao :as participant-dao]))
 
-(def AddParticipant {:room_id s/Int
+(def AddParticipant {:room_id String
                      :name String
-                     :users_id s/Int})
+                     :username String})
 
 (def Model participant-dao/Model)
 

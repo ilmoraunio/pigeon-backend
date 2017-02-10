@@ -13,7 +13,7 @@
 
 (def NewParticipant {:username String
                      :name String
-                     :room_id s/Int})
+                     :room_id String})
 
 (def participant-routes
   (context "/participant" []
@@ -25,13 +25,7 @@
       :body [participant NewParticipant]
       :summary "Join a room"
 
-      (let [user (user-service/get-by-username
-                   (:username participant))
-            arguments (-> participant
-                          (dissoc :username)
-                          (assoc :users_id (:id user)))
-            participant (participant-service/add-participant! arguments)]
-        (ok participant)))
+      (ok (participant-service/add-participant! participant)))
     (GET "/" []
       ;;:body [participant participant-service/QueryInput]
       :summary "Show participant(s) in room (not implemented)"

@@ -19,6 +19,6 @@
               response    (new-participant participant)
               body        (parse-body (:body response))]
           (:status response) => 200
-          body => (contains {:id integer?}
-                            {:room_id integer?}
-                            {:users_id integer?}))))))
+          body => (contains {:id string?}
+                            {:room_id string?}
+                            {:username string?}))))))

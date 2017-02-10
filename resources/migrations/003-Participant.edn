@@ -1,12 +1,12 @@
-{:up ["CREATE TABLE Participant (id bigserial PRIMARY KEY,
-                               Room_id bigint,
-                               name varchar(1000),
-                               users_id bigint,
+{:up ["CREATE TABLE Participant (id text PRIMARY KEY default gen_random_uuid(),
+                               Room_id text,
+                               name varchar(200),
+                               username varchar(200),
                                created timestamp default NOW(),
                                updated timestamp default NOW(),
                                version integer default 0,
                                deleted boolean default false,
                                FOREIGN KEY(Room_id) REFERENCES Room(id),
-                               FOREIGN KEY(users_id) REFERENCES users(id),
+                               FOREIGN KEY(username) REFERENCES users(username),
                                UNIQUE(Room_id, name));"]
- :down ["DROP TABLE Participant;"]}
+ :down [""]}

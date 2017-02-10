@@ -17,8 +17,7 @@
                :full_name "Foo Bar"
                :password "hunter2"})
 
-(def expected-user-dto (contains {:id integer?} 
-                                 {:username "foobar"}
+(def expected-user-dto (contains {:username "foobar"}
                                  {:full_name "Foo Bar"}
                                  {:created #(instance? java.util.Date %)}
                                  {:updated #(instance? java.util.Date %)}
@@ -58,12 +57,11 @@
   (facts "Service: update user"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Success"
-        (let [{id :id} (service/user-create! user-dto)]
-          (service/user-update! (assoc user-dto :id id
-                                                :username "barfoo"))
-          => (contains {:username "barfoo"})))))
+        (let [_ (service/user-create! user-dto)]
+          (service/user-update! (assoc user-dto :full_name "Bar Foo"))
+          => (contains {:full_name "Bar Foo"})))))
   (facts "Service: delete user"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Success"
-        (let [{id :id} (service/user-create! user-dto)]
-          (service/user-delete! (assoc user-dto :id id)))))))
+        (let [_ (service/user-create! user-dto)]
+          (service/user-delete! user-dto))))))

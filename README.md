@@ -27,6 +27,11 @@ Make sure to set the following environment variable(s):
 PORT
 ```
 
+## On database
+
+- Database runs on Postgres 9.4 and assumes `CREATE EXTENSION pgcrypto` has been run (for default id generators).
+- Run `psql -d pigeon-backend -U pigeon-backend` as `postgres`, on database run `ALTER USER "pigeon-backend" WITH SUPERUSER`
+
 ## License
 
 Copyright © Ilmo Raunio

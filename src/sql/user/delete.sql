@@ -1,3 +1,3 @@
 UPDATE users
 SET deleted = true
-WHERE id = (:id)::bigint;
+WHERE username = (:username)::varchar(200);

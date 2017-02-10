@@ -1,5 +1,4 @@
 UPDATE users
-SET username = (:username)::text,
-    full_name = (:full_name)::text,
+SET full_name = (:full_name)::varchar(200),
     password = (:password)::text
-WHERE id = (:id)::bigint;
+WHERE username = (:username)::text;

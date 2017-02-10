@@ -14,7 +14,7 @@
 (s/defschema Model (into model/Model
                          {:name String}))
 
-(s/defschema ServiceQueryInput {(s/optional-key :id)       (s/maybe s/Int)
+(s/defschema ServiceQueryInput {(s/optional-key :id)       (s/maybe String)
                                 (s/optional-key :name)     (s/maybe String)
                                 (s/optional-key :username) (s/maybe String)})
 

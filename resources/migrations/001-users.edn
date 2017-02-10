@@ -1,6 +1,8 @@
-{:up ["CREATE TABLE users (id bigserial PRIMARY KEY,
-                           username text unique,
-                           full_name text,
+{:up ["CREATE TABLE users (username varchar(200) PRIMARY KEY,
+                           full_name varchar(200),
                            password text,
-                           deleted boolean default false);"]
- :down ["DROP TABLE users;"]}
+                           deleted boolean default false,
+                           created timestamp default NOW(),
+                           updated timestamp default NOW(),
+                           version integer default 0);"]
+ :down [""]}
