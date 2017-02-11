@@ -9,7 +9,6 @@ test:
   override:
     - lein midje
     - lein uberjar
-# session_replication_role is not allowed in CircleCI
 # TODO: figure out a way to run coveralls as a lein task and maybe fix the problem
 #deployment:
 #  coverage:
