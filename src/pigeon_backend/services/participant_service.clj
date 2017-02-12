@@ -18,3 +18,7 @@
   {:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (participant-dao/create! tx add-participant-data)))
+
+(s/defn get-by-room [room-id :- String]
+  (jdbc/with-db-transaction [tx db-spec]
+    (participant-dao/get-by tx {:room_id room-id})))

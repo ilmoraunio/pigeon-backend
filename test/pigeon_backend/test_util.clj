@@ -57,8 +57,10 @@
              :expires timestamp}
             jws-shared-secret))
 
+(def test-user "foobar")
+
 (defn create-test-login-token []
-  (create-login-token "foobar"
+  (create-login-token test-user
                       (str (t/plus (t/now) (t/hours 4)))
                       (env :jws-shared-secret)))
 

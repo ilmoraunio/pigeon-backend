@@ -8,7 +8,7 @@
             [schema.core :as s]
             [pigeon-backend.test-util :refer [empty-and-create-tables]]
             [buddy.hashers :as hashers]
-            [pigeon-backend.dao.room-dao-test :as room-dao])
+            [pigeon-backend.dao.room-dao-test :as room-dao-test])
   (import org.postgresql.util.PSQLException))
 
 (def expected (contains {:name "Huone"}
@@ -33,12 +33,12 @@
   (facts "Service: room read"
     (with-state-changes [(before :facts (empty-and-create-tables))]
         (fact "Get one"
-          (let [{id1 :id room-name-1 :name} (room-dao/room)]
+          (let [{id1 :id room-name-1 :name} (room-dao-test/room)]
             (service/room-get-by {:name room-name-1}) => (contains [(contains {:name room-name-1})])))
         (fact "Get multiple"
-          (let [{id1 :id room-name-1 :name} (room-dao/room)
-                {id2 :id room-name-2 :name} (room-dao/room {:name "Pigeon room 2"})]
+          (let [{id1 :id room-name-1 :name} (room-dao-test/room)
+                {id2 :id room-name-2 :name} (room-dao-test/room {:name "Pigeon room 2"})]
             (service/room-get-by nil) => (two-of coll?)))
         (fact "Get none"
-          (let [_ (room-dao/room)]
+          (let [_ (room-dao-test/room)]
             (service/room-get-by {:name "wrong name"}) => [])))))
