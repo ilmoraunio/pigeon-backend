@@ -6,7 +6,7 @@
             [schema.core :as s]
             [pigeon-backend.dao.model :as model]
             [schema-tools.core :as st]
-            [pigeon-backend.dao.participant-dao :as participant-dao]))
+            [pigeon-backend.dao.participant-dao :as participant-dao :refer [QueryResult]]))
 
 (def AddParticipant {:room_id String
                      :name String
@@ -20,5 +20,6 @@
     (participant-dao/create! tx add-participant-data)))
 
 (s/defn get-by-room [room-id :- String]
+  {:post [(s/validate QueryResult %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (participant-dao/get-by tx {:room_id room-id})))

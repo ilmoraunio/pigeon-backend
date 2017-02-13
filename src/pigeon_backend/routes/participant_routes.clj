@@ -9,7 +9,8 @@
             [clj-time.core :as t]
             [environ.core :refer [env]]
             [pigeon-backend.middleware :refer [wrap-auth]]
-            [pigeon-backend.dao.model :as model]))
+            [pigeon-backend.dao.model :as model]
+            [pigeon-backend.util :as util]))
 
 (def NewParticipant {:username String
                      :name String
@@ -19,6 +20,7 @@
   (context "/participant" []
     :middleware [wrap-auth]
     :tags ["participant"]
+    :summary "Requires API token"
 
     (POST "/" []
       :return participant-service/Model
@@ -26,10 +28,11 @@
       :summary "Join a room"
 
       (ok (participant-service/add-participant! participant)))
-    (GET "/" []
-      ;;:body [participant participant-service/QueryInput]
-      :summary "Show participant(s) in room (not implemented)"
-      (not-implemented))
+    (GET "/" request
+      :query [participant {:room_id String}]
+      :summary "Show participant(s) in room"
+      ;; TODO: (util/parse-auth-key request) as get-by-room argument
+      (participant-service/get-by-room (:room_id participant)))
     (PUT "/" []
       ;;:return participant-service/Model
       ;;:body [room room-dao/Existing]

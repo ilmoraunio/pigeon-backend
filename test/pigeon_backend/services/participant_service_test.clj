@@ -39,11 +39,11 @@
               expected output]
           (with-redefs [participant-dao/create! (fn [_ _] output)]
             (service/add-participant! input) => expected)))))
-  (facts "User should be able to list all participants in a room" ;; TODO: add users_id param to get-by-room
+  (facts "User should be able to list all participants in a room"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
         (let [room-id (g/generate String)
-              output (c/complete {:room-id room-id} service/Model)
+              output (c/complete [{:room_id room-id}] participant-dao/QueryResult)
               expected output]
           (with-redefs [participant-dao/get-by (fn [_ _] output)]
             (service/get-by-room room-id) => expected))))))
