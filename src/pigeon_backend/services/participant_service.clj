@@ -6,11 +6,28 @@
             [schema.core :as s]
             [pigeon-backend.dao.model :as model]
             [schema-tools.core :as st]
-            [pigeon-backend.dao.participant-dao :as participant-dao :refer [QueryResult]]))
+            [pigeon-backend.dao.participant-dao :as participant-dao :refer [QueryResult]]
+            [pigeon-backend.util :as util]
+            [buddy.sign.jws :as jws]
+            [environ.core :refer [env]]))
 
 (def AddParticipant {:room_id String
                      :name String
                      :username String})
+
+;; todo: test individually
+(s/defn authorize [room-id :- String,
+                   authorization :- util/AuthorizationKey]
+  (let [username (:user (jws/unsign authorization (env :jws-shared-secret)))
+        authorized? (jdbc/with-db-transaction [tx db-spec]
+                      (participant-dao/get-auth tx {:room_id room-id
+                                                    :username username}))]
+    (if (not authorized?)
+      (throw
+        (ex-info
+          "Authorization not granted"
+          {:type :authorization
+           :cause "User is not a room participant"})))))
 
 (def Model participant-dao/Model)
 
@@ -19,7 +36,9 @@
   (jdbc/with-db-transaction [tx db-spec]
     (participant-dao/create! tx add-participant-data)))
 
-(s/defn get-by-room [room-id :- String]
+(s/defn get-by-room [room-id :- String,
+                     authorization :- util/AuthorizationKey]
   {:post [(s/validate QueryResult %)]}
+  (authorize room-id authorization)
   (jdbc/with-db-transaction [tx db-spec]
     (participant-dao/get-by tx {:room_id room-id})))

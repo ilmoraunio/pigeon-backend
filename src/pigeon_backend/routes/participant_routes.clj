@@ -31,8 +31,8 @@
     (GET "/" request
       :query [participant {:room_id String}]
       :summary "Show participant(s) in room"
-      ;; TODO: (util/parse-auth-key request) as get-by-room argument
-      (participant-service/get-by-room (:room_id participant)))
+      (participant-service/get-by-room (:room_id participant)
+                                       (util/parse-auth-key request)))
     (PUT "/" []
       ;;:return participant-service/Model
       ;;:body [room room-dao/Existing]

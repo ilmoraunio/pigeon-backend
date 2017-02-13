@@ -28,7 +28,8 @@
             [schema-generators.complete :as c]
             [pigeon-backend.services.room-service :as room-service]
             [pigeon-backend.dao.room-dao-test :as room-dao-test]
-            [pigeon-backend.dao.participant-dao-test :as participant-dao-test]))
+            [pigeon-backend.dao.participant-dao-test :as participant-dao-test]
+            [pigeon-backend.util :as util]))
 
 (deftest participant-test
   (facts "User should be able to add himself to room"
@@ -45,5 +46,6 @@
         (let [room-id (g/generate String)
               output (c/complete [{:room_id room-id}] participant-dao/QueryResult)
               expected output]
-          (with-redefs [participant-dao/get-by (fn [_ _] output)]
-            (service/get-by-room room-id) => expected))))))
+          (with-redefs [participant-dao/get-by (fn [_ _] output)
+                        service/authorize (fn [_ _] nil)]
+            (service/get-by-room room-id (create-test-login-token)) => expected))))))

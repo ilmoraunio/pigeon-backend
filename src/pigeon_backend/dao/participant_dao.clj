@@ -25,10 +25,16 @@
 
 (def QueryResult [(s/maybe Model)])
 
+(def AuthInput {:room_id String
+                :username String})
+
 (defquery sql-participant-create<! "sql/participant/create.sql"
   {:connection db-spec})
 
 (defquery sql-participant-get "sql/participant/get.sql"
+  {:connection db-spec})
+
+(defquery sql-get-auth "sql/participant/get-auth.sql"
   {:connection db-spec})
 
 (s/defn create! [tx participant :- New] {:post [(s/validate Model %)]}
@@ -41,3 +47,11 @@
     (execute-sql-or-handle-exception
       (fn [tx map-args]
         (sql-participant-get map-args {:connection tx})) tx query-data)))
+
+;; todo: test individually
+(s/defn get-auth [tx auth :- AuthInput] {:post [(instance? Boolean %)]}
+  (let [[{is_authorized? :is_authorized}]
+          (execute-sql-or-handle-exception
+            (fn [tx map-args]
+              (sql-get-auth map-args {:connection tx})) tx auth)]
+    is_authorized?))
