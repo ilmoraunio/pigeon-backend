@@ -15,7 +15,6 @@
                      :name String
                      :username String})
 
-;; todo: test individually
 (s/defn authorize [room-id :- String,
                    authorization :- util/AuthorizationKey]
   (let [username (:user (jws/unsign authorization (env :jws-shared-secret)))

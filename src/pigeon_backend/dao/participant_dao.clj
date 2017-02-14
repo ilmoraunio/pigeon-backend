@@ -48,7 +48,6 @@
       (fn [tx map-args]
         (sql-participant-get map-args {:connection tx})) tx query-data)))
 
-;; todo: test individually
 (s/defn get-auth [tx auth :- AuthInput] {:post [(instance? Boolean %)]}
   (let [[{is_authorized? :is_authorized}]
           (execute-sql-or-handle-exception
