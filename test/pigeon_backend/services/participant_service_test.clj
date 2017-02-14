@@ -48,4 +48,12 @@
               expected output]
           (with-redefs [participant-dao/get-by (fn [_ _] output)
                         service/authorize (fn [_ _] nil)]
-            (service/get-by-room room-id (create-test-login-token)) => expected))))))
+            (service/get-by-room room-id (create-test-login-token)) => expected)))))
+  (facts "Simple authorization"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Doesn't authorize"
+        (with-redefs [participant-dao/get-auth (fn [_ _] false)]
+          (service/authorize anything (create-test-login-token)) => (throws Exception)))
+      (fact "Authorizes"
+        (with-redefs [participant-dao/get-auth (fn [_ _] true)]
+          (service/authorize anything (create-test-login-token)) => nil)))))

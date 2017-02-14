@@ -71,15 +71,15 @@
             (participant tx {:room_id "id-1"})
             (participant tx {:room_id "id-2"})
             (dao/get-by tx {:room_id "id-1"}) => (contains [(contains {:room_id "id-1"})]))))))
-  (facts "Simple authentication"
+  (facts "Simple authorization"
       (with-state-changes [(before :facts (empty-and-create-tables))]
-        (fact "Doesn't authenticate"
+        (fact "Doesn't authorize"
           (jdbc/with-db-transaction [tx db-spec]
             (without-fk-constraints tx
               (let [{username :username} (pigeon-backend.dao.user-dao-test/user)
                     {room-id :id} (pigeon-backend.dao.room-dao-test/room)]
                 (dao/get-auth tx {:room_id room-id :username "foobar"}) => false))))
-        (fact "Authenticates"
+        (fact "Authorizes"
           (jdbc/with-db-transaction [tx db-spec]
             (without-fk-constraints tx
               (let [{username :username} (pigeon-backend.dao.user-dao-test/user)
