@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [deftest]]
             [midje.sweet :refer :all]
             [pigeon-backend.dao.room-dao-test :as room-dao-test]
+            [pigeon-backend.dao.user-dao-test :as user-dao-test]
             [pigeon-backend.dao.participant-dao :as dao]
             [schema.core :as s]
             [pigeon-backend.db.config :refer [db-spec]]
@@ -76,14 +77,14 @@
         (fact "Doesn't authorize"
           (jdbc/with-db-transaction [tx db-spec]
             (without-fk-constraints tx
-              (let [{username :username} (pigeon-backend.dao.user-dao-test/user)
-                    {room-id :id} (pigeon-backend.dao.room-dao-test/room)]
+              (let [{username :username} (user-dao-test/user)
+                    {room-id :id} (room-dao-test/room)]
                 (dao/get-auth tx {:room_id room-id :username "foobar"}) => false))))
         (fact "Authorizes"
           (jdbc/with-db-transaction [tx db-spec]
             (without-fk-constraints tx
-              (let [{username :username} (pigeon-backend.dao.user-dao-test/user)
-                    {room-id :id} (pigeon-backend.dao.room-dao-test/room)
+              (let [{username :username} (user-dao-test/user)
+                    {room-id :id} (room-dao-test/room)
                     _ (pigeon-backend.dao.participant-dao-test/participant {:room_id room-id
                                                                           :name "participant name"
                                                                           :username "foobar"})]
