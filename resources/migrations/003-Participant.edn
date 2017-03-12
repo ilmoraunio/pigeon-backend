@@ -1,4 +1,4 @@
-{:up ["CREATE TABLE Participant (id text PRIMARY KEY default gen_random_uuid(),
+{:up ["CREATE TABLE Participant (id text PRIMARY KEY default uuid_generate_v1mc(),
                                Room_id text,
                                name varchar(200),
                                username varchar(200),

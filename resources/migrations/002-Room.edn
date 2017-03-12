@@ -1,4 +1,4 @@
-{:up ["CREATE TABLE Room (id text PRIMARY KEY default gen_random_uuid(),
+{:up ["CREATE TABLE Room (id text PRIMARY KEY default uuid_generate_v1mc(),
                           name varchar(200),
                           created timestamp default NOW(),
                           updated timestamp default NOW(),
