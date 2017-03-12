@@ -8,7 +8,7 @@
 
 (def room-data {:name "Pigeon room"})
 
-(def room-expected (contains {:id integer?}
+(def room-expected (contains {:id string?}
                              {:name "Pigeon room"}
                              {:created #(instance? java.util.Date %)}
                              {:updated #(instance? java.util.Date %)}

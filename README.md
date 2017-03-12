@@ -27,6 +27,10 @@ Make sure to set the following environment variable(s):
 PORT
 ```
 
+## On database
+
+- Run `psql -d pigeon-backend -U pigeon-backend` as `postgres`, on database run `ALTER USER "pigeon-backend" WITH SUPERUSER`
+
 ## License
 
 Copyright © Ilmo Raunio

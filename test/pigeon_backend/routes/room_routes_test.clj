@@ -17,7 +17,7 @@
               body     (parse-body (:body response))]
           (:status response) => 200
           body => (contains room
-                            {:id integer?})))
+                            {:id string?})))
 
       (fact "Get rooms (no rooms created)"
         (let [response        (app (-> (mock/request :get "/api/v0/room")
@@ -38,7 +38,7 @@
           (:status response) => 200
           body => (one-of coll?)
           body => (contains [(contains room
-                                       {:id integer?})])))
+                                       {:id string?})])))
 
       (fact "Get rooms (many rooms created)"
         (let [room1           {:name "Room1!"}

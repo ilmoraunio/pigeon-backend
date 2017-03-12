@@ -1,8 +1,8 @@
-{:up ["CREATE TABLE Room (id bigserial PRIMARY KEY,
-                          name varchar(1000),
+{:up ["CREATE TABLE Room (id text PRIMARY KEY default uuid_generate_v1mc(),
+                          name varchar(200),
                           created timestamp default NOW(),
                           updated timestamp default NOW(),
                           version integer default 0,
                           deleted boolean default false,
                           UNIQUE(name));"]
- :down ["DROP TABLE Room;"]}
+ :down [""]}

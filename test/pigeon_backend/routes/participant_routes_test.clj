@@ -19,6 +19,25 @@
               response    (new-participant participant)
               body        (parse-body (:body response))]
           (:status response) => 200
-          body => (contains {:id integer?}
-                            {:room_id integer?}
-                            {:users_id integer?}))))))
+          body => (contains {:id string?}
+                            {:room_id string?}
+                            {:username string?})))
+      (fact "List all participants for room"
+          (let [_              (new-account)
+                {room-id1 :id} (parse-body (:body (new-room)))
+                {room-id2 :id} (parse-body (:body (new-room {:name "Pigeon room 2"})))
+                _ (new-participant {:room_id room-id1
+                                    :name "Participant 1"
+                                    :username "Username!"})
+                _ (new-participant {:room_id room-id1
+                                    :name "Participant 2"
+                                    :username "Username!"})
+                _ (new-participant {:room_id room-id2
+                                    :name "Participant 3"
+                                    :username "Username!"})
+                response (app (-> (mock/request :get (str "/api/v0/participant?room_id=" room-id1))
+                                  (mock/content-type "application/json")
+                                  (mock/header "Authorization" (str "Bearer " (create-test-login-token)))))
+                body (parse-body (:body response))]
+            (:status response) => 200
+            body => (two-of coll?))))))

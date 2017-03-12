@@ -1,5 +1,4 @@
-SELECT users.id,
-       users.username,
+SELECT users.username,
        users.full_name,
        users.password,
        users.created,
@@ -7,8 +6,8 @@ SELECT users.id,
        users.version,
        users.deleted
 FROM users
-WHERE ((:username)::text IS NULL OR users.username = (:username)::text)
-  AND ((:full_name)::text IS NULL OR users.full_name = (:full_name)::text)
+WHERE ((:username)::varchar(200) IS NULL OR users.username = (:username)::varchar(200))
+  AND ((:full_name)::varchar(200) IS NULL OR users.full_name = (:full_name)::varchar(200))
   AND ((:password)::text IS NULL OR users.password = (:password)::text)
   AND ((:created)::timestamp IS NULL OR users.created = (:created)::timestamp)
   AND ((:updated)::timestamp IS NULL OR users.updated = (:updated)::timestamp)

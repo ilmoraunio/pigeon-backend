@@ -1,7 +1,8 @@
 (ns pigeon-backend.middleware
   (require [buddy.sign.jws :as jws]
            [pigeon-backend.services.exception-util :refer [handle-exception-info]]
-           [environ.core :refer [env]]))
+           [environ.core :refer [env]]
+           [pigeon-backend.util :refer :all]))
 
 (def ^{:private true} authorizable-http-methods #{:get :head :post :put :delete})
 
@@ -18,7 +19,7 @@
             (handle-exception-info
               (ex-info "Not logged in" {:type :validation
                                         :cause :signature}) {} request)
-            (let [token (second (re-find #"Bearer (.*?)$" (get headers "authorization")))]
+            (let [token (parse-auth-key request)]
               (if (or (empty? token) (< (count token) 3))
                 (handle-exception-info
                   (ex-info "Not logged in" {:type :validation

@@ -1,2 +1,2 @@
 INSERT INTO Room (name)
-VALUES ((:name)::varchar(1000));
+VALUES ((:name)::varchar(200));

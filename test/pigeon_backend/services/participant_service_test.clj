@@ -26,7 +26,10 @@
             [pigeon-backend.dao.participant-dao :as participant-dao]
             [schema-generators.generators :as g]
             [schema-generators.complete :as c]
-            [pigeon-backend.services.room-service :as room-service]))
+            [pigeon-backend.services.room-service :as room-service]
+            [pigeon-backend.dao.room-dao-test :as room-dao-test]
+            [pigeon-backend.dao.participant-dao-test :as participant-dao-test]
+            [pigeon-backend.util :as util]))
 
 (deftest participant-test
   (facts "User should be able to add himself to room"
@@ -36,4 +39,21 @@
               output (c/complete input service/Model)
               expected output]
           (with-redefs [participant-dao/create! (fn [_ _] output)]
-            (service/add-participant! input) => expected))))))
+            (service/add-participant! input) => expected)))))
+  (facts "User should be able to list all participants in a room"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact
+        (let [room-id (g/generate String)
+              output (c/complete [{:room_id room-id}] participant-dao/QueryResult)
+              expected output]
+          (with-redefs [participant-dao/get-by (fn [_ _] output)
+                        service/authorize (fn [_ _] nil)]
+            (service/get-by-room room-id (create-test-login-token)) => expected)))))
+  (facts "Simple authorization"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Doesn't authorize"
+        (with-redefs [participant-dao/get-auth (fn [_ _] false)]
+          (service/authorize anything (create-test-login-token)) => (throws Exception)))
+      (fact "Authorizes"
+        (with-redefs [participant-dao/get-auth (fn [_ _] true)]
+          (service/authorize anything (create-test-login-token)) => nil)))))

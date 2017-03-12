@@ -12,14 +12,13 @@
                :full_name "Foo Bar"
                :password "hunter2"})
 
-(def user-data-expected (contains {:id integer?} 
-                                 {:username "foobar"}
-                                 {:full_name "Foo Bar"}
-                                 {:password "hunter2"}
-                                 {:created #(instance? java.util.Date %)}
-                                 {:updated #(instance? java.util.Date %)}
-                                 {:version 0}
-                                 {:deleted false}))
+(def user-data-expected (contains {:username "foobar"}
+                                  {:full_name "Foo Bar"}
+                                  {:password "hunter2"}
+                                  {:created #(instance? java.util.Date %)}
+                                  {:updated #(instance? java.util.Date %)}
+                                  {:version 0}
+                                  {:deleted false}))
 
 (defn user
   ([] (let [data user-data]
@@ -51,21 +50,20 @@
       (fact
         (user)
         (dao/get-by-username db-spec "foobar")
-          => (contains {:id integer?}
-                       {:username "foobar"}))))
+          => (contains {:username "foobar"}))))
 
   (facts "Dao: user update"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (let [{id :id} (user)]
-          (dao/update! db-spec {:id id
-                                :username "barfoo"
+        (let [_ (user)]
+          (dao/update! db-spec {:username "foobar"
                                 :full_name "Bar Foo"
                                 :password "hunter2"}) 
-            => (contains {:username "barfoo"})))))
+            => (contains {:username "foobar"}
+                         {:full_name "Bar Foo"})))))
   (facts "Dao: user delete"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
-        (let [{id :id} (user)]
-           (dao/delete! db-spec {:id id}) => (contains {:deleted true})
+        (let [{username :username} (user)]
+           (dao/delete! db-spec {:username username}) => (contains {:deleted true})
            (dao/get-by db-spec nil) => [])))))

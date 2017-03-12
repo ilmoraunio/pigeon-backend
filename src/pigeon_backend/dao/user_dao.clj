@@ -10,9 +10,9 @@
                   :full_name String
                   :password String})
 
-(s/defschema Existing (into model/Existing New))
+(s/defschema Existing New)
 
-(s/defschema Model (into model/Model New))
+(s/defschema Model (into (dissoc model/Model :id) New))
 
 (s/defschema ModelStripped (dissoc Model :password))
 
@@ -59,7 +59,7 @@
         (fn [tx map-args]
           (sql-get-by-username map-args {:connection tx})) tx arguments))))
 
-(s/defn get-by [tx user :- QueryInput] {:post [(s/validate QueryResult %)]}
+  (s/defn get-by [tx user :- QueryInput] {:post [(s/validate QueryResult %)]}
   (let [query-data (merge (initialize-query-data Model) user)]
     (execute-sql-or-handle-exception
       (fn [tx map-args]

@@ -1,2 +1,2 @@
-INSERT INTO Participant (Room_id, name, users_id)
-VALUES ((:room_id)::bigint, (:name)::varchar(1000), (:users_id)::bigint);
+INSERT INTO Participant (Room_id, name, username)
+VALUES ((:room_id)::text, (:name)::varchar(200), (:username)::varchar(200));
