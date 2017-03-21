@@ -1,0 +1,13 @@
+{:up ["CREATE TABLE Message (id TEXT PRIMARY KEY DEFAULT uuid_generate_v1mc(),
+                             Room_id TEXT NOT NULL,
+                             sender TEXT NOT NULL,
+                             recipient TEXT NOT NULL,
+                             message TEXT NOT NULL,
+                             created timestamp default NOW(),
+                             updated timestamp default NOW(),
+                             version integer default 0,
+                             deleted boolean default false,
+                             FOREIGN KEY(Room_id) REFERENCES Room(id),
+                             FOREIGN KEY(sender) REFERENCES Participant(id),
+                             FOREIGN KEY(recipient) REFERENCES Participant(id));"]
+ :down ["DROP TABLE Message;"]}
