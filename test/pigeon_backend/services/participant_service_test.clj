@@ -31,6 +31,8 @@
             [pigeon-backend.dao.participant-dao-test :as participant-dao-test]
             [pigeon-backend.util :as util]))
 
+;; todo: get rid of mocking service tests and do proper integration tests instead
+
 (deftest participant-test
   (facts "User should be able to add himself to room"
     (with-state-changes [(before :facts (empty-and-create-tables))]
