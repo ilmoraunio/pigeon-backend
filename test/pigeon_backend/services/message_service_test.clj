@@ -62,4 +62,29 @@
           (service/add-message! {:room_id   room-id
                                  :sender    participant-1
                                  :recipient participant-2
-                                 :message "foobar"}) => (contains {:id model/id-pattern?}))))))
+                                 :message "foobar"}) => (contains {:id model/id-pattern?})))))
+  (facts "User should get a conversation (messages sent from self to another and vice versa)"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact
+        (let [user-1 "foo1"
+              user-2 "foo2"
+              _ (user-dao-test/user {:username user-1})
+              _ (user-dao-test/user {:username user-2})
+              {room-id :id} (room-dao-test/room)
+              {participant-1 :id} (participant-dao-test/participant {:room_id  room-id
+                                                                     :name     user-1
+                                                                     :username user-1})
+              {participant-2 :id} (participant-dao-test/participant {:room_id  room-id
+                                                                     :name     user-2
+                                                                     :username user-2})
+              _ (message {:room_id   room-id
+                          :sender    participant-1
+                          :recipient participant-2
+                          :message "foobar"})
+              _ (message {:room_id   room-id
+                          :sender    participant-2
+                          :recipient participant-1
+                          :message "foobar"})]
+          (service/get-messages {:room_id room-id
+                                 :sender participant-1
+                                 :recipient participant-2}) => (two-of coll?))))))

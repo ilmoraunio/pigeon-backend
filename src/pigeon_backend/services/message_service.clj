@@ -17,3 +17,8 @@
   {:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (message/create! tx input)))
+
+(s/defn get-messages [data :- message/GetMessages]
+  {:post [(s/validate message/QueryResult %)]}
+  (jdbc/with-db-transaction [tx db-spec]
+    (message/get-messages tx data)))

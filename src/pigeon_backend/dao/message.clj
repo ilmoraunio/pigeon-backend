@@ -12,11 +12,24 @@
              :message String})
 (def New common)
 (def Model (into model/Model common))
+(def GetMessages {:room_id   String
+                  :sender    String
+                  :recipient String})
+(def QueryResult [(s/maybe Model)])
 
-(defquery sql-participant-create<! "sql/message/create.sql"
+(defquery sql-message-create<! "sql/message/create.sql"
   {:connection db-spec})
 
-(s/defn create! [tx participant :- New] {:post [(s/validate Model %)]}
+(defquery sql-message-get-messages "sql/message/get-messages.sql"
+  {:connection db-spec})
+
+(s/defn create! [tx message :- New] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
-      (sql-participant-create<! map-args {:connection tx})) tx participant))
+      (sql-message-create<! map-args {:connection tx})) tx message))
+
+(s/defn get-messages [tx message :- GetMessages] {:post [(s/validate QueryResult %)]}
+  (let [query-data (merge (initialize-query-data Model) message)]
+    (execute-sql-or-handle-exception
+      (fn [tx map-args]
+        (sql-message-get-messages map-args {:connection tx})) tx query-data)))

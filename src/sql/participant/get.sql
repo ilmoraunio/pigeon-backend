@@ -7,7 +7,7 @@ SELECT Participant.id,
        Participant.version,
        Participant.deleted
 FROM Participant
-WHERE ((:room_id)::varchar(200) IS NULL OR Participant.Room_id = (:room_id)::varchar(200))
+WHERE ((:room_id)::text IS NULL OR Participant.Room_id = (:room_id)::text)
   AND ((:name)::varchar(200) IS NULL OR Participant.name = (:name)::varchar(200))
   AND ((:username)::varchar(200) IS NULL OR Participant.username = (:username)::varchar(200))
   AND ((:created)::timestamp IS NULL OR Participant.created = (:created)::timestamp)
