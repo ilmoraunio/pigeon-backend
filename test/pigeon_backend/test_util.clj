@@ -85,6 +85,12 @@
 
 (defn new-participant
   ([input] (app (-> (mock/request :post "/api/v0/participant")
-                  (mock/content-type "application/json")
-                  (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                  (mock/body (cheshire/generate-string input))))))
+                    (mock/content-type "application/json")
+                    (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
+                    (mock/body (cheshire/generate-string input))))))
+
+(defn new-message
+  ([input] (app (-> (mock/request :post "/api/v0/message")
+                    (mock/content-type "application/json")
+                    (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
+                    (mock/body (cheshire/generate-string input))))))

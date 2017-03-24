@@ -12,6 +12,7 @@
             [pigeon-backend.services.participant-service :as participant-service]))
 
 (def AddMessage message/common)
+(def GetMessages message/GetMessages)
 (def Model message/Model)
 
 (s/defn add-message! [input :- AddMessage
