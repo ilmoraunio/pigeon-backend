@@ -8,17 +8,22 @@
             [schema-tools.core :as st]
             [pigeon-backend.util :as util]
             [buddy.sign.jws :as jws]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [pigeon-backend.services.participant-service :as participant-service]))
 
 (def AddMessage message/common)
 (def Model message/Model)
 
-(s/defn add-message! [input :- AddMessage]
+(s/defn add-message! [input :- AddMessage
+                      authorization :- util/AuthorizationKey]
   {:post [(s/validate Model %)]}
+  (participant-service/authorize (:room_id input) authorization)
   (jdbc/with-db-transaction [tx db-spec]
     (message/create! tx input)))
 
-(s/defn get-messages [data :- message/GetMessages]
+(s/defn get-messages [input :- message/GetMessages
+                      authorization :- util/AuthorizationKey]
   {:post [(s/validate message/QueryResult %)]}
+  (participant-service/authorize (:room_id input) authorization)
   (jdbc/with-db-transaction [tx db-spec]
-    (message/get-messages tx data)))
+    (message/get-messages tx input)))

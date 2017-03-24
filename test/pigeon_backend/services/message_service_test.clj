@@ -10,7 +10,8 @@
                                               create-login-token
                                               create-test-login-token
                                               clj-timestamp
-                                              fetch-input-schema-from-dao-fn]]
+                                              fetch-input-schema-from-dao-fn
+                                              test-user]]
             [pigeon-backend.services.user-service :as user-service]
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
@@ -48,7 +49,7 @@
   (facts "User should be able to add a message"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
-        (let [user-1 "foo1"
+        (let [user-1 test-user
               user-2 "foo2"
               _ (user-dao-test/user {:username user-1})
               _ (user-dao-test/user {:username user-2})
@@ -62,11 +63,12 @@
           (service/add-message! {:room_id   room-id
                                  :sender    participant-1
                                  :recipient participant-2
-                                 :message "foobar"}) => (contains {:id model/id-pattern?})))))
+                                 :message "foobar"}
+                                (create-test-login-token)) => (contains {:id model/id-pattern?})))))
   (facts "User should get a conversation (messages sent from self to another and vice versa)"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
-        (let [user-1 "foo1"
+        (let [user-1 test-user
               user-2 "foo2"
               _ (user-dao-test/user {:username user-1})
               _ (user-dao-test/user {:username user-2})
@@ -87,4 +89,5 @@
                           :message "foobar"})]
           (service/get-messages {:room_id room-id
                                  :sender participant-1
-                                 :recipient participant-2}) => (two-of coll?))))))
+                                 :recipient participant-2}
+                                (create-test-login-token)) => (two-of coll?))))))
