@@ -25,6 +25,8 @@
 (s/defn get-messages [input :- message/GetMessages
                       authorization :- util/AuthorizationKey]
   {:post [(s/validate message/QueryResult %)]}
-  (participant-service/authorize (:room_id input) authorization)
+  (participant-service/authorize-by-participant (:room_id input)
+                                                (:sender input)
+                                                authorization)
   (jdbc/with-db-transaction [tx db-spec]
     (message/get-messages tx input)))
