@@ -15,18 +15,31 @@
                      :name String
                      :username String})
 
+(defn authorize-common [authorized?]
+  (if (not authorized?)
+    (throw
+      (ex-info
+        "Authorization not granted"
+        {:type :authorization
+         :cause "User is not a room participant"}))))
+
 (s/defn authorize [room-id :- String,
                    authorization :- util/AuthorizationKey]
   (let [username (:user (jws/unsign authorization (env :jws-shared-secret)))
         authorized? (jdbc/with-db-transaction [tx db-spec]
                       (participant-dao/get-auth tx {:room_id room-id
                                                     :username username}))]
-    (if (not authorized?)
-      (throw
-        (ex-info
-          "Authorization not granted"
-          {:type :authorization
-           :cause "User is not a room participant"})))))
+    (authorize-common authorized?)))
+
+(s/defn authorize-by-participant [room-id :- String,
+                                  participant-id :- String,
+                                  authorization :- util/AuthorizationKey]
+  (let [username (:user (jws/unsign authorization (env :jws-shared-secret)))
+        authorized? (jdbc/with-db-transaction [tx db-spec]
+                      (participant-dao/get-auth-by-participant tx {:room_id room-id
+                                                                   :participant participant-id
+                                                                   :username username}))]
+    (authorize-common authorized?)))
 
 (def Model participant-dao/Model)
 

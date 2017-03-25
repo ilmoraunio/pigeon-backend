@@ -3,16 +3,17 @@
             [midje.sweet :refer :all]
             [pigeon-backend.dao.user-dao :as dao]
             [schema.core :as s]
+            [pigeon-backend.test-util :refer :all]
             [pigeon-backend.db.config :refer [db-spec]]
             [pigeon-backend.test-util :refer [empty-and-create-tables]])
   (import java.sql.BatchUpdateException))
 
 
-(def user-data {:username "foobar"
+(def user-data {:username test-user
                :full_name "Foo Bar"
                :password "hunter2"})
 
-(def user-data-expected (contains {:username "foobar"}
+(def user-data-expected (contains {:username test-user}
                                   {:full_name "Foo Bar"}
                                   {:password "hunter2"}
                                   {:created #(instance? java.util.Date %)}
@@ -42,24 +43,24 @@
       (fact "Basic case"
         (user)
         (user {:username "barfoo"})
-        (dao/get-by db-spec {:username "foobar"})
-          => (contains [(contains {:username "foobar"})]))))
+        (dao/get-by db-spec {:username test-user})
+          => (contains [(contains {:username test-user})]))))
 
   (facts "Get-by-username"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
         (user)
-        (dao/get-by-username db-spec "foobar")
-          => (contains {:username "foobar"}))))
+        (dao/get-by-username db-spec test-user)
+          => (contains {:username test-user}))))
 
   (facts "Dao: user update"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (let [_ (user)]
-          (dao/update! db-spec {:username "foobar"
+          (dao/update! db-spec {:username test-user
                                 :full_name "Bar Foo"
-                                :password "hunter2"}) 
-            => (contains {:username "foobar"}
+                                :password "hunter2"})
+            => (contains {:username test-user}
                          {:full_name "Bar Foo"})))))
   (facts "Dao: user delete"
     (with-state-changes [(before :facts (empty-and-create-tables))]

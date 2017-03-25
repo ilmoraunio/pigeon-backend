@@ -27,6 +27,7 @@
 
 (def AuthInput {:room_id String
                 :username String})
+(def AuthInputByParticipant (assoc AuthInput :participant String))
 
 (defquery sql-participant-create<! "sql/participant/create.sql"
   {:connection db-spec})
@@ -35,6 +36,9 @@
   {:connection db-spec})
 
 (defquery sql-get-auth "sql/participant/get-auth.sql"
+  {:connection db-spec})
+
+(defquery sql-get-auth-by-participant "sql/participant/get-auth-by-participant.sql"
   {:connection db-spec})
 
 (s/defn create! [tx participant :- New] {:post [(s/validate Model %)]}
@@ -53,4 +57,11 @@
           (execute-sql-or-handle-exception
             (fn [tx map-args]
               (sql-get-auth map-args {:connection tx})) tx auth)]
+    is_authorized?))
+
+(s/defn get-auth-by-participant [tx auth :- AuthInputByParticipant] {:post [(instance? Boolean %)]}
+  (let [[{is_authorized? :is_authorized}]
+        (execute-sql-or-handle-exception
+          (fn [tx map-args]
+            (sql-get-auth-by-participant map-args {:connection tx})) tx auth)]
     is_authorized?))

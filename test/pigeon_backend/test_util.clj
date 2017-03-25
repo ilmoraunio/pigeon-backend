@@ -79,7 +79,7 @@
   ([input] (app (-> (mock/request :put "/api/v0/user")
                   (mock/content-type "application/json")
                   (mock/body (cheshire/generate-string input)))))
-  ([] (new-account {:username "Username!"
+  ([] (new-account {:username test-user
                     :password "hunter2"
                     :full_name "Real name!"})))
 

@@ -6,13 +6,12 @@
             [pigeon-backend.dao.participant-dao :as dao]
             [schema.core :as s]
             [pigeon-backend.db.config :refer [db-spec]]
-            [pigeon-backend.test-util :refer [empty-and-create-tables
-                                              without-fk-constraints]]
+            [pigeon-backend.test-util :refer :all]
             [clojure.java.jdbc :as jdbc]))
 
 (defn participant-data
   ([{:keys [room_id name username]
-     :or {name "Room group" username "foobar"}}]
+     :or {name "Room group" username test-user}}]
    {:room_id room_id
     :name name
     :username username}))
@@ -20,7 +19,7 @@
 (def participant-expected (contains {:id string?}
                                   {:room_id string?}
                                   {:name "Room group"}
-                                  {:username "foobar"}
+                                  {:username test-user}
                                   {:created #(instance? java.util.Date %)}
                                   {:updated #(instance? java.util.Date %)}
                                   {:version 0}
@@ -79,7 +78,7 @@
             (without-fk-constraints tx
               (let [{username :username} (user-dao-test/user)
                     {room-id :id} (room-dao-test/room)]
-                (dao/get-auth tx {:room_id room-id :username "foobar"}) => false))))
+                (dao/get-auth tx {:room_id room-id :username test-user}) => false))))
         (fact "Authorizes"
           (jdbc/with-db-transaction [tx db-spec]
             (without-fk-constraints tx
@@ -87,5 +86,5 @@
                     {room-id :id} (room-dao-test/room)
                     _ (pigeon-backend.dao.participant-dao-test/participant {:room_id room-id
                                                                           :name "participant name"
-                                                                          :username "foobar"})]
-                (dao/get-auth tx {:room_id room-id :username "foobar"}) => true)))))))
+                                                                          :username test-user})]
+                (dao/get-auth tx {:room_id room-id :username test-user}) => true)))))))
