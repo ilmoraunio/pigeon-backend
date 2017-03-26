@@ -15,7 +15,7 @@
 (def GetMessages {:room_id   String
                   :sender    String
                   :recipient String})
-(def QueryResult [(s/maybe Model)])
+(def QueryResult [(s/maybe (into Model {:is_from_sender Boolean}))])
 
 (defquery sql-message-create<! "sql/message/create.sql"
   {:connection db-spec})

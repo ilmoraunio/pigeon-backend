@@ -14,6 +14,7 @@
 (def AddMessage message/common)
 (def GetMessages message/GetMessages)
 (def Model message/Model)
+(def QueryResult message/QueryResult)
 
 (s/defn add-message! [input :- AddMessage
                       authorization :- util/AuthorizationKey]

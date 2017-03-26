@@ -24,7 +24,7 @@
       (ok (message-service/add-message! message
                                         (util/parse-auth-key request))))
     (GET "/" request
-      :return [message-service/Model]
+      :return message-service/QueryResult
       :query [message-params message-service/GetMessages]
       :summary "Show message(s) in room"
       (message-service/get-messages message-params
