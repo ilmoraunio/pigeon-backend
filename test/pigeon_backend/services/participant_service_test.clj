@@ -30,25 +30,27 @@
 ;; todo: get rid of mocking service tests and do proper integration tests instead
 
 (deftest participant-test
-  ;; todo: fix test
-  (comment (facts "User should be able to add himself to room"
-             (with-state-changes [(before :facts (empty-and-create-tables))]
-               (fact
-                 (let [input (g/generate service/AddParticipant)
-                       output (c/complete input service/Model)
-                       expected output]
-                   (with-redefs [participant-dao/create! (fn [_ _] output)]
-                     (service/add-participant! input) => expected))))))
-  ;; todo fix test
-  (comment (facts "User should be able to list all participants in a room"
-             (with-state-changes [(before :facts (empty-and-create-tables))]
-               (fact
-                 (let [room-id (g/generate String)
-                       output (c/complete [{:room_id room-id}] participant-dao/QueryResult)
-                       expected output]
-                   (with-redefs [participant-dao/get-by (fn [_ _] output)
-                                 service/authorize (fn [_ _] nil)]
-                     (service/get-by-room room-id (create-test-login-token)) => expected))))))
+  (facts "User should be able to add himself to room"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact
+        (let [_ (user-dao-test/user)
+              {room-id :id} (room-dao-test/room)]
+          (service/add-participant! {:room_id room-id
+                                     :name test-user
+                                     :username test-user}) => (contains {:id string?})))))
+  (facts "User should be able to list all participants in a room"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact
+        (let [_ (user-dao-test/user)
+              {other-user :username} (user-dao-test/user {:username "Username2"})
+              {room-id :id} (room-dao-test/room)
+              _ (participant-dao-test/participant {:room_id room-id
+                                                   :name     test-user
+                                                   :username test-user})
+              _ (participant-dao-test/participant {:room_id room-id
+                                                   :name     other-user
+                                                   :username other-user})]
+          (service/get-by-room room-id (create-test-login-token)) => (two-of coll?)))))
   (facts "Simple authorization"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Doesn't authorize"
@@ -61,7 +63,7 @@
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Does not authorize"
         (let [_ (user-dao-test/user)
-              {other-user :username} (user-dao-test/user {:username "foobar"})
+              {other-user :username} (user-dao-test/user {:username "Username2"})
               {room-id :id} (room-dao-test/room)
               {other-room-id :id} (room-dao-test/room {:name "Pigeon room 2"})
               _ (participant-dao-test/participant {:room_id  room-id
@@ -73,7 +75,7 @@
           (service/authorize-by-participant room-id recipient-id (create-test-login-token)) => (throws Exception)))
       (fact "Authorizes"
         (let [_ (user-dao-test/user)
-              {other-user :username} (user-dao-test/user {:username "foobar"})
+              {other-user :username} (user-dao-test/user {:username "Username2"})
               {room-id :id} (room-dao-test/room)
               _ (participant-dao-test/participant {:room_id  room-id
                                                    :name     test-user
