@@ -30,6 +30,7 @@
 ;; todo: get rid of mocking service tests and do proper integration tests instead
 
 (deftest participant-test
+  ;; todo: fix test
   (comment (facts "User should be able to add himself to room"
              (with-state-changes [(before :facts (empty-and-create-tables))]
                (fact
@@ -38,6 +39,7 @@
                        expected output]
                    (with-redefs [participant-dao/create! (fn [_ _] output)]
                      (service/add-participant! input) => expected))))))
+  ;; todo fix test
   (comment (facts "User should be able to list all participants in a room"
              (with-state-changes [(before :facts (empty-and-create-tables))]
                (fact
@@ -59,16 +61,24 @@
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Does not authorize"
         (let [_ (user-dao-test/user)
+              {other-user :username} (user-dao-test/user {:username "foobar"})
               {room-id :id} (room-dao-test/room)
               {other-room-id :id} (room-dao-test/room {:name "Pigeon room 2"})
-              {participant-id :id} (participant-dao-test/participant {:room_id  room-id
-                                                                      :name     test-user
-                                                                      :username test-user})]
-          (service/authorize-by-participant other-room-id participant-id (create-test-login-token)) => (throws Exception)))
+              _ (participant-dao-test/participant {:room_id  room-id
+                                                   :name     test-user
+                                                   :username test-user})
+              {recipient-id :id} (participant-dao-test/participant {:room_id  other-room-id
+                                                                    :name     other-user
+                                                                    :username other-user})]
+          (service/authorize-by-participant room-id recipient-id (create-test-login-token)) => (throws Exception)))
       (fact "Authorizes"
         (let [_ (user-dao-test/user)
+              {other-user :username} (user-dao-test/user {:username "foobar"})
               {room-id :id} (room-dao-test/room)
-              {participant-id :id} (participant-dao-test/participant {:room_id  room-id
-                                                                      :name     test-user
-                                                                      :username test-user})]
-          (service/authorize-by-participant room-id participant-id (create-test-login-token)) => nil)))))
+              _ (participant-dao-test/participant {:room_id  room-id
+                                                   :name     test-user
+                                                   :username test-user})
+              {recipient-id :id} (participant-dao-test/participant {:room_id  room-id
+                                                                    :name     other-user
+                                                                    :username other-user})]
+          (service/authorize-by-participant room-id recipient-id (create-test-login-token)) => nil)))))

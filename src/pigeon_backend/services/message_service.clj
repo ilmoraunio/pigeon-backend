@@ -26,7 +26,7 @@
                       authorization :- util/AuthorizationKey]
   {:post [(s/validate message/QueryResult %)]}
   (participant-service/authorize-by-participant (:room_id input)
-                                                (:sender input)
+                                                (:recipient input)
                                                 authorization)
   (jdbc/with-db-transaction [tx db-spec]
     (message/get-messages tx input)))

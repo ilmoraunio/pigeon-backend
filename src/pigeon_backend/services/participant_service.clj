@@ -37,7 +37,7 @@
   (let [username (:user (jws/unsign authorization (env :jws-shared-secret)))
         authorized? (jdbc/with-db-transaction [tx db-spec]
                       (participant-dao/get-auth-by-participant tx {:room_id room-id
-                                                                   :participant participant-id
+                                                                   :recipient participant-id
                                                                    :username username}))]
     (authorize-common authorized?)))
 
