@@ -55,21 +55,21 @@
               {other-user :username} (user-dao-test/user {:username "Username2"})
               {room-id :id} (room-dao-test/room)
               {other-room-id :id} (room-dao-test/room {:name "Pigeon room 2"})
-              _ (participant-dao-test/participant {:room_id  room-id
+              {sender-id :id} (participant-dao-test/participant {:room_id  room-id
                                                    :name     test-user
                                                    :username test-user})
               {recipient-id :id} (participant-dao-test/participant {:room_id  other-room-id
                                                                     :name     other-user
                                                                     :username other-user})]
-          (service/authorize-by-participant room-id recipient-id (create-test-login-token)) => (throws Exception)))
+          (service/authorize-by-participant room-id sender-id recipient-id (create-test-login-token)) => (throws Exception)))
       (fact "Authorizes"
         (let [_ (user-dao-test/user)
               {other-user :username} (user-dao-test/user {:username "Username2"})
               {room-id :id} (room-dao-test/room)
-              _ (participant-dao-test/participant {:room_id  room-id
+              {sender-id :id} (participant-dao-test/participant {:room_id  room-id
                                                    :name     test-user
                                                    :username test-user})
               {recipient-id :id} (participant-dao-test/participant {:room_id  room-id
                                                                     :name     other-user
                                                                     :username other-user})]
-          (service/authorize-by-participant room-id recipient-id (create-test-login-token)) => nil)))))
+          (service/authorize-by-participant room-id sender-id recipient-id (create-test-login-token)) => nil)))))

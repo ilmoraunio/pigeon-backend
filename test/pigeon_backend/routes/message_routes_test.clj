@@ -12,7 +12,7 @@
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Post a message"
         (let [_           (new-account)
-              _           (new-account {:username "Username2!"
+              _           (new-account {:username "Username2"
                                         :password "hunter2"
                                         :full_name "Real name!"})
               room          (parse-body (:body (new-room)))
@@ -21,7 +21,7 @@
                                                                  :username "Username!"})))
               participant-2 (parse-body (:body (new-participant {:room_id  (:id room)
                                                                  :name "Participant2!"
-                                                                 :username "Username2!"})))
+                                                                 :username "Username2"})))
               response (new-message {:room_id (:id room)
                                      :sender (:id participant-1)
                                      :recipient (:id participant-2)
@@ -32,7 +32,7 @@
                             {:message string?})))
       (fact "List a conversation"
         (let [_           (new-account)
-              _           (new-account {:username "Username2!"
+              _           (new-account {:username "Username2"
                                         :password "hunter2"
                                         :full_name "Real name!"})
               room          (parse-body (:body (new-room)))
@@ -41,7 +41,7 @@
                                                                  :username "Username!"})))
               participant-2 (parse-body (:body (new-participant {:room_id  (:id room)
                                                                  :name "Participant2!"
-                                                                 :username "Username2!"})))
+                                                                 :username "Username2"})))
               _ (new-message {:room_id (:id room)
                               :sender (:id participant-1)
                               :recipient (:id participant-2)
@@ -49,7 +49,7 @@
               _ (new-message {:room_id (:id room)
                               :sender (:id participant-2)
                               :recipient (:id participant-1)
-                              :message "Hello world2!"})
+                              :message "Hello world2!"} (create-test-login-token "Username2"))
               response (app (-> (mock/request :get (str "/api/v0/message?room_id=" (:id room)
                                                         "&sender=" (:id participant-1)
                                                         "&recipient=" (:id participant-2)))

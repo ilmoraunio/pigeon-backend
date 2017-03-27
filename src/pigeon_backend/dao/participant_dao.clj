@@ -27,7 +27,8 @@
 
 (def AuthInput {:room_id String
                 :username String})
-(def AuthInputByParticipant (assoc AuthInput :recipient String))
+(def AuthInputByParticipant (assoc AuthInput :sender String
+                                             :recipient String))
 
 (defquery sql-participant-create<! "sql/participant/create.sql"
   {:connection db-spec})

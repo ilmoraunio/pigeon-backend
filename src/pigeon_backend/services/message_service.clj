@@ -19,7 +19,10 @@
 (s/defn add-message! [input :- AddMessage
                       authorization :- util/AuthorizationKey]
   {:post [(s/validate Model %)]}
-  (participant-service/authorize (:room_id input) authorization)
+  (participant-service/authorize-by-participant (:room_id input)
+                                                (:sender input)
+                                                (:recipient input)
+                                                authorization)
   (jdbc/with-db-transaction [tx db-spec]
     (message/create! tx input)))
 
@@ -27,6 +30,7 @@
                       authorization :- util/AuthorizationKey]
   {:post [(s/validate message/QueryResult %)]}
   (participant-service/authorize-by-participant (:room_id input)
+                                                (:sender input)
                                                 (:recipient input)
                                                 authorization)
   (jdbc/with-db-transaction [tx db-spec]

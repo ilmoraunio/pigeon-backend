@@ -32,11 +32,13 @@
     (authorize-common authorized?)))
 
 (s/defn authorize-by-participant [room-id :- String,
+                                  sender-id :- String,
                                   participant-id :- String,
                                   authorization :- util/AuthorizationKey]
   (let [username (:user (jws/unsign authorization (env :jws-shared-secret)))
         authorized? (jdbc/with-db-transaction [tx db-spec]
                       (participant-dao/get-auth-by-participant tx {:room_id room-id
+                                                                   :sender sender-id
                                                                    :recipient participant-id
                                                                    :username username}))]
     (authorize-common authorized?)))
