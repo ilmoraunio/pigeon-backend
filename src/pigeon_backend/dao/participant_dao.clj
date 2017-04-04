@@ -42,6 +42,9 @@
 (defquery sql-get-auth-by-participant "sql/participant/get-auth-by-participant.sql"
   {:connection db-spec})
 
+(defquery sql-get-auth-by-username "sql/participant/get-auth-by-username.sql"
+  {:connection db-spec})
+
 (s/defn create! [tx participant :- New] {:post [(s/validate Model %)]}
   (execute-sql-or-handle-exception
     (fn [tx map-args]
@@ -65,4 +68,11 @@
         (execute-sql-or-handle-exception
           (fn [tx map-args]
             (sql-get-auth-by-participant map-args {:connection tx})) tx auth)]
+    is_authorized?))
+
+(s/defn get-auth-by-username [tx auth :- AuthInputByParticipant] {:post [(instance? Boolean %)]}
+  (let [[{is_authorized? :is_authorized}]
+        (execute-sql-or-handle-exception
+          (fn [tx map-args]
+            (sql-get-auth-by-username map-args {:connection tx})) tx auth)]
     is_authorized?))

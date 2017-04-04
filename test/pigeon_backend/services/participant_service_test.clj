@@ -35,6 +35,15 @@
                                                    :name     other-user
                                                    :username other-user})]
           (service/get-by-room room-id (create-test-login-token)) => (two-of coll?)))))
+  (facts "User should be able to list himself as participant in a room"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact
+        (let [{username :username} (user-dao-test/user)
+              {room-id :id} (room-dao-test/room)
+              _ (participant-dao-test/participant {:room_id room-id
+                                                   :name test-user
+                                                   :username test-user})]
+          (service/get-by-username room-id username (create-test-login-token)) => (one-of coll?)))))
   (facts "Simple authorization"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Doesn't authorize"
