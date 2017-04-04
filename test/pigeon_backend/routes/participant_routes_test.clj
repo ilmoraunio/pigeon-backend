@@ -44,13 +44,14 @@
       (fact "List user's participant in a room"
         (let [_ (new-account)
               {room-id1 :id} (parse-body (:body (new-room)))
-              _ (new-participant {:room_id room-id1
-                                  :name "Participant 1"
-                                  :username test-user})
+              {participant-id :id} (parse-body (:body (new-participant {:room_id room-id1
+                                                                        :name "Participant 1"
+                                                                        :username test-user})))
               response (app (-> (mock/request :get
                                   (str "/api/v0/participant?room_id=" room-id1 "&username=" test-user))
                                 (mock/content-type "application/json")
                                 (mock/header "Authorization" (str "Bearer " (create-test-login-token)))))
               body (parse-body (:body response))]
           (:status response) => 200
-          body => (one-of coll?))))))
+          body => (one-of coll?)
+          body => (contains [(contains {:id participant-id})]))))))
