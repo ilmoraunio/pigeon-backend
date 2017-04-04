@@ -81,4 +81,22 @@
               {recipient-id :id} (participant-dao-test/participant {:room_id  room-id
                                                                     :name     other-user
                                                                     :username other-user})]
-          (service/authorize-by-participant room-id sender-id recipient-id (create-test-login-token)) => nil)))))
+          (service/authorize-by-participant room-id sender-id recipient-id (create-test-login-token)) => nil))))
+  (facts "Authorization against room & username"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Does not authorize"
+        (let [{username-1 :username} (user-dao-test/user)
+              {username-2 :username} (user-dao-test/user {:username "Username2"})
+              {room-id :id} (room-dao-test/room)
+              _ (participant-dao-test/participant {:room_id  room-id
+                                                   :name     test-user
+                                                   :username username-2})]
+          (service/authorize-by-username room-id test-user (create-test-login-token)) => (throws Exception)))
+      (fact "Authorizes"
+        (let [_ (user-dao-test/user)
+              {room-id :id} (room-dao-test/room)
+              _ (participant-dao-test/participant {:room_id  room-id
+                                                   :name     test-user
+                                                   :username test-user})]
+          (service/authorize-by-username room-id test-user (create-test-login-token)) => nil))))
+  )
