@@ -29,10 +29,15 @@
 
       (ok (participant-service/add-participant! participant)))
     (GET "/" request
-      :query [participant {:room_id String}]
-      :summary "Show participant(s) in room"
-      (participant-service/get-by-room (:room_id participant)
-                                       (util/parse-auth-key request)))
+      :query [participant {:room_id String
+                          (s/optional-key :username) (s/maybe String)}]
+      :summary "Show participant(s) in room. If you want to query your participant details, add your own username as query parameter."
+      (if (:username participant)
+        (participant-service/get-by-username (:room_id participant)
+                                             (:username participant)
+                                             (util/parse-auth-key request))
+        (participant-service/get-by-room (:room_id participant)
+                                         (util/parse-auth-key request))))
     (PUT "/" []
       ;;:return participant-service/Model
       ;;:body [room room-dao/Existing]

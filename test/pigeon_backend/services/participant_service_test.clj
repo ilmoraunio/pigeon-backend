@@ -1,59 +1,102 @@
 (ns pigeon-backend.services.participant-service-test
   (:require [clojure.test :refer [deftest]]
-            [cheshire.core :as cheshire]
             [midje.sweet :refer :all]
             [pigeon-backend.handler :refer :all]
-            [ring.mock.request :as mock]
-            [clojure.data.json :as json]
-            [pigeon-backend.test-util :refer [empty-and-create-tables
-                                              parse-body
-                                              create-login-token
-                                              create-test-login-token
-                                              clj-timestamp
-                                              fetch-input-schema-from-dao-fn]]
-            [pigeon-backend.services.user-service :as user-service]
-            [buddy.sign.jws :as jws]
-            [clj-time.core :as t]
+            [pigeon-backend.test-util :refer :all]
             [environ.core :refer [env]]
             [clojure.test :refer [deftest]]
             [pigeon-backend.migrations_test :refer [drop-all-tables]]
             [pigeon-backend.db.config :refer [db-spec]]
-            [pigeon-backend.db.migrations :as migrations]
             [midje.sweet :refer :all]
             [pigeon-backend.services.participant-service :as service]
-            [schema.core :as s]
-            [buddy.hashers :as hashers]
-            [pigeon-backend.dao.participant-dao :as participant-dao]
-            [schema-generators.generators :as g]
-            [schema-generators.complete :as c]
-            [pigeon-backend.services.room-service :as room-service]
             [pigeon-backend.dao.room-dao-test :as room-dao-test]
             [pigeon-backend.dao.participant-dao-test :as participant-dao-test]
-            [pigeon-backend.util :as util]))
+            [pigeon-backend.dao.user-dao-test :as user-dao-test]))
 
 (deftest participant-test
   (facts "User should be able to add himself to room"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
-        (let [input (g/generate service/AddParticipant)
-              output (c/complete input service/Model)
-              expected output]
-          (with-redefs [participant-dao/create! (fn [_ _] output)]
-            (service/add-participant! input) => expected)))))
+        (let [_ (user-dao-test/user)
+              {room-id :id} (room-dao-test/room)]
+          (service/add-participant! {:room_id room-id
+                                     :name test-user
+                                     :username test-user}) => (contains {:id string?})))))
   (facts "User should be able to list all participants in a room"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact
-        (let [room-id (g/generate String)
-              output (c/complete [{:room_id room-id}] participant-dao/QueryResult)
-              expected output]
-          (with-redefs [participant-dao/get-by (fn [_ _] output)
-                        service/authorize (fn [_ _] nil)]
-            (service/get-by-room room-id (create-test-login-token)) => expected)))))
+        (let [_ (user-dao-test/user)
+              {other-user :username} (user-dao-test/user {:username "Username2"})
+              {room-id :id} (room-dao-test/room)
+              _ (participant-dao-test/participant {:room_id room-id
+                                                   :name     test-user
+                                                   :username test-user})
+              _ (participant-dao-test/participant {:room_id room-id
+                                                   :name     other-user
+                                                   :username other-user})]
+          (service/get-by-room room-id (create-test-login-token)) => (two-of coll?)))))
+  (facts "User should be able to list himself as participant in a room"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact
+        (let [{username :username} (user-dao-test/user)
+              {room-id :id} (room-dao-test/room)
+              _ (participant-dao-test/participant {:room_id room-id
+                                                   :name test-user
+                                                   :username test-user})]
+          (service/get-by-username room-id username (create-test-login-token)) => (one-of coll?)))))
   (facts "Simple authorization"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Doesn't authorize"
-        (with-redefs [participant-dao/get-auth (fn [_ _] false)]
-          (service/authorize anything (create-test-login-token)) => (throws Exception)))
+        (let [_ (user-dao-test/user)
+              {room-id :id} (room-dao-test/room)]
+          (service/authorize room-id (create-test-login-token)) => (throws Exception)))
       (fact "Authorizes"
-        (with-redefs [participant-dao/get-auth (fn [_ _] true)]
-          (service/authorize anything (create-test-login-token)) => nil)))))
+        (let [_ (user-dao-test/user)
+              {room-id :id} (room-dao-test/room)
+              _ (participant-dao-test/participant {:room_id  room-id
+                                                   :name     test-user
+                                                   :username test-user})]
+          (service/authorize room-id (create-test-login-token)) => nil))))
+  (facts "Authorization against room & participant"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Does not authorize"
+        (let [_ (user-dao-test/user)
+              {other-user :username} (user-dao-test/user {:username "Username2"})
+              {room-id :id} (room-dao-test/room)
+              {other-room-id :id} (room-dao-test/room {:name "Pigeon room 2"})
+              {sender-id :id} (participant-dao-test/participant {:room_id  room-id
+                                                   :name     test-user
+                                                   :username test-user})
+              {recipient-id :id} (participant-dao-test/participant {:room_id  other-room-id
+                                                                    :name     other-user
+                                                                    :username other-user})]
+          (service/authorize-by-participant room-id sender-id recipient-id (create-test-login-token)) => (throws Exception)))
+      (fact "Authorizes"
+        (let [_ (user-dao-test/user)
+              {other-user :username} (user-dao-test/user {:username "Username2"})
+              {room-id :id} (room-dao-test/room)
+              {sender-id :id} (participant-dao-test/participant {:room_id  room-id
+                                                   :name     test-user
+                                                   :username test-user})
+              {recipient-id :id} (participant-dao-test/participant {:room_id  room-id
+                                                                    :name     other-user
+                                                                    :username other-user})]
+          (service/authorize-by-participant room-id sender-id recipient-id (create-test-login-token)) => nil))))
+  (facts "Authorization against room & username"
+    (with-state-changes [(before :facts (empty-and-create-tables))]
+      (fact "Does not authorize"
+        (let [{username-1 :username} (user-dao-test/user)
+              {username-2 :username} (user-dao-test/user {:username "Username2"})
+              {room-id :id} (room-dao-test/room)
+              _ (participant-dao-test/participant {:room_id  room-id
+                                                   :name     test-user
+                                                   :username username-2})]
+          (service/authorize-by-username room-id test-user (create-test-login-token)) => (throws Exception)))
+      (fact "Authorizes"
+        (let [_ (user-dao-test/user)
+              {room-id :id} (room-dao-test/room)
+              _ (participant-dao-test/participant {:room_id  room-id
+                                                   :name     test-user
+                                                   :username test-user})]
+          (service/authorize-by-username room-id test-user (create-test-login-token)) => nil))))
+  )

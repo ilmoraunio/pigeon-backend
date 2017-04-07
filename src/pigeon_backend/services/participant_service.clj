@@ -15,18 +15,43 @@
                      :name String
                      :username String})
 
+(defn authorize-common [authorized?]
+  (if (not authorized?)
+    (throw
+      (ex-info
+        "Authorization not granted"
+        {:type :authorization
+         :cause "User is not a room participant"}))))
+
 (s/defn authorize [room-id :- String,
                    authorization :- util/AuthorizationKey]
   (let [username (:user (jws/unsign authorization (env :jws-shared-secret)))
         authorized? (jdbc/with-db-transaction [tx db-spec]
                       (participant-dao/get-auth tx {:room_id room-id
                                                     :username username}))]
-    (if (not authorized?)
-      (throw
-        (ex-info
-          "Authorization not granted"
-          {:type :authorization
-           :cause "User is not a room participant"})))))
+    (authorize-common authorized?)))
+
+(s/defn authorize-by-username [room-id :- String,
+                               username :- String,
+                               authorization :- util/AuthorizationKey]
+  (let [username-from-req (:user (jws/unsign authorization (env :jws-shared-secret)))
+        authorized? (jdbc/with-db-transaction [tx db-spec]
+                      (participant-dao/get-auth-by-username tx {:room_id room-id
+                                                                :username username
+                                                                :username_from_req username-from-req}))]
+    (authorize-common authorized?)))
+
+(s/defn authorize-by-participant [room-id :- String,
+                                  sender-id :- String,
+                                  recipient-id :- String,
+                                  authorization :- util/AuthorizationKey]
+  (let [username (:user (jws/unsign authorization (env :jws-shared-secret)))
+        authorized? (jdbc/with-db-transaction [tx db-spec]
+                      (participant-dao/get-auth-by-participant tx {:room_id room-id
+                                                                   :sender sender-id
+                                                                   :recipient recipient-id
+                                                                   :username username}))]
+    (authorize-common authorized?)))
 
 (def Model participant-dao/Model)
 
@@ -41,3 +66,12 @@
   (authorize room-id authorization)
   (jdbc/with-db-transaction [tx db-spec]
     (participant-dao/get-by tx {:room_id room-id})))
+
+(s/defn get-by-username [room-id :- String
+                         username :- String
+                         authorization :- util/AuthorizationKey]
+  {:post [(s/validate QueryResult %)]}
+  (authorize-by-username room-id username authorization)
+  (jdbc/with-db-transaction [tx db-spec]
+    (participant-dao/get-by tx {:room_id room-id
+                                :username username})))

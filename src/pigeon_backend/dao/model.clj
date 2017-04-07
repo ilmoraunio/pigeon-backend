@@ -9,12 +9,11 @@
    (s/optional-key :version) (s/maybe s/Int)
    (s/optional-key :deleted) (s/maybe Boolean)})
 
-(def Model
-  {:id String
-   :created java.util.Date
-   :updated java.util.Date
-   :version s/Int
-   :deleted Boolean})
-
-(def Existing
-  {:id String})
+(def id-pattern? #".{8}-.{4}-.{4}-.{4}-.{12}")
+(def id (s/pred #(re-matches id-pattern? %)))
+(def Model (assoc {:created java.util.Date
+                   :updated java.util.Date
+                   :version s/Int
+                   :deleted Boolean}
+                  :id id))
+(def Existing id)

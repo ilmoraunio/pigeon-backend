@@ -59,10 +59,11 @@
 
 (def test-user "Username!")
 
-(defn create-test-login-token []
-  (create-login-token test-user
-                      (str (t/plus (t/now) (t/hours 4)))
-                      (env :jws-shared-secret)))
+(defn create-test-login-token
+  ([] (create-test-login-token test-user))
+  ([user] (create-login-token user
+            (str (t/plus (t/now) (t/hours 4)))
+            (env :jws-shared-secret))))
 
 (def clj-timestamp #"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{1,3}Z")
 
@@ -79,12 +80,20 @@
   ([input] (app (-> (mock/request :put "/api/v0/user")
                   (mock/content-type "application/json")
                   (mock/body (cheshire/generate-string input)))))
-  ([] (new-account {:username "Username!"
+  ([] (new-account {:username test-user
                     :password "hunter2"
                     :full_name "Real name!"})))
 
 (defn new-participant
   ([input] (app (-> (mock/request :post "/api/v0/participant")
-                  (mock/content-type "application/json")
-                  (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                  (mock/body (cheshire/generate-string input))))))
+                    (mock/content-type "application/json")
+                    (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
+                    (mock/body (cheshire/generate-string input))))))
+
+(defn new-message
+  ([input] (new-message input (create-test-login-token)))
+  ([input authorization]
+    (app (-> (mock/request :post "/api/v0/message")
+             (mock/content-type "application/json")
+             (mock/header "Authorization" (str "Bearer " authorization))
+             (mock/body (cheshire/generate-string input))))))
