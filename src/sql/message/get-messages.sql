@@ -1,6 +1,9 @@
 SELECT Message.id,
        Message.Room_id,
        Message.sender,
+       (SELECT name
+        FROM Participant
+        WHERE Participant.id = Message.sender) AS sender_name,
        Message.recipient,
        Message.message,
        Message.sender = (:sender)::text AS is_from_sender,
