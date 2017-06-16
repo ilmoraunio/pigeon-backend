@@ -23,16 +23,13 @@
 (defquery sql-user-create<! "sql/user/create.sql" {:connection db-spec})
 (defquery sql-user-get "sql/user/get.sql" {:connection db-spec})
 
-(s/defn user-create! [dto :- New] {:post [(s/validate ModelStripped %)]}
+(s/defn user-create! [{:keys [password] :as data} :- New] {:post [(s/validate ModelStripped %)]}
   (jdbc/with-db-transaction [tx db-spec]
-    (let [user-with-hashed-password (assoc dto :password (hashers/derive (:password dto)))]
-      (st/select-schema
-        (execute-sql-or-handle-exception
-          (fn [tx map-args]
-            (sql-user-create<! map-args {:connection tx})) tx user-with-hashed-password)
-        ModelStripped))))
+    (st/select-schema
+      (sql-user-create<! (assoc data :password (hashers/derive password)) {:connection tx})
+      ModelStripped)))
 
-(s/defn check-credentials [{username :username password :password} :- LoginUser]
+(s/defn check-credentials [{:keys [username password]} :- LoginUser]
                           {:post [(instance? Boolean %)]}
     (jdbc/with-db-transaction [tx db-spec]
       (let [query-data (merge (initialize-query-data Model) {:username username})

@@ -35,8 +35,7 @@
           (:password returned-dto) => nil))
       (fact "Duplicate username entry not allowed"
         (service/user-create! user-dto)
-        (service/user-create! user-dto) => (throws clojure.lang.ExceptionInfo
-                                                   "Duplicate username"))))
+        (service/user-create! user-dto) => (throws org.postgresql.util.PSQLException))))
   (facts "Service: user check credentials"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Success"
