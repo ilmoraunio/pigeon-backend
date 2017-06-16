@@ -33,9 +33,7 @@
                           {:post [(instance? Boolean %)]}
     (jdbc/with-db-transaction [tx db-spec]
       (let [query-data (merge (initialize-query-data Model) {:username username})
-            [user-model] (execute-sql-or-handle-exception
-                           (fn [tx map-args]
-                             (sql-user-get map-args {:connection tx})) tx query-data)]
+            [user-model] (sql-user-get query-data {:connection tx})]
         (if (nil? user-model)
           false
           (hashers/check password (:password user-model))))))
