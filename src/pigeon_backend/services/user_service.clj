@@ -3,7 +3,7 @@
             [pigeon-backend.db.config :refer [db-spec]]
             [buddy.hashers :as hashers]
             [schema.core :as s]
-            [pigeon-backend.dao.model :as model]
+            [pigeon-backend.services.model :as model]
             [schema-tools.core :as st]
             [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]
             [pigeon-backend.dao.dao-util :refer [initialize-query-data]]
