@@ -1,3 +1,8 @@
+-- name: sql-user-create<!
+INSERT INTO users (username, name, password)
+VALUES ((:username)::varchar(200), (:name)::varchar(200), (:password)::text)
+
+-- name: sql-user-get
 SELECT users.username,
        users.name,
        users.password,
@@ -15,4 +20,4 @@ WHERE ((:username)::varchar(200) IS NULL OR users.username = (:username)::varcha
   AND ((:deleted)::boolean IS NULL OR users.deleted = (:deleted)::boolean)
 -- TODO order dynamic
 ORDER BY users.created ASC
-LIMIT (:limit)::integer OFFSET (:offset)::integer;
+LIMIT (:limit)::integer OFFSET (:offset)::integer

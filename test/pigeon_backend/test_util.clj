@@ -16,7 +16,7 @@
 
 (defn empty-and-create-tables []
   (empty-all-tables db-spec)
-  (if (= 0 (count (get-table-names)))
+  (if (= 0 (count (get-table-names db-spec)))
     (migrations/migrate)))
 
 (defmacro without-fk-constraints [tx & body]

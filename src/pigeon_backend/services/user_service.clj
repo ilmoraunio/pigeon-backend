@@ -6,7 +6,7 @@
             [pigeon-backend.services.model :as model]
             [schema-tools.core :as st]
             [pigeon-backend.services.util :refer [initialize-query-data]]
-            [yesql.core :refer [defquery]]))
+            [jeesql.core :refer [defqueries]]))
 
 (s/defschema New {:username String
                   :name String
@@ -16,20 +16,19 @@
 (s/defschema LoginUser {:username String
                         :password String})
 
-(defquery sql-user-create<! "sql/user/create.sql" {:connection db-spec})
-(defquery sql-user-get "sql/user/get.sql" {:connection db-spec})
+(defqueries "sql/user.sql")
 
 (s/defn user-create! [{:keys [password] :as data} :- New] {:post [(s/validate ModelStripped %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (st/select-schema
-      (sql-user-create<! (assoc data :password (hashers/derive password)) {:connection tx})
+      (sql-user-create<! tx (assoc data :password (hashers/derive password)))
       ModelStripped)))
 
 (s/defn check-credentials [{:keys [username password]} :- LoginUser]
                           {:post [(instance? Boolean %)]}
     (jdbc/with-db-transaction [tx db-spec]
       (let [query-data (merge (initialize-query-data Model) {:username username})
-            [user-model] (sql-user-get query-data {:connection tx})]
+            [user-model] (sql-user-get tx query-data)]
         (if (nil? user-model)
           false
           (hashers/check password (:password user-model))))))

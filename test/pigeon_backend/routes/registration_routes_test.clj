@@ -5,7 +5,8 @@
             [ring.mock.request :as mock]
             [pigeon-backend.test-util :refer :all]
             [midje.sweet :refer :all]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [pigeon-backend.db.config :refer [db-spec]]))
 
 (deftest registration-routes-test
   (facts
