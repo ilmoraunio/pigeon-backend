@@ -1,27 +1,44 @@
 (ns pigeon-backend.services.user-service
-  (:require [pigeon-backend.dao.user-dao :as user-dao]
-            [clojure.java.jdbc :as jdbc]
+  (:require [clojure.java.jdbc :as jdbc]
             [pigeon-backend.db.config :refer [db-spec]]
             [buddy.hashers :as hashers]
             [schema.core :as s]
             [pigeon-backend.dao.model :as model]
             [schema-tools.core :as st]
-            [pigeon-backend.dao.user-dao :refer [New Existing ModelStripped LoginUser]]))
+            [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]
+            [pigeon-backend.dao.dao-util :refer [initialize-query-data]]
+            [yesql.core :refer [defquery]]))
 
-(def Model user-dao/Model)
+(s/defschema New {:username String
+                  :name String
+                  :password String})
+
+(s/defschema Model (into (dissoc model/Model :id) New))
+
+(s/defschema ModelStripped (dissoc Model :password))
+
+(s/defschema LoginUser {:username String
+                        :password String})
+
+(defquery sql-user-create<! "sql/user/create.sql" {:connection db-spec})
+(defquery sql-user-get "sql/user/get.sql" {:connection db-spec})
 
 (s/defn user-create! [dto :- New] {:post [(s/validate ModelStripped %)]}
   (jdbc/with-db-transaction [tx db-spec]
-    (let [user-with-hashed-password
-            (assoc dto :password 
-                       (hashers/derive (:password dto)))]
-      (st/select-schema (user-dao/create! tx user-with-hashed-password) 
-                        ModelStripped))))
+    (let [user-with-hashed-password (assoc dto :password (hashers/derive (:password dto)))]
+      (st/select-schema
+        (execute-sql-or-handle-exception
+          (fn [tx map-args]
+            (sql-user-create<! map-args {:connection tx})) tx user-with-hashed-password)
+        ModelStripped))))
 
-(s/defn check-credentials [{username :username password :password :as dto} :- LoginUser]
+(s/defn check-credentials [{username :username password :password} :- LoginUser]
                           {:post [(instance? Boolean %)]}
     (jdbc/with-db-transaction [tx db-spec]
-      (let [[user-model] (user-dao/get-by tx {:username username})]
+      (let [query-data (merge (initialize-query-data Model) {:username username})
+            [user-model] (execute-sql-or-handle-exception
+                           (fn [tx map-args]
+                             (sql-user-get map-args {:connection tx})) tx query-data)]
         (if (nil? user-model)
           false
           (hashers/check password (:password user-model))))))

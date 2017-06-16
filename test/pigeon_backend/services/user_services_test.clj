@@ -9,8 +9,7 @@
             [pigeon-backend.test-util :refer [empty-and-create-tables]]
             [buddy.hashers :as hashers]
             [schema-generators.generators :as g]
-            [schema-generators.complete :as c]
-            [pigeon-backend.dao.user-dao :as user-dao])
+            [schema-generators.complete :as c])
   (import org.postgresql.util.PSQLException))
 
 (def user-dto {:username "foobar"
