@@ -11,11 +11,8 @@
 (s/defschema New {:username String
                   :name String
                   :password String})
-
 (s/defschema Model (into (dissoc model/Model :id) New))
-
 (s/defschema ModelStripped (dissoc Model :password))
-
 (s/defschema LoginUser {:username String
                         :password String})
 
