@@ -19,27 +19,12 @@
   (if (= 0 (count (get-table-names)))
     (migrations/migrate)))
 
-(defn drop-and-create-tables []
-  (drop-all-tables db-spec)
-  (migrations/migrate))
-
 (defmacro without-fk-constraints [tx & body]
   `(do
     (disable-fks-in-postgres ~tx)
     (let [result# (do ~@body)]
       (enable-fks-in-postgres ~tx)
       result#)))
-
-;; TODO: refactor together with fetch-input-schema-from-dao-fn
-(defn fetch-input-schema-from-service-fn [fn-var]
-  (let [ns (:ns (meta fn-var))
-        [[_ _ schema]] (:raw-arglists (meta fn-var))]
-    (->> schema (ns-resolve ns) var-get)))
-
-(defn fetch-input-schema-from-dao-fn [fn-var]
-  (let [ns (:ns (meta fn-var))
-        [[_ _ _ schema]] (:raw-arglists (meta fn-var))]
-    (->> schema (ns-resolve ns) var-get)))
 
 (defn disable-fks-in-postgres [tx]
   (jdbc/execute! tx ["SET session_replication_role = replica"]))
@@ -57,7 +42,7 @@
              :expires timestamp}
             jws-shared-secret))
 
-(def test-user "Username!")
+(def test-user "username")
 
 (defn create-test-login-token
   ([] (create-test-login-token test-user))
@@ -69,31 +54,10 @@
 
 ;; route requests: new
 
-(defn new-room
-  ([input] (app (-> (mock/request :post "/api/v0/room")
-                  (mock/content-type "application/json")
-                  (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                  (mock/body (cheshire/generate-string input)))))
-  ([] (new-room {:name "Room!"})))
-
 (defn new-account
   ([input] (app (-> (mock/request :put "/api/v0/user")
-                  (mock/content-type "application/json")
-                  (mock/body (cheshire/generate-string input)))))
-  ([] (new-account {:username test-user
-                    :password "hunter2"
-                    :full_name "Real name!"})))
-
-(defn new-participant
-  ([input] (app (-> (mock/request :post "/api/v0/participant")
                     (mock/content-type "application/json")
-                    (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                    (mock/body (cheshire/generate-string input))))))
-
-(defn new-message
-  ([input] (new-message input (create-test-login-token)))
-  ([input authorization]
-    (app (-> (mock/request :post "/api/v0/message")
-             (mock/content-type "application/json")
-             (mock/header "Authorization" (str "Bearer " authorization))
-             (mock/body (cheshire/generate-string input))))))
+                    (mock/body (cheshire/generate-string input)))))
+  ([] (new-account {:username test-user
+                    :password "password"
+                    :name "name"})))

@@ -10,11 +10,11 @@
 
 
 (def user-data {:username test-user
-               :full_name "Foo Bar"
+               :name "Foo Bar"
                :password "hunter2"})
 
 (def user-data-expected (contains {:username test-user}
-                                  {:full_name "Foo Bar"}
+                                  {:name "Foo Bar"}
                                   {:password "hunter2"}
                                   {:created #(instance? java.util.Date %)}
                                   {:updated #(instance? java.util.Date %)}
@@ -36,35 +36,11 @@
         (user) => user-data-expected)
       (fact "Duplicate username entry not allowed"
         (user)
-        (user) => (throws clojure.lang.ExceptionInfo 
-                                                  "Duplicate username"))))
+        (user) => (throws clojure.lang.ExceptionInfo "Duplicate username"))))
   (facts "Dao: get by username"
     (with-state-changes [(before :facts (empty-and-create-tables))]
       (fact "Basic case"
         (user)
         (user {:username "barfoo"})
         (dao/get-by db-spec {:username test-user})
-          => (contains [(contains {:username test-user})]))))
-
-  (facts "Get-by-username"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact
-        (user)
-        (dao/get-by-username db-spec test-user)
-          => (contains {:username test-user}))))
-
-  (facts "Dao: user update"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Basic case"
-        (let [_ (user)]
-          (dao/update! db-spec {:username test-user
-                                :full_name "Bar Foo"
-                                :password "hunter2"})
-            => (contains {:username test-user}
-                         {:full_name "Bar Foo"})))))
-  (facts "Dao: user delete"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Basic case"
-        (let [{username :username} (user)]
-           (dao/delete! db-spec {:username username}) => (contains {:deleted true})
-           (dao/get-by db-spec nil) => [])))))
+          => (contains [(contains {:username test-user})])))))

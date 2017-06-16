@@ -12,11 +12,11 @@
     (PUT "/" []
       :body-params [username :- String,
                     password :- String,
-                    full_name :- String]
+                    name :- String]
       :summary "Creates a user account with given unique username,
                 password and full name (optional)"
       (user-service/user-create!
             {:username username
              :password password
-             :full_name full_name})
+             :name name})
       (created))))

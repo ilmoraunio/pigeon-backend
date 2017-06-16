@@ -13,18 +13,18 @@
       (fact
         (let [account  {:username "User!"
                         :password "hunter2"
-                        :full_name "Full Name!"}
+                        :name "Full Name!"}
               _        (new-account account)
               response (app (-> (mock/request :post "/api/v0/session")
                                 (mock/content-type "application/json")
-                                (mock/body (cheshire/generate-string (dissoc account :full_name)))))
+                                (mock/body (cheshire/generate-string (dissoc account :name)))))
               body     (parse-body (:body response))]
           (:status response) => 200))
 
       (fact "Incorrect credentials"
         (let [account  {:username "User!"
                         :password "hunter2"
-                        :full_name "Full Name!"}
+                        :name "Full Name!"}
               _        (new-account account)
               response (app (-> (mock/request :post "/api/v0/session")
                                 (mock/content-type "application/json")

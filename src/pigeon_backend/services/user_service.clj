@@ -25,20 +25,3 @@
         (if (nil? user-model)
           false
           (hashers/check password (:password user-model))))))
-
-(s/defn get-by-username [username :- String]
-  {:post [(s/validate Model %)]}
-  (jdbc/with-db-transaction [tx db-spec]
-    (user-dao/get-by-username tx username)))
-
-(s/defn user-update! [user :- Existing]
-  {:post [(s/validate ModelStripped %)]}
-  (st/select-schema (jdbc/with-db-transaction [tx db-spec]
-                      (user-dao/update! tx user)) 
-                    ModelStripped))
-
-(s/defn user-delete! [user :- model/Existing]
-  {:post [(s/validate ModelStripped %)]}
-  (st/select-schema (jdbc/with-db-transaction [tx db-spec]
-                      (user-dao/delete! tx user))
-                    ModelStripped))
