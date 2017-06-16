@@ -5,8 +5,7 @@
             [schema.core :as s]
             [pigeon-backend.services.model :as model]
             [schema-tools.core :as st]
-            [pigeon-backend.dao.psql-util :refer [execute-sql-or-handle-exception]]
-            [pigeon-backend.dao.dao-util :refer [initialize-query-data]]
+            [pigeon-backend.services.util :refer [initialize-query-data]]
             [yesql.core :refer [defquery]]))
 
 (s/defschema New {:username String

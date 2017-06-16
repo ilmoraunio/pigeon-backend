@@ -1,4 +1,4 @@
-(ns pigeon-backend.dao.dao-util)
+(ns pigeon-backend.services.util)
 
 (defn initialize-query-data [model]
   (-> (into {} (map (fn [x] (assoc x 1 nil)) model))
