@@ -1,0 +1,7 @@
+{:up ["CREATE TABLE token-list (username varchar(254) references users(username),
+                                token varchar(2000),
+                                deleted boolean default false,
+                                created timestamp default NOW(),
+                                updated timestamp default NOW(),
+                                version integer default 0);"]
+ :down [""]}

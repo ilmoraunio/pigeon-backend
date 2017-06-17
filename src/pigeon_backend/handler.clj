@@ -8,7 +8,6 @@
             [environ.core :refer [env]]
             [pigeon-backend.db.migrations :as migrations]
             [ring.middleware.reload :refer [wrap-reload]]
-            [pigeon-backend.routes.registration :refer [registration-routes]]
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
             [pigeon-backend.routes.login :refer [login-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
