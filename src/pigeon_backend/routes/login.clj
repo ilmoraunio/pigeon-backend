@@ -29,9 +29,9 @@
     :tags ["login"]
 
     (POST "/" []
-      :body-params [email :- String])
+      :body-params [email :- String]
       ;; todo: send sms
-      (not-implemented)))
+      (not-implemented))))
 
 (def login-route
   (context "/login" []
