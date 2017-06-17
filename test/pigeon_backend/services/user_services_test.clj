@@ -27,20 +27,18 @@
 (def wrong-credentials-dto {:username "foobar" :password "password123"})
 
 (deftest user-service-crud
-  (facts "Service: user create"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Basic case"
-        (let [returned-dto (service/user-create! user-dto)]
-          returned-dto => expected-user-dto
-          (:password returned-dto) => nil))
-      (fact "Duplicate username entry not allowed"
-        (service/user-create! user-dto)
-        (service/user-create! user-dto) => (throws org.postgresql.util.PSQLException))))
-  (facts "Service: user check credentials"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Success"
-        (let [returned-dto (service/user-create! user-dto)]
-          (service/check-credentials credentials-dto) => true))
-      (fact "Unsuccess!"
-        (let [returned-dto (service/user-create! user-dto)]
-          (service/check-credentials wrong-credentials-dto) => false)))))
+  (with-state-changes [(before :facts (empty-and-create-tables))]
+    (fact
+      (let [returned-dto (service/user-create! user-dto)]
+        returned-dto => expected-user-dto
+        (:password returned-dto) => nil))
+    (fact "Duplicate username entry not allowed"
+      (service/user-create! user-dto)
+      (service/user-create! user-dto) => (throws org.postgresql.util.PSQLException)))
+  (with-state-changes [(before :facts (empty-and-create-tables))]
+    (fact "user check credentials - success"
+      (let [returned-dto (service/user-create! user-dto)]
+        (service/check-credentials credentials-dto) => true))
+    (fact "user check credentials - unsuccesful"
+      (let [returned-dto (service/user-create! user-dto)]
+        (service/check-credentials wrong-credentials-dto) => false))))
