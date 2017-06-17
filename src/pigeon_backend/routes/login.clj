@@ -37,7 +37,7 @@
   (context "/login" []
     :tags ["login"]
 
-    (GET "/" []
-      :query-params [name :- String]
+    (GET "/:token" []
+      :path-params [token :- String]
       ;; todo: verify magic link
       (not-implemented))))
