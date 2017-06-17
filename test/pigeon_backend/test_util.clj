@@ -12,7 +12,11 @@
             [environ.core :refer [env]]
             [clojure.java.jdbc :as jdbc]
             [ring.mock.request :as mock]
-            [pigeon-backend.handler :refer [app]]))
+            [pigeon-backend.handler :refer [app]]
+            [jeesql.core :refer [defqueries]]
+            [buddy.hashers :as hashers]))
+
+(defqueries "sql/user.sql")
 
 (defn empty-and-create-tables []
   (empty-all-tables db-spec)
@@ -55,9 +59,8 @@
 ;; route requests: new
 
 (defn new-account
-  ([input] (app (-> (mock/request :put "/api/v0/user")
-                    (mock/content-type "application/json")
-                    (mock/body (cheshire/generate-string input)))))
+  ([input] (sql-user-create<! db-spec
+             (assoc input :password (hashers/derive (:password input)))))
   ([] (new-account {:username test-user
                     :password "password"
                     :name "name"})))

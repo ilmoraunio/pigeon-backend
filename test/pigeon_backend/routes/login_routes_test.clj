@@ -31,9 +31,3 @@
                                 (mock/body (cheshire/generate-string {:username "User!"
                                                                       :password "wrong password"}))))]
           (:status response) => 401)))))
-
-(deftest login
-  (facts "Log into service"
-    (with-state-changes [(before :facts (empty-and-create-tables))]
-      (fact "Login must work with correct token")
-      (fact "Login must fail with incorrect token"))))
