@@ -23,3 +23,21 @@
           (ok {:session {:token token
                          :username username}}))
         (unauthorized)))))
+
+(def login-token-route
+  (context "/token" []
+    :tags ["login"]
+
+    (POST "/" []
+      :body-params [email :- String])
+      ;; todo: send sms
+      (not-implemented)))
+
+(def login-route
+  (context "/login" []
+    :tags ["login"]
+
+    (GET "/" []
+      :query-params [name :- String]
+      ;; todo: verify magic link
+      (not-implemented))))
