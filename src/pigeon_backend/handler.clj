@@ -36,7 +36,6 @@
      :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
     (context "/api/v0" []
           hello-routes
-          registration-routes
           login-routes)))
 
 (defn coerce-to-integer [v]
