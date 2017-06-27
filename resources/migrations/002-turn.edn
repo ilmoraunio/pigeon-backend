@@ -1,6 +1,7 @@
 {:up ["CREATE TABLE turn (id serial primary key,
                           name varchar(255),
                           ordering integer default 0,
+                          active boolean default false,
                           deleted boolean default false,
                           created timestamp default NOW(),
                           updated timestamp default NOW(),
