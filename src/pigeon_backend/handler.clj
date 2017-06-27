@@ -10,6 +10,7 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
             [pigeon-backend.routes.login :refer [login-routes]]
+            [pigeon-backend.routes.message :refer [message-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [buddy.sign.jws :as jws])
   (:gen-class))
@@ -35,7 +36,8 @@
      :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
     (context "/api/v0" []
           hello-routes
-          login-routes)))
+          login-routes
+          message-routes)))
 
 (defn coerce-to-integer [v]
   (if (string? v)

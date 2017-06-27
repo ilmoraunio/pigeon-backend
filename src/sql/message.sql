@@ -20,7 +20,9 @@ INSERT INTO message (sender,
              message.updated,
              message.version,
              message.deleted,
-             turn.name
+             (message.sender = (:sender)::varchar(255)) as is_from_sender,
+             (SELECT name FROM users where username = message.sender) as sender_name,
+             turn.name as turn_name
         FROM message
   INNER JOIN turn
           ON turn.id = message.turn
