@@ -1,6 +1,6 @@
 -- name: sql-user-create<!
 INSERT INTO users (username, name, password)
-VALUES ((:username)::varchar(254), (:name)::varchar(254), (:password)::text)
+VALUES ((:username)::varchar(255), (:name)::varchar(255), (:password)::text)
 
 -- name: sql-user-get
 SELECT users.username,

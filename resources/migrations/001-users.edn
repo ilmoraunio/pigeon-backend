@@ -1,5 +1,5 @@
-{:up ["CREATE TABLE users (username varchar(254) PRIMARY KEY,
-                           name varchar(254),
+{:up ["CREATE TABLE users (username varchar(255) PRIMARY KEY,
+                           name varchar(255),
                            password text,
                            deleted boolean default false,
                            created timestamp default NOW(),

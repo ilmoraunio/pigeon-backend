@@ -1,0 +1,7 @@
+{:up ["CREATE TABLE time (id serial primary key,
+                          name varchar(255),
+                          deleted boolean default false,
+                          created timestamp default NOW(),
+                          updated timestamp default NOW(),
+                          version integer default 0);"]
+ :down [""]}
