@@ -2,7 +2,7 @@
                              recipient varchar(255) references users(username),
                              actual_recipient varchar(255) references users(username),
                              message text,
-                             time integer references time(id),
+                             turn integer references turn(id),
                              deleted boolean default false,
                              created timestamp default NOW(),
                              updated timestamp default NOW(),
