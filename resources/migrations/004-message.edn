@@ -1,4 +1,5 @@
-{:up ["CREATE TABLE message (sender varchar(255) references users(username),
+{:up ["CREATE TABLE message (id serial primary key,
+                             sender varchar(255) references users(username),
                              recipient varchar(255) references users(username),
                              actual_recipient varchar(255) references users(username),
                              message text,

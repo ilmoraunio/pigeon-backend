@@ -8,10 +8,11 @@ INSERT INTO message (sender,
              (:recipient)::varchar(255),
              (:actual_recipient)::varchar(255),
              (:message)::text,
-             (:turn)::integer);
+             (SELECT turn.id from turn where active = true and deleted = false));
 
 -- name: sql-message-get
-      SELECT message.sender,
+      SELECT message.id,
+             message.sender,
              message.recipient,
              message.actual_recipient,
              message.message,

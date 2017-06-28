@@ -17,11 +17,13 @@
             [buddy.hashers :as hashers]))
 
 (defqueries "sql/user.sql")
+(defqueries "sql/message.sql")
 
 (defn empty-and-create-tables []
-  (empty-all-tables db-spec)
-  (if (= 0 (count (get-table-names db-spec)))
-    (migrations/migrate)))
+  (do
+    (empty-all-tables db-spec)
+    (when (= 0 (count (get-table-names db-spec)))
+      (migrations/migrate))))
 
 (defmacro without-fk-constraints [tx & body]
   `(do
@@ -64,3 +66,10 @@
   ([] (new-account {:username test-user
                     :password "password"
                     :name "name"})))
+
+(defn new-message
+  ([{:keys [sender recipient]}]
+     (sql-message-create<! db-spec {:sender sender
+                                    :recipient recipient
+                                    :actual_recipient recipient
+                                    :message "message"})))
