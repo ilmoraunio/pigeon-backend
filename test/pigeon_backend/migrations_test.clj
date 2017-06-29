@@ -41,6 +41,7 @@
     (fact "Migrate called in main"
       (handler/-main) => irrelevant
       (provided
-        (migrations/migrate) => irrelevant :times 1)
+        (migrations/migrate) => irrelevant :times 1,
+        (migrations/migrate-data) => irrelevant :times 1)
       (against-background
         (ring/serve anything anything) => irrelevant))))

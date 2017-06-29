@@ -55,5 +55,6 @@
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]
     (migrations/migrate)
+    (migrations/migrate-data)
     ; TODO: get production-ready server running here...
     (ring/serve (app-with-middleware) {:port port})))

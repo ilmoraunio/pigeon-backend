@@ -23,7 +23,8 @@
   (do
     (empty-all-tables db-spec)
     (when (= 0 (count (get-table-names db-spec)))
-      (migrations/migrate))))
+      (migrations/migrate))
+    (migrations/migrate-data)))
 
 (defmacro without-fk-constraints [tx & body]
   `(do

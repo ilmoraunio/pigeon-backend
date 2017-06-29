@@ -37,7 +37,9 @@
              :uberjar {:omit-source true
                        :aot :all}}
    :aliases {"migrate" ["run" "-m" "pigeon-backend.db.migrations/migrate"]
-             "rollback" ["run" "-m" "pigeon-backend.db.migrations/rollback"]}
+             "rollback" ["run" "-m" "pigeon-backend.db.migrations/rollback"]
+             "migrate-data" ["run" "-m" "pigeon-backend.db.migrations/migrate-data"]
+             "rollback-data" ["run" "-m" "pigeon-backend.db.migrations/rollback-data"]}
    :main pigeon-backend.handler
    :min-lein-version "2.5.3"
    :resource-paths ["src" "resources"])
