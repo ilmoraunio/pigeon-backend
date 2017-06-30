@@ -10,7 +10,7 @@
 
 (def users-routes
   (context "/" []
-    :tags ["message"]
+    :tags ["users"]
 
     (GET "/users/:username" []
       :path-params [username :- String]
