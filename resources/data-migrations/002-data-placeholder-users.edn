@@ -1,0 +1,5 @@
+;; test password: hunter2
+{:up ["INSERT INTO users (username, password, name) values
+       ('foo', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
+      ,('bar', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name');"]
+ :down [""]}
