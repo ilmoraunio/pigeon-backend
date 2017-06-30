@@ -24,6 +24,10 @@
       (sql-user-create<! tx (assoc data :password (hashers/derive password)))
       ModelStripped)))
 
+(s/defn list-users [data :- {:username String}]
+  (jdbc/with-db-transaction [tx db-spec]
+    (sql-list-users tx data)))
+
 (s/defn check-credentials [{:keys [username password]} :- LoginUser]
                           {:post [(instance? Boolean %)]}
     (jdbc/with-db-transaction [tx db-spec]

@@ -9,7 +9,7 @@
             [environ.core :refer [env]]))
 
 (def message-routes
-  (context "/" []
+  (context "/message" []
     :tags ["message"]
 
     (GET "/sender/:sender/recipient/:recipient" []

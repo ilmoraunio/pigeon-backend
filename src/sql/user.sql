@@ -21,3 +21,9 @@ WHERE ((:username)::varchar(200) IS NULL OR users.username = (:username)::varcha
 -- TODO order dynamic
 ORDER BY users.created ASC
 LIMIT (:limit)::integer OFFSET (:offset)::integer
+
+-- name: sql-list-users
+SELECT users.username,
+       users.name
+  FROM users
+ WHERE users.username != (:username)::varchar(255);
