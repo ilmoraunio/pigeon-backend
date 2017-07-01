@@ -1,0 +1,16 @@
+{:up ["CREATE TYPE users_edge_type AS ENUM ('visibility');
+      CREATE TABLE users_edge (id serial primary key,
+                               from_node varchar(255) references users(username),
+                               to_node varchar(255) references users(username),
+                               type users_edge_type,
+                               deleted boolean default false,
+                               created timestamp default NOW(),
+                               updated timestamp default NOW(),
+                               version integer default 0);
+       CREATE OR REPLACE VIEW visibility
+                    AS SELECT from_node, array_agg(to_node)
+                         FROM users_edge
+                        WHERE type = 'visibility'
+                          AND deleted = false
+                     GROUP BY from_node;"]
+ :down [""]}
