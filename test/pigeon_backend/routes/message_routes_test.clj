@@ -11,14 +11,14 @@
   (with-state-changes [(before :facts (empty-and-create-tables))]
     (fact "Insertion"
       (let [;; todo: remove user data initialization and then decomment below
-            ;;account1  {:username "foo"
-            ;;           :password "hunter2"
-            ;;           :name "name"}
-            ;;account2  {:username "bar"
-            ;;           :password "hunter2"
-            ;;           :name "name"}
-            ;;_        (new-account account1)
-            ;;_        (new-account account2)
+            account1  {:username "foo"
+                       :password "hunter2"
+                       :name "name"}
+            account2  {:username "bar"
+                       :password "hunter2"
+                       :name "name"}
+            _        (new-account account1)
+            _        (new-account account2)
             response (app (-> (mock/request :post "/api/v0/message/sender/foo/recipient/bar")
                               (mock/content-type "application/json")
                               (mock/body (cheshire/generate-string {:message "message"}))))
@@ -28,14 +28,14 @@
 
     (fact "Listing"
       (let [;; todo: remove user data initialization and then decomment below
-            ;;account1  {:username "foo"
-            ;;           :password "hunter2"
-            ;;           :name "name"}
-            ;;account2  {:username "bar"
-            ;;           :password "hunter2"
-            ;;           :name "name"}
-            ;;_        (new-account account1)
-            ;;_        (new-account account2)
+            account1  {:username "foo"
+                       :password "hunter2"
+                       :name "name"}
+            account2  {:username "bar"
+                       :password "hunter2"
+                       :name "name"}
+            _        (new-account account1)
+            _        (new-account account2)
             _        (new-message {:sender "foo" :recipient "bar"})
             _        (new-message {:sender "bar" :recipient "foo"})
             response (app (-> (mock/request :get "/api/v0/message/sender/foo/recipient/bar")

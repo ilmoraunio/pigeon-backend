@@ -11,14 +11,14 @@
   (with-state-changes [(before :facts (empty-and-create-tables))]
     (fact
       (let [;; todo: decomment once users data initialization ddl removed
-            ;;account1 {:username "foo"
-            ;;          :password "hunter2"
-            ;;          :name "name"}
-            ;;account2 {:username "bar"
-            ;;          :password "hunter2"
-            ;;          :name "name"}
-            ;;_        (new-account account1)
-            ;;_        (new-account account2)
+            account1 {:username "foo"
+                      :password "hunter2"
+                      :name "name"}
+            account2 {:username "bar"
+                      :password "hunter2"
+                      :name "name"}
+            _        (new-account account1)
+            _        (new-account account2)
             response (app (-> (mock/request :get "/api/v0/users/foo")
                               (mock/content-type "application/json")))
             body     (parse-body (:body response))]
