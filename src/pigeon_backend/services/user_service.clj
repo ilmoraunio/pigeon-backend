@@ -17,6 +17,7 @@
                         :password String})
 
 (defqueries "sql/user.sql")
+(defqueries "sql/visibility.sql")
 
 (s/defn user-create! [{:keys [password] :as data} :- New] {:post [(s/validate ModelStripped %)]}
   (jdbc/with-db-transaction [tx db-spec]

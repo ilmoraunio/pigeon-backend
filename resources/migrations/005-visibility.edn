@@ -8,7 +8,7 @@
                                updated timestamp default NOW(),
                                version integer default 0);
        CREATE OR REPLACE VIEW visibility
-                    AS SELECT from_node, array_agg(to_node)
+                    AS SELECT from_node, array_agg(to_node) AS to_nodes
                          FROM users_edge
                         WHERE type = 'visibility'
                           AND deleted = false
