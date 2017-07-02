@@ -1,13 +1,13 @@
 ;; test password: hunter2
 {:up ["INSERT INTO users (username, password, name) values
-       ('captured_1', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
-      ,('captured_2', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
-      ,('team_1_supreme_commander', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
-      ,('team_1_player_1', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
-      ,('team_1_player_2', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
-      ,('team_1_player_3', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
-      ,('team_2_supreme_commander', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
-      ,('team_2_player_1', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
-      ,('team_2_player_2', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name')
-      ,('team_2_player_3', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'name');"]
+       ('captured_1', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Kaapatut viestit')
+      ,('captured_2', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Kaapatut viestit')
+      ,('team_1_supreme_commander', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Ylikomentaja')
+      ,('team_1_player_1', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Pohjoinen rintamakomentaja')
+      ,('team_1_player_2', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Keskinen rintamakomentaja')
+      ,('team_1_player_3', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Eteläinen rintamakomentaja')
+      ,('team_2_supreme_commander', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Ylikomentaja')
+      ,('team_2_player_1', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Pohjoinen rintamakomentaja')
+      ,('team_2_player_2', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Keskinen rintamakomentaja')
+      ,('team_2_player_3', 'bcrypt+sha512$a42bd11294af1fffca0720dbef8b4b31$12$51f3a0f34b40e96ed037c9a1f3711a01eb6b8cd16f2837b0', 'Eteläinen rintamakomentaja');"]
  :down [""]}
