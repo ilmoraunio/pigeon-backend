@@ -10,8 +10,7 @@
 (deftest message-routes-test
   (with-state-changes [(before :facts (empty-and-create-tables))]
     (fact "Insertion"
-      (let [;; todo: remove user data initialization and then decomment below
-            account1  {:username "foo"
+      (let [account1  {:username "foo"
                        :password "hunter2"
                        :name "name"}
             account2  {:username "bar"
@@ -27,8 +26,7 @@
         (:message body) => "message"))
 
     (fact "Listing"
-      (let [;; todo: remove user data initialization and then decomment below
-            account1  {:username "foo"
+      (let [account1  {:username "foo"
                        :password "hunter2"
                        :name "name"}
             account2  {:username "bar"

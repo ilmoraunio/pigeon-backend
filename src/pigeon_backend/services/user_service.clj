@@ -25,9 +25,14 @@
       (sql-user-create<! tx (assoc data :password (hashers/derive password)))
       ModelStripped)))
 
-(s/defn list-users [data :- {:username String}]
-  (jdbc/with-db-transaction [tx db-spec]
-    (sql-list-users tx data)))
+(s/defn list-users [{:keys [username]} :- {:username String}]
+  (let [visible-users-for-user (->> (filter #(= (:from_node %) username)
+                                            (sql-get-visibilities db-spec))
+                                    (map :to_nodes)
+                                    flatten
+                                    set)]
+    (filter #(contains? visible-users-for-user (:username %))
+            (sql-list-users db-spec))))
 
 (s/defn check-credentials [{:keys [username password]} :- LoginUser]
                           {:post [(instance? Boolean %)]}
