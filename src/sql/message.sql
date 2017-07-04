@@ -28,10 +28,16 @@ INSERT INTO message (sender,
   INNER JOIN turn
           ON turn.id = message.turn
        WHERE ((message.sender = (:sender)::varchar(255)
-               AND message.actual_recipient = (:recipient)::varchar(255))
+               AND message.recipient = (:recipient)::varchar(255))
            OR (message.sender = (:recipient)::varchar(255)
-               AND message.actual_recipient = (:sender)::varchar(255)))
-         AND ((:turn)::integer IS NULL OR message.turn = (:turn)::integer)
+               AND message.recipient = (:sender)::varchar(255)))
          AND message.deleted = false
     ORDER BY turn.ordering ASC,
              message.created ASC;
+
+-- name: sql-conversations
+SELECT *
+  FROM message
+ WHERE ((:sender)::varchar(255) IS NULL OR message.sender = (:sender)::varchar(255))
+   AND ((:turn)::integer IS NULL OR message.turn = (:turn)::integer)
+   AND message.recipient IN (:recipient)

@@ -16,8 +16,7 @@
       :path-params [sender :- String,
                     recipient :- String]
       (ok (message-service/message-get {:sender sender
-                                        :recipient recipient
-                                        :turn nil})))
+                                        :recipient recipient})))
 
     (POST "/sender/:sender/recipient/:recipient" []
       :path-params [sender :- String
