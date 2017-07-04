@@ -31,6 +31,7 @@ INSERT INTO message (sender,
                AND message.actual_recipient = (:recipient)::varchar(255))
            OR (message.sender = (:recipient)::varchar(255)
                AND message.actual_recipient = (:sender)::varchar(255)))
+         AND ((:turn)::integer IS NULL OR message.turn = (:turn)::integer)
          AND message.deleted = false
     ORDER BY turn.ordering ASC,
              message.created ASC;
