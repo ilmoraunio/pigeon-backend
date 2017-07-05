@@ -19,6 +19,16 @@
         (:status response) => 200
         (:message body) => "message"))
 
+    (fact "Insertion (send_limit, separate multiple)"
+      (defn insert-request [recipient] (app (-> (mock/request :post (str "/api/v0/message/sender/team_1_supreme_commander/recipient/" recipient))
+                                              (mock/content-type "application/json")
+                                              (mock/body (cheshire/generate-string {:message "message"})))))
+      (let [response-1 (insert-request "team_1_player_1")
+            response-2 (insert-request "team_1_player_2")
+            body     (parse-body (:body response-2))]
+        (:status response-1) => 200
+        (:status response-2) => 200))
+
     (fact "Message quota exceeded (send_limit)"
       (defn insert-request [] (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                                        (mock/content-type "application/json")

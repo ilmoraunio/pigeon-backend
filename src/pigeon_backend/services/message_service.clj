@@ -37,8 +37,12 @@
                                                          :turn (:id active-turn)})))
                                        send-limit-rules))
           all-rule-limits-exceeded? (every? true?
-                                            (for [entry send-limit-rules]
-                                              (>= (count (:messages entry)) (:value entry))))
+                                            (for [entry send-limit-rules
+                                                  :let [messages-counted-by-recipient
+                                                          (into {}
+                                                            (for [[k v] (group-by :recipient (:messages entry))]
+                                                              {k (count v)}))]]
+                                              (>= (get messages-counted-by-recipient recipient 0) (:value entry))))
           shared-send-limit-rules (->> (sql-get-send-limit tx)
                                        (filter #(and (= (:from_node %) sender)
                                                  (some #{recipient} (:to_nodes %))
