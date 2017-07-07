@@ -1,0 +1,68 @@
+{:up ["INSERT INTO users_edge
+       (ref,              from_node,         to_node,                    type,                           value) VALUES
+
+       ('duplicate_000',  null,              'team_1_supreme_commander', 'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('duplicate_000',  null,              'captured_2',               'rule_consequence',             null)
+      ,('duplicate_000',  null,              'team_1_supreme_commander', 'rule_consequence',             null)
+      ,('capture_000',    null,              'team_1_supreme_commander', 'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('capture_000',    null,              'captured_2',               'rule_consequence',             null)
+      ,('regular_000',    null,              'team_1_supreme_commander', 'rule_if_six_sided_dice_fuzzy', '1')
+      ,('regular_000',    null,              'team_1_supreme_commander', 'rule_consequence',             null)
+
+      ,('duplicate_001',  null,              'team_1_player_1',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('duplicate_001',  null,              'captured_2',               'rule_consequence',             null)
+      ,('duplicate_001',  null,              'team_1_player_1',          'rule_consequence',             null)
+      ,('capture_001',    null,              'team_1_player_1',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('capture_001',    null,              'captured_2',               'rule_consequence',             null)
+      ,('regular_001',    null,              'team_1_player_1',          'rule_if_six_sided_dice_fuzzy', '1')
+      ,('regular_001',    null,              'team_1_player_1',          'rule_consequence',             null)
+
+      ,('duplicate_002',  null,              'team_1_player_2',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('duplicate_002',  null,              'captured_2',               'rule_consequence',             null)
+      ,('duplicate_002',  null,              'team_1_player_2',          'rule_consequence',             null)
+      ,('capture_002',    null,              'team_1_player_2',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('capture_002',    null,              'captured_2',               'rule_consequence',             null)
+      ,('regular_002',    null,              'team_1_player_2',          'rule_if_six_sided_dice_fuzzy', '1')
+      ,('regular_002',    null,              'team_1_player_2',          'rule_consequence',             null)
+
+      ,('duplicate_003',  null,              'team_1_player_3',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('duplicate_003',  null,              'captured_2',               'rule_consequence',             null)
+      ,('duplicate_003',  null,              'team_1_player_3',          'rule_consequence',             null)
+      ,('capture_003',    null,              'team_1_player_3',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('capture_003',    null,              'captured_2',               'rule_consequence',             null)
+      ,('regular_003',    null,              'team_1_player_3',          'rule_if_six_sided_dice_fuzzy', '1')
+      ,('regular_003',    null,              'team_1_player_3',          'rule_consequence',             null)
+
+      ,('duplicate_004',  null,              'team_2_supreme_commander', 'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('duplicate_004',  null,              'captured_1',               'rule_consequence',             null)
+      ,('duplicate_004',  null,              'team_2_supreme_commander', 'rule_consequence',             null)
+      ,('capture_004',    null,              'team_2_supreme_commander', 'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('capture_004',    null,              'captured_1',               'rule_consequence',             null)
+      ,('regular_004',    null,              'team_2_supreme_commander', 'rule_if_six_sided_dice_fuzzy', '1')
+      ,('regular_004',    null,              'team_2_supreme_commander', 'rule_consequence',             null)
+
+      ,('duplicate_005',  null,              'team_2_player_1',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('duplicate_005',  null,              'captured_1',               'rule_consequence',             null)
+      ,('duplicate_005',  null,              'team_2_player_1',          'rule_consequence',             null)
+      ,('capture_005',    null,              'team_2_player_1',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('capture_005',    null,              'captured_1',               'rule_consequence',             null)
+      ,('regular_005',    null,              'team_2_player_1',          'rule_if_six_sided_dice_fuzzy', '1')
+      ,('regular_005',    null,              'team_2_player_1',          'rule_consequence',             null)
+
+      ,('duplicate_006',  null,              'team_2_player_2',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('duplicate_006',  null,              'captured_1',               'rule_consequence',             null)
+      ,('duplicate_006',  null,              'team_2_player_2',          'rule_consequence',             null)
+      ,('capture_006',    null,              'team_2_player_2',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('capture_006',    null,              'captured_1',               'rule_consequence',             null)
+      ,('regular_006',    null,              'team_2_player_2',          'rule_if_six_sided_dice_fuzzy', '1')
+      ,('regular_006',    null,              'team_2_player_2',          'rule_consequence',             null)
+
+      ,('duplicate_007',  null,              'team_2_player_3',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('duplicate_007',  null,              'captured_1',               'rule_consequence',             null)
+      ,('duplicate_007',  null,              'team_2_player_3',          'rule_consequence',             null)
+      ,('capture_007',    null,              'team_2_player_3',          'rule_if_six_sided_dice_fuzzy', '0.167')
+      ,('capture_007',    null,              'captured_1',               'rule_consequence',             null)
+      ,('regular_007',    null,              'team_2_player_3',          'rule_if_six_sided_dice_fuzzy', '1')
+      ,('regular_007',    null,              'team_2_player_3',          'rule_consequence',             null)
+      ;"]
+ :down [""]}
