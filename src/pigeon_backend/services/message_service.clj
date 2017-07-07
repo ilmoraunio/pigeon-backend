@@ -24,7 +24,9 @@
                    :short_circuit_rule_chain_if_true Boolean
                    :short_circuit_rule_chain_if_false Boolean
                    :order_no s/Int
-                   :if_satisfied_then_direct_to_nodes [String]})
+                   :if_satisfied_then_direct_to_nodes [String]
+                   :if_satisfied_then_duplicate_to_nodes [String]
+                   :if_satisfied_then_duplicate_from_nodes [String]})
 
 (defqueries "sql/message.sql")
 (defqueries "sql/send_limit.sql")
@@ -125,9 +127,16 @@
         ;; todo: log applicable-rules
 
       (if (not-empty rules)
-        (doseq [{:keys [if_satisfied_then_direct_to_nodes]} (determine-applicable-rules rules)]
+        (doseq [{:keys [if_satisfied_then_direct_to_nodes
+                        if_satisfied_then_duplicate_to_nodes
+                        if_satisfied_then_duplicate_from_nodes]} (determine-applicable-rules rules)]
           (doseq [to_node if_satisfied_then_direct_to_nodes]
-            (sql-message-create<! tx (assoc data :actual_recipient to_node))))
+            (sql-message-create<! tx (assoc data :actual_recipient to_node)))
+          (doseq [duplicate-sender if_satisfied_then_duplicate_from_nodes
+                  duplicate-recipient if_satisfied_then_duplicate_to_nodes]
+            (sql-message-create<! tx (assoc data :sender duplicate-sender
+                                                 :recipient duplicate-recipient
+                                                 :actual_recipient duplicate-recipient))))
         (sql-message-create<! tx (assoc data :actual_recipient recipient))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean

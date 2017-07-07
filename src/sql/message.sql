@@ -41,10 +41,15 @@ INSERT INTO message_attempt (sender,
         FROM message
   INNER JOIN turn
           ON turn.id = message.turn
+  INNER JOIN (SELECT from_node, to_node
+                FROM (SELECT from_node, unnest(to_nodes) AS to_node
+                        FROM visibility) as _) AS visibility
+          ON visibility.from_node = (:sender)::varchar(255)
+         AND visibility.to_node = (:recipient)::varchar(255)
        WHERE ((message.sender = (:sender)::varchar(255)
-               AND message.recipient = (:recipient)::varchar(255))
-           OR (message.sender = (:recipient)::varchar(255)
-               AND message.recipient = (:sender)::varchar(255)))
+           AND message.recipient = (:recipient)::varchar(255))
+          OR (message.sender = (:recipient)::varchar(255)
+          AND message.actual_recipient = (:sender)::varchar(255)))
          AND message.deleted = false
     ORDER BY turn.ordering ASC,
              message.created ASC;

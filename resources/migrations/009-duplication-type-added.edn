@@ -1,0 +1,34 @@
+{:up ["COMMIT;
+       ALTER TYPE users_edge_type ADD VALUE 'rule_duplication';
+       BEGIN TRANSACTION;
+       CREATE OR REPLACE VIEW rule AS
+          SELECT ue1.ref,
+                 ue1.order_no,
+                 ue1.short_circuit_rule_chain_if_true,
+                 ue1.short_circuit_rule_chain_if_false,
+                 ue1.type,
+                 ue1.from_node,
+                 ue1.to_node,
+                 ue1.value::jsonb,
+                 array_remove(array_agg(ue2.to_node), NULL) as if_satisfied_then_direct_to_nodes,
+                 array_remove(array_agg(distinct ue3.from_node), NULL) as if_satisfied_then_duplicate_from_nodes,
+                 array_remove(array_agg(distinct ue3.to_node), NULL) as if_satisfied_then_duplicate_to_nodes
+            FROM users_edge ue1
+       LEFT JOIN users_edge ue2
+              ON ue1.ref = ue2.ref
+             AND ue2.type = 'rule_consequence'
+       LEFT JOIN users_edge ue3
+              ON ue1.ref = ue3.ref
+             AND ue3.type = 'rule_duplication'
+           WHERE ue1.type IN ('rule_if_six_sided_dice_fuzzy')
+        GROUP BY ue1.ref,
+                 ue1.short_circuit_rule_chain_if_true,
+                 ue1.short_circuit_rule_chain_if_false,
+                 ue1.order_no,
+                 ue1.type,
+                 ue1.from_node,
+                 ue1.to_node,
+                 ue1.value::jsonb
+        ORDER BY ue1.to_node,
+                 ue1.order_no;"]
+ :down [""]}
