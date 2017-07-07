@@ -22,6 +22,6 @@
       :path-params [sender :- String
                     recipient :- String]
       :body-params [message :- String]
-      (ok (message-service/message-create! {:sender sender
-                                            :recipient recipient
-                                            :message message})))))
+      (created (message-service/message-create! {:sender sender
+                                                 :recipient recipient
+                                                 :message message})))))

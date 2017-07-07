@@ -15,41 +15,36 @@
     (fact "Insertion"
       (let [response (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                               (mock/content-type "application/json")
-                              (mock/body (cheshire/generate-string {:message "message"}))))
-            body     (parse-body (:body response))]
-        (:status response) => 200
-        (:message body) => "message"))
+                              (mock/body (cheshire/generate-string {:message "message"}))))]
+        (:status response) => 201))
 
     (fact "Insertion (send_limit, separate multiple)"
       (defn insert-request [recipient] (app (-> (mock/request :post (str "/api/v0/message/sender/team_1_supreme_commander/recipient/" recipient))
-                                              (mock/content-type "application/json")
-                                              (mock/body (cheshire/generate-string {:message "message"})))))
+                                                (mock/content-type "application/json")
+                                                (mock/body (cheshire/generate-string {:message "message"})))))
       (let [response-1 (insert-request "team_1_player_1")
-            response-2 (insert-request "team_1_player_2")
-            body     (parse-body (:body response-2))]
-        (:status response-1) => 200
-        (:status response-2) => 200))
+            response-2 (insert-request "team_1_player_2")]
+        (:status response-1) => 201
+        (:status response-2) => 201))
 
     (fact "Message quota exceeded (send_limit)"
       (defn insert-request [] (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                                        (mock/content-type "application/json")
                                        (mock/body (cheshire/generate-string {:message "message"})))))
       (let [response-1 (insert-request)
-            response-2 (insert-request)
-            body     (parse-body (:body response-2))]
-        (:status response-1) => 200
+            response-2 (insert-request)]
+        (:status response-1) => 201
         (:status response-2) => 400))
 
-    (comment (fact "Message quota exceeded (shared_send_limit)"
-               (let [response-1 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_2")
-                                       (mock/content-type "application/json")
-                                       (mock/body (cheshire/generate-string {:message "message"}))))
-                     response-2 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_3")
-                                       (mock/content-type "application/json")
-                                       (mock/body (cheshire/generate-string {:message "message"}))))
-                     body     (parse-body (:body response-2))]
-                 (:status response-1) => 200
-                 (:status response-2) => 400)))
+    (fact "Message quota exceeded (shared_send_limit)"
+      (let [response-1 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_2")
+                              (mock/content-type "application/json")
+                              (mock/body (cheshire/generate-string {:message "message"}))))
+            response-2 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_3")
+                              (mock/content-type "application/json")
+                              (mock/body (cheshire/generate-string {:message "message"}))))]
+        (:status response-1) => 201
+        (:status response-2) => 400))
 
     (fact "Listing"
       (let [account1  {:username "foo"
