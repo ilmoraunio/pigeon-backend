@@ -10,6 +10,7 @@
 
 (deftest message-routes-test
   (with-state-changes [(before :facts (do (empty-and-create-tables)
+                                          ;; todo: fix tests to be deterministic
                                           (migrations/migrate-data-extra)))]
     (fact "Insertion"
       (let [response (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
