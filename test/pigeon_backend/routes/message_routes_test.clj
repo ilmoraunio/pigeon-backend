@@ -38,11 +38,11 @@
 
     (fact "Message quota exceeded (shared_send_limit)"
       (let [response-1 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_2")
-                              (mock/content-type "application/json")
-                              (mock/body (cheshire/generate-string {:message "message"}))))
+                                (mock/content-type "application/json")
+                                (mock/body (cheshire/generate-string {:message "message"}))))
             response-2 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_3")
-                              (mock/content-type "application/json")
-                              (mock/body (cheshire/generate-string {:message "message"}))))]
+                                (mock/content-type "application/json")
+                                (mock/body (cheshire/generate-string {:message "message"}))))]
         (:status response-1) => 201
         (:status response-2) => 400))
 
