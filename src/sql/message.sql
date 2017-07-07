@@ -8,7 +8,21 @@ INSERT INTO message (sender,
              (:recipient)::varchar(255),
              (:actual_recipient)::varchar(255),
              (:message)::text,
-             (SELECT turn.id from turn where active = true and deleted = false));
+             (SELECT turn.id
+                FROM turn
+               WHERE active = true
+                 AND deleted = false));
+
+-- name: sql-message-attempt-create<!
+INSERT INTO message_attempt (sender,
+                             recipient,
+                             turn)
+     VALUES ((:sender)::varchar(255),
+             (:recipient)::varchar(255),
+             (SELECT turn.id
+                FROM turn
+               WHERE active = true
+                 AND deleted = false));
 
 -- name: sql-message-get
       SELECT message.id,
@@ -37,7 +51,7 @@ INSERT INTO message (sender,
 
 -- name: sql-conversations
 SELECT *
-  FROM message
- WHERE ((:sender)::varchar(255) IS NULL OR message.sender = (:sender)::varchar(255))
-   AND ((:turn)::integer IS NULL OR message.turn = (:turn)::integer)
-   AND message.recipient IN (:recipient)
+  FROM message_attempt
+ WHERE ((:sender)::varchar(255) IS NULL OR message_attempt.sender = (:sender)::varchar(255))
+   AND ((:turn)::integer IS NULL OR message_attempt.turn = (:turn)::integer)
+   AND message_attempt.recipient IN (:recipient)

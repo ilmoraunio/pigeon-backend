@@ -116,18 +116,19 @@
                                                      (>= (count (:messages entry)) (:value entry))))
           rules (sql-get-rule tx {:recipient recipient})]
 
-;;      (when (and all-rule-limits-exceeded?
-;;                 all-shared-rule-limits-exceeded?)
-;;        (throw (ex-info "Message quota exceeded" data)))
-;;
+      (when (and all-rule-limits-exceeded?
+                 all-shared-rule-limits-exceeded?)
+        (throw (ex-info "Message quota exceeded" data)))
+
+      (sql-message-attempt-create<! tx data)
+
         ;; todo: log applicable-rules
 
-        (if (not-empty rules)
-          (doseq [{:keys [if_satisfied_then_direct_to_nodes]} (determine-applicable-rules rules)]
-            (doseq [to_node if_satisfied_then_direct_to_nodes]
-              (sql-message-create<! tx (assoc data :actual_recipient to_node))))
-          (sql-message-create<! tx (assoc data :actual_recipient recipient)))
-      )))
+      (if (not-empty rules)
+        (doseq [{:keys [if_satisfied_then_direct_to_nodes]} (determine-applicable-rules rules)]
+          (doseq [to_node if_satisfied_then_direct_to_nodes]
+            (sql-message-create<! tx (assoc data :actual_recipient to_node))))
+        (sql-message-create<! tx (assoc data :actual_recipient recipient))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
                                                                     :turn_name String
