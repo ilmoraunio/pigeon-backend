@@ -25,4 +25,5 @@ LIMIT (:limit)::integer OFFSET (:offset)::integer
 -- name: sql-list-users
 SELECT users.username,
        users.name
-  FROM users;
+  FROM users
+ WHERE users.deleted = false;

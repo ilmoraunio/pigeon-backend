@@ -60,3 +60,4 @@ SELECT *
  WHERE ((:sender)::varchar(255) IS NULL OR message_attempt.sender = (:sender)::varchar(255))
    AND ((:turn)::integer IS NULL OR message_attempt.turn = (:turn)::integer)
    AND message_attempt.recipient IN (:recipient)
+   AND message_attempt.deleted = false
