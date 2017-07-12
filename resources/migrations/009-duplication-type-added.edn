@@ -17,10 +17,13 @@
        LEFT JOIN users_edge ue2
               ON ue1.ref = ue2.ref
              AND ue2.type = 'rule_consequence'
+             AND ue2.deleted = false
        LEFT JOIN users_edge ue3
               ON ue1.ref = ue3.ref
              AND ue3.type = 'rule_duplication'
+             AND ue3.deleted = false
            WHERE ue1.type IN ('rule_if_six_sided_dice_fuzzy')
+             AND ue1.deleted = false
         GROUP BY ue1.ref,
                  ue1.short_circuit_rule_chain_if_true,
                  ue1.short_circuit_rule_chain_if_false,
