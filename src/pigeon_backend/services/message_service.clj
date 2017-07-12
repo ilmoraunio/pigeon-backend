@@ -60,9 +60,11 @@
           0 realized-result)
 
         take-last-element?
-        (let [[{:keys [type realized_value value]} & _] (drop take-count realized-result)]
-          (case type
-                "rule_if_six_sided_dice_fuzzy" (<= realized_value value)))
+        (let [[{:keys [type realized_value value]} & coll] (drop take-count realized-result)]
+          (if (seq coll)
+            (case type
+              "rule_if_six_sided_dice_fuzzy" (<= realized_value value))
+            false))
 
         applicable-rules
         (filter (fn [{:keys [type
@@ -72,8 +74,9 @@
                         "rule_if_six_sided_dice_fuzzy"
                         (<= realized_value value)))
           (take (if take-last-element?
-            (inc take-count)
-            take-count) realized-result))]
+                  (inc take-count)
+                  take-count)
+                realized-result))]
 
     applicable-rules))
 
