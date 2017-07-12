@@ -18,4 +18,11 @@
                                      (mock/content-type "application/json")))
                    body     (parse-body (:body response))]
                (:status response) => 200
-               body => #(n-of % 22)))))
+               body => #(n-of % 22)))
+
+           (fact "Activate turn"
+             (let [response (app (-> (mock/request :post "/api/v0/turn/2")
+                                     (mock/content-type "application/json")))
+                   body     (parse-body (:body response))]
+               (:status response) => 200
+               body => (contains {:id 2})))))

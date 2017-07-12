@@ -17,3 +17,9 @@
   {:post [(s/validate [Model] %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (sql-turn-get tx)))
+
+(s/defn turn-update! [data :- {:id s/Int}]
+  {:post [(s/validate Model %)]}
+  (jdbc/with-db-transaction [tx db-spec]
+    (sql-inactivate-turn<! tx)
+    (sql-activate-turn<! tx data)))

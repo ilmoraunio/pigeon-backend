@@ -13,14 +13,8 @@
     :tags ["turn"]
 
     (GET "/" []
-      :path-params []
       (ok (turn-service/turn-get)))
 
-    ;;(POST "/sender/:sender/recipient/:recipient" []
-    ;;  :path-params [sender :- String
-    ;;                recipient :- String]
-    ;;  :body-params [message :- String]
-    ;;  (created (message-service/message-create! {:sender sender
-    ;;                                             :recipient recipient
-    ;;                                             :message message})))
-    ))
+    (POST "/:id" []
+      :path-params [id :- String]
+      (ok (turn-service/turn-update! {:id id})))))
