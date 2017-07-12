@@ -12,6 +12,7 @@
             [pigeon-backend.routes.login :refer [login-routes]]
             [pigeon-backend.routes.message :refer [message-routes]]
             [pigeon-backend.routes.users :refer [users-routes]]
+            [pigeon-backend.routes.turn :refer [turn-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [buddy.sign.jws :as jws])
   (:gen-class))
@@ -39,7 +40,8 @@
           hello-routes
           login-routes
           message-routes
-          users-routes)))
+          users-routes
+          turn-routes)))
 
 (defn coerce-to-integer [v]
   (if (string? v)
