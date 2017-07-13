@@ -70,6 +70,9 @@
                        (mock/body (cheshire/generate-string {:message "message"}))))
             [{id :id} & _]   (parse-body (:body (app (-> (mock/request :get "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                                                    (mock/content-type "application/json")))))
-            response (app (-> (mock/request :delete (str "/api/v0/message/" id))
-                              (mock/content-type "application/json")))]
-        (:status response) => 204))))
+            response-delete (app (-> (mock/request :delete (str "/api/v0/message/" id))
+                                     (mock/content-type "application/json")))
+            messages (parse-body (:body (app (-> (mock/request :get "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
+                                                 (mock/content-type "application/json")))))]
+        (:status response-delete) => 204
+        messages => empty?))))
