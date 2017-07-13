@@ -11,6 +11,7 @@
                   :recipient String
                   :message String})
 (s/defschema Model (merge model/Model New {:actual_recipient String
+                                           :message_attempt s/Int
                                            :turn s/Int}))
 (s/defschema Get {:sender String
                   :recipient String})
@@ -108,22 +109,23 @@
                  all-shared-rule-limits-exceeded?)
         (throw (ex-info "Message quota exceeded" data)))
 
-      (sql-message-attempt-create<! tx data)
-
-        ;; todo: log applicable-rules
-
-      (if (not-empty rules)
-        (doseq [{:keys [if_satisfied_then_direct_to_nodes
-                        if_satisfied_then_duplicate_to_nodes
-                        if_satisfied_then_duplicate_from_nodes]} (determine-applicable-rules rules)]
-          (doseq [to_node if_satisfied_then_direct_to_nodes]
-            (sql-message-create<! tx (assoc data :actual_recipient to_node)))
-          (doseq [duplicate-sender if_satisfied_then_duplicate_from_nodes
-                  duplicate-recipient if_satisfied_then_duplicate_to_nodes]
-            (sql-message-create<! tx (assoc data :sender duplicate-sender
-                                                 :recipient duplicate-recipient
-                                                 :actual_recipient duplicate-recipient))))
-        (sql-message-create<! tx (assoc data :actual_recipient recipient))))))
+      (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)]
+        ;; todo: log/persist applicable-rules
+        (if (not-empty rules)
+          (doseq [{:keys [if_satisfied_then_direct_to_nodes
+                          if_satisfied_then_duplicate_to_nodes
+                          if_satisfied_then_duplicate_from_nodes]} (determine-applicable-rules rules)]
+            (doseq [to_node if_satisfied_then_direct_to_nodes]
+              (sql-message-create<! tx (assoc data :actual_recipient to_node
+                                                   :message_attempt message-attempt-id)))
+            (doseq [duplicate-sender if_satisfied_then_duplicate_from_nodes
+                    duplicate-recipient if_satisfied_then_duplicate_to_nodes]
+              (sql-message-create<! tx (assoc data :sender duplicate-sender
+                                                   :recipient duplicate-recipient
+                                                   :actual_recipient duplicate-recipient
+                                                   :message_attempt message-attempt-id))))
+          (sql-message-create<! tx (assoc data :actual_recipient recipient
+                                               :message_attempt message-attempt-id)))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
                                                                     :turn_name String
@@ -138,3 +140,11 @@
 (s/defn message-undelete! [data :- Undeletable]
   (jdbc/with-db-transaction [tx db-spec]
     (sql-message-set-deleted<! tx (assoc data :deleted false))))
+
+(s/defn message-attempt-delete! [data :- Deletable]
+  (jdbc/with-db-transaction [tx db-spec]
+    (sql-message-attempt-set-deleted<! tx (assoc data :deleted true))))
+
+(s/defn message-attempt-undelete! [data :- Undeletable]
+  (jdbc/with-db-transaction [tx db-spec]
+    (sql-message-attempt-set-deleted<! tx (assoc data :deleted false))))

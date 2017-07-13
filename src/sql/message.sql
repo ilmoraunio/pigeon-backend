@@ -3,11 +3,13 @@ INSERT INTO message (sender,
                      recipient,
                      actual_recipient,
                      message,
+                     message_attempt,
                      turn)
      VALUES ((:sender)::varchar(255),
              (:recipient)::varchar(255),
              (:actual_recipient)::varchar(255),
              (:message)::text,
+             (:message_attempt)::integer,
              (SELECT turn.id
                 FROM turn
                WHERE active = true
@@ -31,6 +33,7 @@ INSERT INTO message_attempt (sender,
              message.actual_recipient,
              message.message,
              message.turn,
+             message.message_attempt,
              message.created,
              message.updated,
              message.version,
@@ -66,3 +69,8 @@ SELECT *
 UPDATE message
    SET deleted = (:deleted)::boolean
  WHERE id = (:id)::integer
+
+-- name: sql-message-attempt-set-deleted<!
+ UPDATE message_attempt
+    SET deleted = (:deleted)::boolean
+  WHERE id = (:id)::integer

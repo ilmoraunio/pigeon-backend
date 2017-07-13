@@ -84,4 +84,28 @@
             messages-2 (parse-body (:body (app (-> (mock/request :get "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                                                    (mock/content-type "application/json")))))]
         (:status response) => 204
-        messages-2         => (one-of coll?)))))
+        messages-2         => (one-of coll?)))
+
+    ;; todo w/ moderator powers only
+    (fact "Delete message attempt"
+      (let [_ (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
+                       (mock/content-type "application/json")
+                       (mock/body (cheshire/generate-string {:message "message"}))))
+            [{id :message_attempt}]   (parse-body (:body (app (-> (mock/request :get "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
+                                                              (mock/content-type "application/json")))))
+            response-delete (app (-> (mock/request :delete (str "/api/v0/message_attempt/" id))
+                                     (mock/content-type "application/json")))]
+        (:status response-delete) => 204))
+
+    ;; todo w/ moderator powers only
+    (fact "Undelete message attempt"
+      (let [_ (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
+                       (mock/content-type "application/json")
+                       (mock/body (cheshire/generate-string {:message "message"}))))
+            [{id :message_attempt} & _]   (parse-body (:body (app (-> (mock/request :get "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
+                                                                      (mock/content-type "application/json")))))
+            _ (app (-> (mock/request :delete (str "/api/v0/message_attempt/" id))
+                                     (mock/content-type "application/json")))
+            response-undelete (app (-> (mock/request :patch (str "/api/v0/message_attempt/" id))
+                                       (mock/content-type "application/json")))]
+        (:status response-undelete) => 204))))

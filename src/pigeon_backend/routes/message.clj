@@ -9,16 +9,16 @@
             [environ.core :refer [env]]))
 
 (def message-routes
-  (context "/message" []
+  (context "/" []
     :tags ["message"]
 
-    (GET "/sender/:sender/recipient/:recipient" []
+    (GET "/message/sender/:sender/recipient/:recipient" []
       :path-params [sender :- String,
                     recipient :- String]
       (ok (message-service/message-get {:sender sender
                                         :recipient recipient})))
 
-    (POST "/sender/:sender/recipient/:recipient" []
+    (POST "/message/sender/:sender/recipient/:recipient" []
       :path-params [sender :- String
                     recipient :- String]
       :body-params [message :- String]
@@ -26,12 +26,23 @@
                                                  :recipient recipient
                                                  :message message})))
 
-    (DELETE "/:id" []
+    (DELETE "/message/:id" []
       :path-params [id :- s/Int]
       (do (message-service/message-delete! {:id id})
           (no-content)))
 
-    (PATCH "/:id" []
+    (PATCH "/message/:id" []
       :path-params [id :- s/Int]
       (do (message-service/message-undelete! {:id id})
-          (no-content)))))
+          (no-content)))
+
+    (DELETE "/message_attempt/:id" []
+      :path-params [id :- s/Int]
+      (do (message-service/message-attempt-delete! {:id id})
+          (no-content)))
+
+    (PATCH "/message_attempt/:id" []
+      :path-params [id :- s/Int]
+      (do (message-service/message-attempt-undelete! {:id id})
+          (no-content)))
+    ))
