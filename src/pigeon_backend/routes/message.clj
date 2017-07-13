@@ -24,4 +24,9 @@
       :body-params [message :- String]
       (created (message-service/message-create! {:sender sender
                                                  :recipient recipient
-                                                 :message message})))))
+                                                 :message message})))
+
+    (DELETE "/:id" []
+      :path-params [id :- s/Int]
+      (do (message-service/message-delete! {:id id})
+          (no-content)))))

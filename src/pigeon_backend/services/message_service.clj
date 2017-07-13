@@ -127,3 +127,7 @@
                                                                     :sender_name String)] %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (sql-message-get tx data)))
+
+(s/defn message-delete! [data :- {:id s/Int}]
+  (jdbc/with-db-transaction [tx db-spec]
+    (sql-message-delete<! tx data)))

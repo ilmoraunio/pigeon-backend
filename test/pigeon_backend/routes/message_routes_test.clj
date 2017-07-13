@@ -61,4 +61,15 @@
                               (mock/content-type "application/json")))
             body     (parse-body (:body response))]
         (:status response) => 200
-        body => two-of))))
+        body => two-of))
+
+    ;; todo: w/ admin powers only
+    (fact "Delete message"
+      (let [_ (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
+                       (mock/content-type "application/json")
+                       (mock/body (cheshire/generate-string {:message "message"}))))
+            [{id :id} & _]   (parse-body (:body (app (-> (mock/request :get "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
+                                                   (mock/content-type "application/json")))))
+            response (app (-> (mock/request :delete (str "/api/v0/message/" id))
+                              (mock/content-type "application/json")))]
+        (:status response) => 204))))
