@@ -20,7 +20,7 @@
                (:status response) => 200
                body => #(n-of % 22)))
 
-           ;; todo: w/ admin powers only
+           ;; todo: w/ moderator powers only
            (fact "Activate turn"
              (let [response (app (-> (mock/request :post "/api/v0/turn/2")
                                      (mock/content-type "application/json")))

@@ -63,7 +63,7 @@
         (:status response) => 200
         body => two-of))
 
-    ;; todo: w/ admin powers only
+    ;; todo: w/ moderator powers only
     (fact "Delete message"
       (let [_ (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                        (mock/content-type "application/json")
