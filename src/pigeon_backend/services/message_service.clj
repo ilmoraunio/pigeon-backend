@@ -45,38 +45,18 @@
                                                    0.667
                                                    0.833
                                                    1]))) data)
-
-        take-count
-        (reduce (fn [a {:keys [realized_value
-                               value
-                               type
-                               short_circuit_rule_chain_if_true
-                               short_circuit_rule_chain_if_false]}]
+        applicable-rules
+        (reduce (fn [coll {:keys [realized_value
+                                  value
+                                  type
+                                  short_circuit_rule_chain_if_true
+                                  short_circuit_rule_chain_if_false] :as entry}]
                   (case type
                     "rule_if_six_sided_dice_fuzzy"
                     (if (<= realized_value value)
-                      (if (not short_circuit_rule_chain_if_true)  (inc a) a)
-                      (if (not short_circuit_rule_chain_if_false) (inc a) a))))
-          0 realized-result)
-
-        take-last-element?
-        (let [[{:keys [type realized_value value]} & coll] (drop take-count realized-result)]
-          (if (seq coll)
-            (case type
-              "rule_if_six_sided_dice_fuzzy" (<= realized_value value))
-            false))
-
-        applicable-rules
-        (filter (fn [{:keys [type
-                             realized_value
-                             value]}]
-                  (case type
-                        "rule_if_six_sided_dice_fuzzy"
-                        (<= realized_value value)))
-          (take (if take-last-element?
-                  (inc take-count)
-                  take-count)
-                realized-result))]
+                      (if short_circuit_rule_chain_if_true (reduced (conj coll entry)) (conj coll entry))
+                      (if short_circuit_rule_chain_if_false (reduced coll) coll))))
+          [] realized-result)]
 
     applicable-rules))
 
