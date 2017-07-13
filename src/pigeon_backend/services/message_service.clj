@@ -28,6 +28,9 @@
                    :if_satisfied_then_duplicate_to_nodes [String]
                    :if_satisfied_then_duplicate_from_nodes [String]})
 
+(s/defschema Deletable {:id s/Int})
+(def Undeletable Deletable)
+
 (defqueries "sql/message.sql")
 (defqueries "sql/send_limit.sql")
 (defqueries "sql/turn.sql")
@@ -128,6 +131,10 @@
   (jdbc/with-db-transaction [tx db-spec]
     (sql-message-get tx data)))
 
-(s/defn message-delete! [data :- {:id s/Int}]
+(s/defn message-delete! [data :- Deletable]
   (jdbc/with-db-transaction [tx db-spec]
-    (sql-message-delete<! tx data)))
+    (sql-message-set-deleted<! tx (assoc data :deleted true))))
+
+(s/defn message-undelete! [data :- Undeletable]
+  (jdbc/with-db-transaction [tx db-spec]
+    (sql-message-set-deleted<! tx (assoc data :deleted false))))

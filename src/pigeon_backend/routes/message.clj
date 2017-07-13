@@ -29,4 +29,9 @@
     (DELETE "/:id" []
       :path-params [id :- s/Int]
       (do (message-service/message-delete! {:id id})
+          (no-content)))
+
+    (PATCH "/:id" []
+      :path-params [id :- s/Int]
+      (do (message-service/message-undelete! {:id id})
           (no-content)))))

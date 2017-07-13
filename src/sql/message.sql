@@ -62,7 +62,7 @@ SELECT *
    AND message_attempt.recipient IN (:recipient)
    AND message_attempt.deleted = false
 
--- name: sql-message-delete<!
+-- name: sql-message-set-deleted<!
 UPDATE message
-   SET deleted = true
+   SET deleted = (:deleted)::boolean
  WHERE id = (:id)::integer
