@@ -77,11 +77,15 @@ UPDATE message
 
 -- name: sql-moderator-messages
     SELECT message.*,
-           (SELECT name FROM users where username = message.sender) as sender_name,
+           (SELECT name FROM users WHERE username = message.sender) AS sender_name,
+           (SELECT name FROM users WHERE username = message.recipient) AS recipient_name,
+           (SELECT name FROM users WHERE username = message.actual_recipient) AS actual_recipient_name,
+           (SELECT deleted FROM message_attempt WHERE id = message.message_attempt) AS message_attempt_deleted,
            turn.name as turn_name
       FROM message
 INNER JOIN turn
         ON turn.id = message.turn
-  ORDER BY turn.ordering           ASC
-           message.created         ASC
-           message.message_attempt ASC
+  ORDER BY turn.ordering           ASC,
+           message.created         ASC,
+           message.message_attempt ASC,
+           message.id              ASC

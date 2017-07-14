@@ -6,7 +6,6 @@
        ALTER TABLE users_edge ADD COLUMN order_no integer DEFAULT 0;
        ALTER TABLE users_edge ADD COLUMN short_circuit_rule_chain_if_true boolean DEFAULT true;
        ALTER TABLE users_edge ADD COLUMN short_circuit_rule_chain_if_false boolean DEFAULT false;
-       ALTER TABLE message    ADD COLUMN realized_value JSON;
        CREATE OR REPLACE VIEW rule AS
           SELECT ue1.ref,
                  ue1.order_no,

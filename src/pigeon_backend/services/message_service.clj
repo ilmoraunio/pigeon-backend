@@ -133,6 +133,14 @@
   (jdbc/with-db-transaction [tx db-spec]
     (sql-message-get tx data)))
 
+(s/defn moderator-messages-get [] {:post [(s/validate [(assoc Model :turn_name String
+                                                                    :sender_name String
+                                                                    :actual_recipient_name String
+                                                                    :recipient_name String
+                                                                    :message_attempt_deleted Boolean)] %)]}
+  (jdbc/with-db-transaction [tx db-spec]
+    (sql-moderator-messages tx)))
+
 (s/defn message-delete! [data :- Deletable]
   (jdbc/with-db-transaction [tx db-spec]
     (sql-message-set-deleted<! tx (assoc data :deleted true))))

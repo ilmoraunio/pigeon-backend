@@ -26,6 +26,9 @@
                                                  :recipient recipient
                                                  :message message})))
 
+    (GET "/message" []
+      (ok (message-service/moderator-messages-get)))
+
     (DELETE "/message/:id" []
       :path-params [id :- s/Int]
       (do (message-service/message-delete! {:id id})
