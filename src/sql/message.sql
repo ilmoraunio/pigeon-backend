@@ -74,3 +74,14 @@ UPDATE message
  UPDATE message_attempt
     SET deleted = (:deleted)::boolean
   WHERE id = (:id)::integer
+
+-- name: sql-moderator-messages
+    SELECT message.*,
+           (SELECT name FROM users where username = message.sender) as sender_name,
+           turn.name as turn_name
+      FROM message
+INNER JOIN turn
+        ON turn.id = message.turn
+  ORDER BY turn.ordering           ASC
+           message.created         ASC
+           message.message_attempt ASC
