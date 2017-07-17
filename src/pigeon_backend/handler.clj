@@ -14,7 +14,8 @@
             [pigeon-backend.routes.users :refer [users-routes]]
             [pigeon-backend.routes.turn :refer [turn-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
-            [buddy.sign.jws :as jws])
+            [buddy.sign.jws :as jws]
+            [immutant.web :as immutant])
   (:gen-class))
 
 (defn wrap-cors [handler]
@@ -61,4 +62,4 @@
     (migrations/migrate)
     (migrations/migrate-data)
     ; TODO: get production-ready server running here...
-    (ring/serve (app-with-middleware) {:port port})))
+    (immutant/run (app-with-middleware) {:port port})))

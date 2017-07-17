@@ -9,7 +9,8 @@
                                               get-table-names-without-meta
                                               get-migrations]]
             [pigeon-backend.handler :as handler]
-            [ring.server.standalone :as ring])
+            [ring.server.standalone :as ring]
+            [immutant.web :as immutant])
   (:import (org.postgresql.util PSQLException)))
 
 (defn empty-all-tables [conn]
@@ -44,4 +45,4 @@
         (migrations/migrate) => irrelevant :times 1,
         (migrations/migrate-data) => irrelevant :times 1)
       (against-background
-        (ring/serve anything anything) => irrelevant))))
+        (immutant/run anything anything) => irrelevant))))

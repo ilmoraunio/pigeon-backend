@@ -15,9 +15,10 @@
                  [buddy/buddy-auth "0.12.0" :exclusions [clj-time cheshire joda-time com.fasterxml.jackson.dataformat/jackson-dataformat-smile commons-codec]]
                  [metosin/schema-tools "0.9.0"]
                  [prismatic/schema-generators "0.1.0"]
-                 [cheshire "5.3.1"]]
+                 [cheshire "5.3.1"]
+                 [com.taoensso/sente "1.11.0"]
+                 [org.immutant/immutant "2.1.9"]]
   :plugins       [[lein-environ "0.4.0"]]
-  :ring {:handler pigeon-backend.handler/app}
   :uberjar-name "server.jar"
   :eval-in :nrepl
   :profiles {:dev [:project/dev :profiles/dev]
