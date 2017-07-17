@@ -15,8 +15,12 @@
             [pigeon-backend.routes.turn :refer [turn-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [buddy.sign.jws :as jws]
-            [immutant.web :as immutant])
+            [immutant.web :as immutant]
+            [immutant.web.async :as async]
+            [immutant.web.middleware :refer [wrap-websocket]])
   (:gen-class))
+
+(defonce channels (atom #{}))
 
 (defn wrap-cors [handler]
   (fn [request]
@@ -25,6 +29,22 @@
           (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
           (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,PATCH,DELETE,OPTIONS")
           (assoc-in [:headers "Access-Control-Allow-Headers"] "X-Requested-With,Content-Type,Cache-Control,Authorization,Access-Control-Request-Headers,Accept")))))
+
+(defn ws-app
+  "For passing information when to reload messages or turns from the backend"
+  [request]
+  (async/as-channel request
+    {:on-open    (fn [channel]
+                   (swap! channels conj channel)
+                   (async/send! channel "Ready to reverse your messages!")
+                   (prn "channel open" @channels))
+     :on-message (fn [channel m]
+                   ;; should probably only talk with server
+                   (doseq [channel @channels]
+                     (async/send! channel m)))
+     :on-close   (fn [channel {:keys [code reason]}]
+                   (prn "close code:" code "reason:" reason)
+                   (swap! channels #(remove #{channel} %)))}))
 
 (def app
   (api
@@ -38,11 +58,12 @@
      ;; TODO: exception handler for returning schema validation errors
      :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
     (context "/api/v0" []
-          hello-routes
-          login-routes
-          message-routes
-          users-routes
-          turn-routes)))
+      hello-routes
+      login-routes
+      message-routes
+      users-routes
+      turn-routes
+      (GET "/ws" [] ws-app))))
 
 (defn coerce-to-integer [v]
   (if (string? v)
