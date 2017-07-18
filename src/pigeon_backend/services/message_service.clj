@@ -5,7 +5,8 @@
             [pigeon-backend.services.model :as model]
             [schema-tools.core :as st]
             [pigeon-backend.services.util :refer [initialize-query-data]]
-            [jeesql.core :refer [defqueries]]))
+            [jeesql.core :refer [defqueries]]
+            [pigeon-backend.websocket :refer [channels async-send!]]))
 
 (s/defschema New {:sender String
                   :recipient String
@@ -125,7 +126,8 @@
                                                    :actual_recipient duplicate-recipient
                                                    :message_attempt message-attempt-id))))
           (sql-message-create<! tx (assoc data :actual_recipient recipient
-                                               :message_attempt message-attempt-id)))))))
+                                               :message_attempt message-attempt-id))))))
+  (async-send! @channels :reload-messages))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
                                                                     :turn_name String
