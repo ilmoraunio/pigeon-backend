@@ -14,23 +14,25 @@
   (:import  [java.io
              ByteArrayOutputStream]))
 
-(defonce channels (atom #{}))
+(defonce channels (atom {}))
 
 (defn async-send! [channels message]
   (let [out (ByteArrayOutputStream. 4096)
         writer (transit/writer out :json)
         _ (transit/write writer message)
         message (.toString out)]
-    (doseq [channel channels]
+    (doseq [[_ channel] channels]
       (async/send! channel message))))
 
 (defn ws-app
-  "For passing information when to reload messages or turns from the backend"
-  [request]
+  "For passing information when to reload messages,
+                                   reload turns,
+                                   or to get running tally of new messages"
+  [request username]
   (async/as-channel request
     {:on-open    (fn [channel]
-                   (swap! channels conj channel)
-                   (async-send! [channel] "Ready to reverse your messages!")
+                   (swap! channels assoc username channel)
+                   (async-send! {username channel} "Async ready")
                    (prn "channel open" @channels))
      :on-message (fn [channel m]
                    ;; todo: enable support
@@ -40,4 +42,4 @@
                    )
      :on-close   (fn [channel {:keys [code reason]}]
                    (prn "close code:" code "reason:" reason)
-                   (swap! channels #(remove #{channel} %)))}))
+                   (swap! channels dissoc username))}))

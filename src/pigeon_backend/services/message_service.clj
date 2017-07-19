@@ -118,16 +118,29 @@
                           if_satisfied_then_duplicate_from_nodes]} (determine-applicable-rules rules)]
             (doseq [to_node if_satisfied_then_direct_to_nodes]
               (sql-message-create<! tx (assoc data :actual_recipient to_node
-                                                   :message_attempt message-attempt-id)))
+                                                   :message_attempt message-attempt-id))
+              (async-send!
+                (filter (fn [[k _]] (= k to_node)) @channels)
+                [:message-received sender])
+              (async-send!
+                (filter (fn [[k _]] (or (= k sender)
+                                        (= k to_node))) @channels)
+                [:reload-messages]))
             (doseq [duplicate-sender if_satisfied_then_duplicate_from_nodes
                     duplicate-recipient if_satisfied_then_duplicate_to_nodes]
               (sql-message-create<! tx (assoc data :sender duplicate-sender
                                                    :recipient duplicate-recipient
                                                    :actual_recipient duplicate-recipient
-                                                   :message_attempt message-attempt-id))))
+                                                   :message_attempt message-attempt-id))
+              (async-send!
+                (filter (fn [[k _]] (= k duplicate-recipient)) @channels)
+                [:message-received duplicate-sender])
+              (async-send!
+                (filter (fn [[k _]] (or (= k duplicate-sender)
+                                        (= k duplicate-recipient))) @channels)
+                [:reload-messages])))
           (sql-message-create<! tx (assoc data :actual_recipient recipient
-                                               :message_attempt message-attempt-id))))))
-  (async-send! @channels :reload-messages))
+                                               :message_attempt message-attempt-id)))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
                                                                     :turn_name String

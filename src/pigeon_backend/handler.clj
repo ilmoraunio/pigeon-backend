@@ -45,7 +45,7 @@
       message-routes
       users-routes
       turn-routes
-      (GET "/ws" [] ws-app))))
+      (GET "/ws/:username" [username] #(ws-app %1 username)))))
 
 (defn coerce-to-integer [v]
   (if (string? v)

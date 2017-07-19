@@ -25,5 +25,5 @@
   (let [return-val (jdbc/with-db-transaction [tx db-spec]
                      (sql-inactivate-turn<! tx)
                      (sql-activate-turn<! tx data))]
-    (async-send! @channels :reload-turns)
+    (async-send! @channels [:reload-turns])
     return-val))
