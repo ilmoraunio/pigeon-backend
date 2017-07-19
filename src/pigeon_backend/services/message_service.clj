@@ -139,8 +139,15 @@
                 (filter (fn [[k _]] (or (= k duplicate-sender)
                                         (= k duplicate-recipient))) @channels)
                 [:reload-messages])))
-          (sql-message-create<! tx (assoc data :actual_recipient recipient
-                                               :message_attempt message-attempt-id)))))))
+          (do (sql-message-create<! tx (assoc data :actual_recipient recipient
+                                                   :message_attempt message-attempt-id))
+              (async-send!
+                (filter (fn [[k _]] (= k recipient)) @channels)
+                [:message-received sender])
+              (async-send!
+                (filter (fn [[k _]] (or (= k sender)
+                                        (= k recipient))) @channels)
+                [:reload-messages])))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
                                                                     :turn_name String
