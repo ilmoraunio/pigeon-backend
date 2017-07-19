@@ -21,13 +21,14 @@
         writer (transit/writer out :json)
         _ (transit/write writer message)
         message (.toString out)]
+    (prn "[Websocket OUT]" (keys channels) message)
     (doseq [[_ channel] channels]
       (async/send! channel message))))
 
 (defn ws-app
   "For passing information when to reload messages,
                                    reload turns,
-                                   or to get running tally of new messages"
+                                   or to get notifications of new messages"
   [request username]
   (async/as-channel request
     {:on-open    (fn [channel]
