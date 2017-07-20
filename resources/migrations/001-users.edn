@@ -1,6 +1,7 @@
 {:up ["CREATE TABLE users (username varchar(255) PRIMARY KEY,
                            name varchar(255),
                            password text,
+                           is_moderator boolean default false,
                            deleted boolean default false,
                            created timestamp default NOW(),
                            updated timestamp default NOW(),

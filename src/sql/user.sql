@@ -27,3 +27,8 @@ SELECT users.username,
        users.name
   FROM users
  WHERE users.deleted = false;
+
+-- name: sql-is-moderator?
+SELECT users.is_moderator = true AS is_moderator
+  FROM users
+ WHERE users.username = ((:username)::varchar(255))

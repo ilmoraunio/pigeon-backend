@@ -42,3 +42,10 @@
         (if (nil? user-model)
           false
           (hashers/check password (:password user-model))))))
+
+(s/defn is-moderator? [data :- {:username String}]
+  {:post [(instance? Boolean %)]}
+  (jdbc/with-db-transaction [tx db-spec]
+    (->> (sql-is-moderator? tx data)
+         first
+         :is_moderator)))
