@@ -20,8 +20,8 @@
       ,(16,  'II fortnight tammikuu',  false,  15)
       ,(17,  'I fortnight helmikuu',   false,  16)
       ,(18,  'II fortnight helmikuu',  false,  17)
-      ,(19,  'I fortnight marraskuu',  false,  18)
-      ,(20,  'II fortnight marraskuu', false,  19)
+      ,(19,  'I fortnight maaliskuu',  false,  18)
+      ,(20,  'II fortnight maaliskuu', false,  19)
       ,(21,  'I fortnight huhtikuu',   false,  20)
       ,(22,  'II fortnight huhtikuu',  false,  21);"]
  :down [""]}
