@@ -11,8 +11,7 @@
 (s/defschema New {:sender String
                   :recipient String
                   :message String})
-(s/defschema Model (merge model/Model New {:actual_recipient String
-                                           :message_attempt s/Int
+(s/defschema Model (merge model/Model New {:message_attempt s/Int
                                            :turn s/Int}))
 (s/defschema Get {:sender String
                   :recipient String})
@@ -164,6 +163,7 @@
 
 (s/defn moderator-messages-get [] {:post [(s/validate [(assoc Model :turn_name String
                                                                     :sender_name String
+                                                                    :actual_recipient String
                                                                     :actual_recipient_name String
                                                                     :recipient_name String
                                                                     :message_attempt_deleted Boolean)] %)]}
