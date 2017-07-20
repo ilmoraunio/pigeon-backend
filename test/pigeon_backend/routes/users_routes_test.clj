@@ -9,22 +9,6 @@
             [schema.core :as s]))
 
 (deftest users-routes-test
-  (with-state-changes [(before :facts (empty-and-create-tables))]
-    (fact
-      (let [account1 {:username "foo"
-                      :password "hunter2"
-                      :name "name"}
-            account2 {:username "bar"
-                      :password "hunter2"
-                      :name "name"}
-            _        (new-account account1)
-            _        (new-account account2)
-            response (app (-> (mock/request :get "/api/v0/users/foo")
-                              (mock/content-type "application/json")))
-            body     (parse-body (:body response))]
-        (:status response) => 200
-        body => (one-of coll?)
-        body => (contains [(contains {:username "bar"})]))))
   (with-state-changes [(before :facts (do (empty-and-create-tables)
                                           (migrations/migrate-data-extra)))]
     (fact
