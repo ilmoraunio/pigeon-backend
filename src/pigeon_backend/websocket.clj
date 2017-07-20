@@ -16,14 +16,15 @@
 
 (defonce channels (atom {}))
 
-(defn async-send! [channels message]
+(defn async-send! [users-to-channels message]
   (let [out (ByteArrayOutputStream. 4096)
         writer (transit/writer out :json)
         _ (transit/write writer message)
         message (.toString out)]
-    (prn "[Websocket OUT]" (keys channels) message)
-    (doseq [[_ channel] channels]
-      (async/send! channel message))))
+    (prn "[Websocket OUT]" (keys users-to-channels) message)
+    (doseq [[_ channels] users-to-channels]
+      (doseq [channel channels]
+        (async/send! channel message)))))
 
 (defn ws-app
   "For passing information when to reload messages,
@@ -32,8 +33,9 @@
   [request username]
   (async/as-channel request
     {:on-open    (fn [channel]
-                   (swap! channels assoc username channel)
-                   (async-send! {username channel} "Async ready")
+                   (swap! channels
+                     update username #(into #{} (conj %1 channel)))
+                   (async-send! {username #{channel}} "Async ready")
                    (prn "channel open" @channels))
      :on-message (fn [channel m]
                    ;; todo: enable support
@@ -43,4 +45,8 @@
                    )
      :on-close   (fn [channel {:keys [code reason]}]
                    (prn "close code:" code "reason:" reason)
-                   (swap! channels dissoc username))}))
+                   (swap! channels update username #(disj %1 channel))
+                   (swap! channels #(into {}
+                                      (filter
+                                        (fn [[_ channels]] (not-empty channels))
+                                        %1))))}))
