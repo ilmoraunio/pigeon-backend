@@ -71,8 +71,9 @@
     (let [active-turn (->> (sql-turn-get tx)
                            (filter #(true? (:active %)))
                            first)
+          send-limits (sql-get-send-limit tx)
           ;; todo: some duplicate code below...
-          send-limit-rules (->> (sql-get-send-limit tx)
+          send-limit-rules (->> send-limits
                                 (filter #(and (= (:from_node %) sender)
                                           (some #{recipient} (:to_nodes %))
                                           (= (:type %) "send_limit"))))
@@ -90,7 +91,7 @@
                                                             (for [[k v] (group-by :recipient (:messages entry))]
                                                               {k (count v)}))]]
                                               (>= (get messages-counted-by-recipient recipient 0) (:value entry))))
-          shared-send-limit-rules (->> (sql-get-send-limit tx)
+          shared-send-limit-rules (->> send-limits
                                        (filter #(and (= (:from_node %) sender)
                                                  (some #{recipient} (:to_nodes %))
                                                  (= (:type %) "shared_send_limit"))))
@@ -104,10 +105,16 @@
           all-shared-rule-limits-exceeded? (every? true?
                                                    (for [entry shared-send-limit-rules]
                                                      (>= (count (:messages entry)) (:value entry))))
+          limitless-send-limit-rules (->> send-limits
+                                       (filter #(and (= (:from_node %) sender)
+                                                     (some #{recipient} (:to_nodes %))
+                                                     (= (:type %) "limitless_send_limit"))))
+          no-limitless-send-limit-rules? (empty? limitless-send-limit-rules)
           rules (sql-get-rule tx {:recipient recipient})]
 
       (when (and all-rule-limits-exceeded?
-                 all-shared-rule-limits-exceeded?)
+                 all-shared-rule-limits-exceeded?
+                 no-limitless-send-limit-rules?) ;; limitless_send_limit trumps all
         (throw (ex-info "Message quota exceeded" data)))
 
       (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)]

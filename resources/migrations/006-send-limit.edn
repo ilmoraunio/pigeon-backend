@@ -1,6 +1,7 @@
 {:up ["COMMIT; -- avoid transactional issues with ragtime
        ALTER TYPE users_edge_type ADD VALUE 'send_limit';
        ALTER TYPE users_edge_type ADD VALUE 'shared_send_limit';
+       ALTER TYPE users_edge_type ADD VALUE 'limitless_send_limit';
        BEGIN TRANSACTION;
        ALTER TABLE users_edge ADD COLUMN value json;
        CREATE OR REPLACE VIEW send_limit AS
@@ -14,5 +15,11 @@
             FROM users_edge
            WHERE type = 'send_limit'
             AND deleted = false
+        GROUP BY from_node, type, value::jsonb
+        UNION
+          SELECT from_node, type, array_agg(to_node) as to_nodes, value::jsonb
+            FROM users_edge
+           WHERE type = 'limitless_send_limit'
+             AND deleted = false
         GROUP BY from_node, type, value::jsonb;"]
  :down [""]}
