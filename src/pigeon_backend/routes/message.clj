@@ -5,7 +5,8 @@
             [schema.core :as s]
             [pigeon-backend.services.message-service :as message-service]
             [pigeon-backend.middleware :refer [wrap-auth
-                                               wrap-authorize]]
+                                               wrap-authorize
+                                               wrap-auth-moderator]]
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
             [environ.core :refer [env]]))
@@ -32,21 +33,25 @@
                                                  :message message})))
 
     (GET "/" []
+      :middleware [wrap-auth-moderator]
       (ok (message-service/moderator-messages-get)))
 
     (DELETE "/:id" []
       :path-params [id :- s/Int]
+      :middleware [wrap-auth-moderator]
       (do (message-service/message-delete! {:id id})
           (no-content)))
 
     (PATCH "/:id" []
       :path-params [id :- s/Int]
+      :middleware [wrap-auth-moderator]
       (do (message-service/message-undelete! {:id id})
           (no-content)))))
 
 (def message-attempt-routes
   (context "/message_attempt" []
-    :middleware [wrap-auth]
+    :middleware [wrap-auth
+                 wrap-auth-moderator]
     :tags ["message"]
 
     (DELETE "/:id" []

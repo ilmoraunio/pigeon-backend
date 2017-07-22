@@ -63,7 +63,6 @@
         (:status response) => 200
         body => (one-of coll?)))
 
-    ;; todo: w/ moderator powers only
     (fact "Delete message"
       (let [_ (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                        (mock/content-type "application/json")
@@ -102,7 +101,6 @@
         (:status response) => 204
         messages-2         => (one-of coll?)))
 
-    ;; todo w/ moderator powers only
     (fact "Delete message attempt"
       (let [_ (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                        (mock/content-type "application/json")
@@ -116,7 +114,6 @@
                                      (mock/header :authorization (tokenize token-moderator))))]
         (:status response-delete) => 204))
 
-    ;; todo w/ moderator powers only
     (fact "Undelete message attempt"
       (let [_ (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                        (mock/content-type "application/json")

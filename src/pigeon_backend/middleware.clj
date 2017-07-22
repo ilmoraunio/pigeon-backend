@@ -47,3 +47,15 @@
       (handle-exception-info
         (ex-info "Missing argument" {:type  :validation
                                      :cause :authorization}) {} request))))
+
+(defn wrap-auth-moderator
+  "Used after wrap-auth"
+  [handler]
+  (fn [request]
+    (if-let [is-a-mod? (:is_moderator (jws/unsign
+                                        (parse-auth-key request)
+                                        (env :jws-shared-secret)))]
+      (handler request)
+      (handle-exception-info
+        (ex-info "Not authorized" {:type :validation
+                                   :cause :authorization}) {} request))))
