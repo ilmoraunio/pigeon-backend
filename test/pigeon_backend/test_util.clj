@@ -42,7 +42,10 @@
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 
-(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIn0.gam31MTKYrmqZ4OlHcBUPALjMFUcQ48KIGDzRUBxBc0")
+(defn tokenize [token] (str "Bearer " token))
+(def token-moderator                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoibW9kZXJhdG9yIiwiaXNfbW9kZXJhdG9yIjp0cnVlfQ.yW8UjJDcvSxZzbJvMmfZpzvWNpSHCj91aTuCW7IiniU")
+(def token-team-1-player-1          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoidGVhbV8xX3BsYXllcl8xIiwiaXNfbW9kZXJhdG9yIjpmYWxzZX0.W9T687f3ssOFvej0dC6ctlMRWCsbCm4DyRH62ZVVWgQ")
+(def token-team-1-supreme-commander "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoidGVhbV8xX3N1cHJlbWVfY29tbWFuZGVyIiwiaXNfbW9kZXJhdG9yIjoiZmFsc2UifQ.8hj6bJnIRL3SZGbiGGsqQRUtLhqA62gkdeeacd6vWBA")
 
 (defn create-login-token [username timestamp jws-shared-secret]
   (jws/sign {:user username

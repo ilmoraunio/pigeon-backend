@@ -15,7 +15,8 @@
                                                  (migrations/migrate-data-extra)))]
            (fact "Listing"
              (let [response (app (-> (mock/request :get "/api/v0/turn")
-                                     (mock/content-type "application/json")))
+                                     (mock/content-type "application/json")
+                                     (mock/header :authorization (tokenize token-team-1-player-1))))
                    body     (parse-body (:body response))]
                (:status response) => 200
                body => #(n-of % 22)))
@@ -23,7 +24,8 @@
            ;; todo: w/ moderator powers only
            (fact "Activate turn"
              (let [response (app (-> (mock/request :post "/api/v0/turn/2")
-                                     (mock/content-type "application/json")))
+                                     (mock/content-type "application/json")
+                                     (mock/header :authorization (tokenize token-moderator))))
                    body     (parse-body (:body response))]
                (:status response) => 200
                body => (contains {:id 2})))))

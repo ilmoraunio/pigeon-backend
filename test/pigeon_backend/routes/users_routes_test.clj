@@ -13,7 +13,8 @@
                                           (migrations/migrate-data-extra)))]
     (fact
       (let [response (app (-> (mock/request :get "/api/v0/users/team_1_player_1")
-                            (mock/content-type "application/json")))
+                              (mock/content-type "application/json")
+                              (mock/header :authorization (tokenize token-team-1-player-1))))
             body     (parse-body (:body response))]
         (:status response) => 200
         body => (n-of coll? 3)

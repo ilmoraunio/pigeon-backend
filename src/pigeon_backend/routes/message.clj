@@ -4,48 +4,57 @@
             [ring.util.http-status :as status]
             [schema.core :as s]
             [pigeon-backend.services.message-service :as message-service]
+            [pigeon-backend.middleware :refer [wrap-auth
+                                               wrap-authorize]]
             [buddy.sign.jws :as jws]
             [clj-time.core :as t]
             [environ.core :refer [env]]))
 
 (def message-routes
-  (context "/" []
+  (context "/message" []
+    :middleware [wrap-auth]
     :tags ["message"]
 
-    (GET "/message/sender/:sender/recipient/:recipient" []
+    (GET "/sender/:sender/recipient/:recipient" []
       :path-params [sender :- String,
                     recipient :- String]
+      :middleware [(partial wrap-authorize [:params :sender])]
       (ok (message-service/message-get {:sender sender
                                         :recipient recipient})))
 
-    (POST "/message/sender/:sender/recipient/:recipient" []
+    (POST "/sender/:sender/recipient/:recipient" []
       :path-params [sender :- String
                     recipient :- String]
       :body-params [message :- String]
+      :middleware [(partial wrap-authorize [:params :sender])]
       (created (message-service/message-create! {:sender sender
                                                  :recipient recipient
                                                  :message message})))
 
-    (GET "/message" []
+    (GET "/" []
       (ok (message-service/moderator-messages-get)))
 
-    (DELETE "/message/:id" []
+    (DELETE "/:id" []
       :path-params [id :- s/Int]
       (do (message-service/message-delete! {:id id})
           (no-content)))
 
-    (PATCH "/message/:id" []
+    (PATCH "/:id" []
       :path-params [id :- s/Int]
       (do (message-service/message-undelete! {:id id})
-          (no-content)))
+          (no-content)))))
 
-    (DELETE "/message_attempt/:id" []
+(def message-attempt-routes
+  (context "/message_attempt" []
+    :middleware [wrap-auth]
+    :tags ["message"]
+
+    (DELETE "/:id" []
       :path-params [id :- s/Int]
       (do (message-service/message-attempt-delete! {:id id})
           (no-content)))
 
-    (PATCH "/message_attempt/:id" []
+    (PATCH "/:id" []
       :path-params [id :- s/Int]
       (do (message-service/message-attempt-undelete! {:id id})
-          (no-content)))
-    ))
+          (no-content)))))

@@ -19,8 +19,9 @@
       (if-let [has-access?   (user-service/check-credentials
                               {:username username
                                :password password})]
-        (let [token (jws/sign {:user username} (env :jws-shared-secret))
-              is-moderator? (user-service/is-moderator? {:username username})]
+        (let [is-moderator? (user-service/is-moderator? {:username username})
+              token (jws/sign {:user username
+                               :is_moderator is-moderator?} (env :jws-shared-secret))]
           (ok {:session {:token token
                          :username username
                          :is_moderator is-moderator?}}))
