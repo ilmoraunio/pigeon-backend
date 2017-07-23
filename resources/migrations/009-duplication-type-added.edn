@@ -10,7 +10,7 @@
                  ue1.from_node,
                  ue1.to_node,
                  ue1.value::jsonb,
-                 array_remove(array_agg(ue2.to_node), NULL) as if_satisfied_then_direct_to_nodes,
+                 array_remove(array_agg(distinct ue2.to_node), NULL) as if_satisfied_then_direct_to_nodes,
                  array_remove(array_agg(distinct ue3.from_node), NULL) as if_satisfied_then_duplicate_from_nodes,
                  array_remove(array_agg(distinct ue3.to_node), NULL) as if_satisfied_then_duplicate_to_nodes
             FROM users_edge ue1
