@@ -87,8 +87,9 @@
                                             (for [entry send-limit-rules
                                                   :let [messages-counted-by-recipient
                                                           (into {}
-                                                            (for [[k v] (group-by :recipient (:messages entry))]
-                                                              {k (count v)}))]]
+                                                            (mapv
+                                                              (fn [[k v]] {k (count v)})
+                                                              (group-by :recipient (:messages entry))))]]
                                               (>= (get messages-counted-by-recipient recipient 0) (:value entry))))
           shared-send-limit-rules (->> send-limits
                                        (filter #(and (= (:from_node %) sender)
