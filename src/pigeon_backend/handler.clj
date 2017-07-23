@@ -62,8 +62,8 @@
           wrap-cookies)))
 
 (defn -main [& args]
-  (let [port (coerce-to-integer (env :port))]
-    (migrations/migrate)
-    (migrations/migrate-data)
-    ; TODO: get production-ready server running here...
-    (immutant/run (app-with-middleware) {:port port})))
+  (migrations/migrate)
+  (migrations/migrate-data)
+  (if-let [port (coerce-to-integer (env :port))]
+    (immutant/run (app-with-middleware) {:port port})
+    (immutant/run (app-with-middleware))))
