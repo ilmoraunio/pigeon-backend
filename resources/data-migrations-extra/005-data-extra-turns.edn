@@ -1,0 +1,27 @@
+{:up ["TRUNCATE turn CASCADE;
+       INSERT INTO turn
+       (id,  name,                     active, ordering) VALUES
+
+       ( 1,  'I fortnight kesäkuu',    true ,  0)
+      ,( 2,  'II fortnight kesäkuu',   false,  1)
+      ,( 3,  'I fortnight heinäkuu',   false,  2)
+      ,( 4,  'II fortnight heinäkuu',  false,  3)
+      ,( 5,  'I fortnight elokuu',     false,  4)
+      ,( 6,  'II fortnight elokuu',    false,  5)
+      ,( 7,  'I fortnight syyskuu',    false,  6)
+      ,( 8,  'II fortnight syyskuu',   false,  7)
+      ,( 9,  'I fortnight lokakuu',    false,  8)
+      ,(10,  'II fortnight lokakuu',   false,  9)
+      ,(11,  'I fortnight marraskuu',  false,  10)
+      ,(12,  'II fortnight marraskuu', false,  11)
+      ,(13,  'I fortnight joulukuu',   false,  12)
+      ,(14,  'II fortnight joulukuu',  false,  13)
+      ,(15,  'I fortnight tammikuu',   false,  14)
+      ,(16,  'II fortnight tammikuu',  false,  15)
+      ,(17,  'I fortnight helmikuu',   false,  16)
+      ,(18,  'II fortnight helmikuu',  false,  17)
+      ,(19,  'I fortnight maaliskuu',  false,  18)
+      ,(20,  'II fortnight maaliskuu', false,  19)
+      ,(21,  'I fortnight huhtikuu',   false,  20)
+      ,(22,  'II fortnight huhtikuu',  false,  21);"]
+ :down [""]}

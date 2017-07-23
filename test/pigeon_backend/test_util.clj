@@ -12,16 +12,19 @@
             [environ.core :refer [env]]
             [clojure.java.jdbc :as jdbc]
             [ring.mock.request :as mock]
-            [pigeon-backend.handler :refer [app]]))
+            [pigeon-backend.handler :refer [app]]
+            [jeesql.core :refer [defqueries]]
+            [buddy.hashers :as hashers]))
+
+(defqueries "sql/user.sql")
+(defqueries "sql/message.sql")
 
 (defn empty-and-create-tables []
-  (empty-all-tables db-spec)
-  (if (= 0 (count (get-table-names)))
-    (migrations/migrate)))
-
-(defn drop-and-create-tables []
-  (drop-all-tables db-spec)
-  (migrations/migrate))
+  (do
+    (empty-all-tables db-spec)
+    (when (= 0 (count (get-table-names db-spec)))
+      (migrations/migrate))
+    (migrations/migrate-data)))
 
 (defmacro without-fk-constraints [tx & body]
   `(do
@@ -29,17 +32,6 @@
     (let [result# (do ~@body)]
       (enable-fks-in-postgres ~tx)
       result#)))
-
-;; TODO: refactor together with fetch-input-schema-from-dao-fn
-(defn fetch-input-schema-from-service-fn [fn-var]
-  (let [ns (:ns (meta fn-var))
-        [[_ _ schema]] (:raw-arglists (meta fn-var))]
-    (->> schema (ns-resolve ns) var-get)))
-
-(defn fetch-input-schema-from-dao-fn [fn-var]
-  (let [ns (:ns (meta fn-var))
-        [[_ _ _ schema]] (:raw-arglists (meta fn-var))]
-    (->> schema (ns-resolve ns) var-get)))
 
 (defn disable-fks-in-postgres [tx]
   (jdbc/execute! tx ["SET session_replication_role = replica"]))
@@ -50,14 +42,17 @@
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 
-(def test-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoiZm9vYmFyIn0.gam31MTKYrmqZ4OlHcBUPALjMFUcQ48KIGDzRUBxBc0")
+(defn tokenize [token] (str "Bearer " token))
+(def token-moderator                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoibW9kZXJhdG9yIiwiaXNfbW9kZXJhdG9yIjp0cnVlfQ.yW8UjJDcvSxZzbJvMmfZpzvWNpSHCj91aTuCW7IiniU")
+(def token-team-1-player-1          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoidGVhbV8xX3BsYXllcl8xIiwiaXNfbW9kZXJhdG9yIjpmYWxzZX0.W9T687f3ssOFvej0dC6ctlMRWCsbCm4DyRH62ZVVWgQ")
+(def token-team-1-supreme-commander "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJ1c2VyIjoidGVhbV8xX3N1cHJlbWVfY29tbWFuZGVyIiwiaXNfbW9kZXJhdG9yIjoiZmFsc2UifQ.8hj6bJnIRL3SZGbiGGsqQRUtLhqA62gkdeeacd6vWBA")
 
 (defn create-login-token [username timestamp jws-shared-secret]
   (jws/sign {:user username
              :expires timestamp}
             jws-shared-secret))
 
-(def test-user "Username!")
+(def test-user "username")
 
 (defn create-test-login-token
   ([] (create-test-login-token test-user))
@@ -69,31 +64,16 @@
 
 ;; route requests: new
 
-(defn new-room
-  ([input] (app (-> (mock/request :post "/api/v0/room")
-                  (mock/content-type "application/json")
-                  (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                  (mock/body (cheshire/generate-string input)))))
-  ([] (new-room {:name "Room!"})))
-
 (defn new-account
-  ([input] (app (-> (mock/request :put "/api/v0/user")
-                  (mock/content-type "application/json")
-                  (mock/body (cheshire/generate-string input)))))
+  ([input] (sql-user-create<! db-spec
+             (assoc input :password (hashers/derive (:password input)))))
   ([] (new-account {:username test-user
-                    :password "hunter2"
-                    :full_name "Real name!"})))
-
-(defn new-participant
-  ([input] (app (-> (mock/request :post "/api/v0/participant")
-                    (mock/content-type "application/json")
-                    (mock/header "Authorization" (str "Bearer " (create-test-login-token)))
-                    (mock/body (cheshire/generate-string input))))))
+                    :password "password"
+                    :name "name"})))
 
 (defn new-message
-  ([input] (new-message input (create-test-login-token)))
-  ([input authorization]
-    (app (-> (mock/request :post "/api/v0/message")
-             (mock/content-type "application/json")
-             (mock/header "Authorization" (str "Bearer " authorization))
-             (mock/body (cheshire/generate-string input))))))
+  ([{:keys [sender recipient]}]
+     (sql-message-create<! db-spec {:sender sender
+                                    :recipient recipient
+                                    :actual_recipient recipient
+                                    :message "message"})))

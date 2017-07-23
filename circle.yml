@@ -2,8 +2,6 @@ dependencies:
   pre:
     - createdb pigeon-backend
     - createuser pigeon-backend
-    - psql -c "CREATE EXTENSION \"uuid-ossp\";" -d pigeon-backend
-    - psql -c 'ALTER USER "pigeon-backend" WITH SUPERUSER' # For tests only
     - echo '{:profiles/dev {:env {:connection-uri "jdbc:postgresql://localhost/pigeon-backend?user=pigeon-backend&password=pigeon-backend" :jws-shared-secret "secret"}}}' > profiles.clj
 test:
   override:

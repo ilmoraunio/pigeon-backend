@@ -4,7 +4,7 @@
            [environ.core :refer [env]]
            [pigeon-backend.util :refer :all]))
 
-(def ^{:private true} authorizable-http-methods #{:get :head :post :put :delete})
+(def ^{:private true} authorizable-http-methods #{:get :head :post :put :delete :patch})
 
 (defn wrap-auth [handler]
   (fn [request]
@@ -29,3 +29,33 @@
                   (handler request))))))
 
         (handler request)))))
+
+(defn wrap-authorize
+  "Used after wrap-auth"
+  [kws handler]
+  (fn [request]
+    (if-let [username (get-in request kws)]
+      (if-let [is-a-match?
+               (= username
+                 (:user (jws/unsign
+                          (parse-auth-key request)
+                          (env :jws-shared-secret))))]
+        (handler request)
+        (handle-exception-info
+          (ex-info "Not authorized" {:type :validation
+                                     :cause :authorization}) {} request))
+      (handle-exception-info
+        (ex-info "Missing argument" {:type  :validation
+                                     :cause :authorization}) {} request))))
+
+(defn wrap-auth-moderator
+  "Used after wrap-auth"
+  [handler]
+  (fn [request]
+    (if-let [is-a-mod? (:is_moderator (jws/unsign
+                                        (parse-auth-key request)
+                                        (env :jws-shared-secret)))]
+      (handler request)
+      (handle-exception-info
+        (ex-info "Not authorized" {:type :validation
+                                   :cause :authorization}) {} request))))

@@ -4,3 +4,4 @@ target
 cov
 *.iml
 .idea
+pom.xml

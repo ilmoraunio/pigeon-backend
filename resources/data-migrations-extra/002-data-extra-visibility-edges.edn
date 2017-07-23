@@ -1,0 +1,52 @@
+{:up ["INSERT INTO users_edge
+       (from_node,                   to_node,                   type) VALUES
+       
+       ('team_1_supreme_commander', 'team_1_player_1',          'visibility')
+      ,('team_1_supreme_commander', 'team_1_player_2',          'visibility')
+      ,('team_1_supreme_commander', 'captured_1',               'visibility')
+
+      ,('team_1_player_1',          'team_1_supreme_commander', 'visibility')
+      ,('team_1_player_2',          'team_1_supreme_commander', 'visibility')
+
+      ,('team_1_player_1',          'team_1_player_2',          'visibility')
+      ,('team_1_player_2',          'team_1_player_1',          'visibility')
+
+
+      ,('team_2_supreme_commander', 'team_2_player_1',          'visibility')
+      ,('team_2_supreme_commander', 'team_2_player_2',          'visibility')
+      ,('team_2_supreme_commander', 'team_2_player_3',          'visibility')
+      ,('team_2_supreme_commander', 'team_2_player_4',          'visibility')
+      ,('team_2_supreme_commander', 'captured_2',               'visibility')
+
+      ,('team_2_player_1',          'team_2_supreme_commander', 'visibility')
+      ,('team_2_player_2',          'team_2_supreme_commander', 'visibility')
+      ,('team_2_player_3',          'team_2_supreme_commander', 'visibility')
+      ,('team_2_player_4',          'team_2_supreme_commander', 'visibility')
+
+      ,('team_2_player_1',          'team_2_player_2',          'visibility')
+      ,('team_2_player_1',          'team_2_player_3',          'visibility')
+      ,('team_2_player_1',          'team_2_player_4',          'visibility')
+
+      ,('team_2_player_2',          'team_2_player_1',          'visibility')
+      ,('team_2_player_2',          'team_2_player_3',          'visibility')
+      ,('team_2_player_2',          'team_2_player_4',          'visibility')
+
+      ,('team_2_player_3',          'team_2_player_1',          'visibility')
+      ,('team_2_player_3',          'team_2_player_2',          'visibility')
+      ,('team_2_player_3',          'team_2_player_4',          'visibility')
+
+      ,('team_2_player_4',          'team_2_player_1',          'visibility')
+      ,('team_2_player_4',          'team_2_player_2',          'visibility')
+      ,('team_2_player_4',          'team_2_player_3',          'visibility')
+
+
+      ,('team_3_supreme_commander', 'team_3_player_1',          'visibility')
+      ,('team_3_supreme_commander', 'team_3_player_2',          'visibility')
+      ,('team_3_supreme_commander', 'captured_3',               'visibility')
+
+      ,('team_3_player_1',          'team_3_supreme_commander', 'visibility')
+      ,('team_3_player_2',          'team_3_supreme_commander', 'visibility')
+
+      ,('team_3_player_1',          'team_3_player_2',          'visibility')
+      ,('team_3_player_2',          'team_3_player_1',          'visibility');"]
+ :down [""]}

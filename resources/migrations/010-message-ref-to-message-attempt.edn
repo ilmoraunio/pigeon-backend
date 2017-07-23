@@ -1,0 +1,2 @@
+{:up ["ALTER TABLE message ADD COLUMN message_attempt integer REFERENCES message_attempt(id);"]
+ :down [""]}

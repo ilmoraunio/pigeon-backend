@@ -1,44 +1,51 @@
 (ns pigeon-backend.services.user-service
-  (:require [pigeon-backend.dao.user-dao :as user-dao]
-            [clojure.java.jdbc :as jdbc]
+  (:require [clojure.java.jdbc :as jdbc]
             [pigeon-backend.db.config :refer [db-spec]]
             [buddy.hashers :as hashers]
             [schema.core :as s]
-            [pigeon-backend.dao.model :as model]
+            [pigeon-backend.services.model :as model]
             [schema-tools.core :as st]
-            [pigeon-backend.dao.user-dao :refer [New Existing ModelStripped LoginUser]]))
+            [pigeon-backend.services.util :refer [initialize-query-data]]
+            [jeesql.core :refer [defqueries]]))
 
-(def Model user-dao/Model)
+(s/defschema New {:username String
+                  :name String
+                  :password String})
+(s/defschema Model (into (dissoc model/Model :id) New))
+(s/defschema ModelStripped (dissoc Model :password))
+(s/defschema LoginUser {:username String
+                        :password String})
 
-(s/defn user-create! [dto :- New] {:post [(s/validate ModelStripped %)]}
+(defqueries "sql/user.sql")
+(defqueries "sql/visibility.sql")
+
+(s/defn user-create! [{:keys [password] :as data} :- New] {:post [(s/validate ModelStripped %)]}
   (jdbc/with-db-transaction [tx db-spec]
-    (let [user-with-hashed-password
-            (assoc dto :password 
-                       (hashers/derive (:password dto)))]
-      (st/select-schema (user-dao/create! tx user-with-hashed-password) 
-                        ModelStripped))))
+    (st/select-schema
+      (sql-user-create<! tx (assoc data :password (hashers/derive password)))
+      ModelStripped)))
 
-(s/defn check-credentials [{username :username password :password :as dto} :- LoginUser]
+(s/defn list-users [{:keys [username]} :- {:username String}]
+  (let [visible-users-for-user (->> (filter #(= (:from_node %) username)
+                                            (sql-get-visibilities db-spec))
+                                    (map :to_nodes)
+                                    flatten
+                                    set)]
+    (filter #(contains? visible-users-for-user (:username %))
+            (sql-list-users db-spec))))
+
+(s/defn check-credentials [{:keys [username password]} :- LoginUser]
                           {:post [(instance? Boolean %)]}
     (jdbc/with-db-transaction [tx db-spec]
-      (let [[user-model] (user-dao/get-by tx {:username username})]
+      (let [query-data (merge (initialize-query-data Model) {:username username})
+            [user-model] (sql-user-get tx query-data)]
         (if (nil? user-model)
           false
           (hashers/check password (:password user-model))))))
 
-(s/defn get-by-username [username :- String]
-  {:post [(s/validate Model %)]}
+(s/defn is-moderator? [data :- {:username String}]
+  {:post [(instance? Boolean %)]}
   (jdbc/with-db-transaction [tx db-spec]
-    (user-dao/get-by-username tx username)))
-
-(s/defn user-update! [user :- Existing]
-  {:post [(s/validate ModelStripped %)]}
-  (st/select-schema (jdbc/with-db-transaction [tx db-spec]
-                      (user-dao/update! tx user)) 
-                    ModelStripped))
-
-(s/defn user-delete! [user :- model/Existing]
-  {:post [(s/validate ModelStripped %)]}
-  (st/select-schema (jdbc/with-db-transaction [tx db-spec]
-                      (user-dao/delete! tx user))
-                    ModelStripped))
+    (->> (sql-is-moderator? tx data)
+         first
+         :is_moderator)))

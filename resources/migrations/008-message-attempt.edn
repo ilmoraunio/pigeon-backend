@@ -1,0 +1,9 @@
+{:up ["CREATE TABLE message_attempt (id serial primary key,
+                                     sender varchar(255) references users(username),
+                                     recipient varchar(255) references users(username),
+                                     turn integer references turn(id),
+                                     deleted boolean default false,
+                                     created timestamp default NOW(),
+                                     updated timestamp default NOW(),
+                                     version integer default 0);"]
+ :down [""]}

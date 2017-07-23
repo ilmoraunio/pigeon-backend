@@ -8,23 +8,25 @@
             [environ.core :refer [env]]
             [pigeon-backend.db.migrations :as migrations]
             [ring.middleware.reload :refer [wrap-reload]]
-            [pigeon-backend.routes.registration :refer [registration-routes]]
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
             [pigeon-backend.routes.login :refer [login-routes]]
-            [pigeon-backend.routes.room-routes :refer [room-routes]]
-            [pigeon-backend.routes.participant-routes :refer [participant-routes]]
-            [pigeon-backend.routes.message-routes :refer [message-routes]]
+            [pigeon-backend.routes.message :refer [message-routes message-attempt-routes]]
+            [pigeon-backend.routes.users :refer [users-routes]]
+            [pigeon-backend.routes.turn :refer [turn-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
-            [buddy.sign.jws :as jws])
+            [buddy.sign.jws :as jws]
+            [immutant.web :as immutant]
+            [immutant.web.middleware :refer [wrap-websocket]]
+            [pigeon-backend.websocket :refer [channels async-send! ws-app]])
   (:gen-class))
 
 (defn wrap-cors [handler]
   (fn [request]
     (let [response (handler request)]
       (-> response
-          (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
-          (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")
-          (assoc-in [:headers "Access-Control-Allow-Headers"] "X-Requested-With,Content-Type,Cache-Control,Authorization,Access-Control-Request-Headers,Accept")))))
+        (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
+        (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,PATCH,DELETE,OPTIONS")
+        (assoc-in [:headers "Access-Control-Allow-Headers"] "X-Requested-With,Content-Type,Cache-Control,Authorization,Access-Control-Request-Headers,Accept")))))
 
 (def app
   (api
@@ -38,12 +40,13 @@
      ;; TODO: exception handler for returning schema validation errors
      :exceptions {:handlers {:compojure.api.exception/default handle-exception-info}}}
     (context "/api/v0" []
-          hello-routes
-          registration-routes
-          login-routes
-          room-routes
-          participant-routes
-          message-routes)))
+      hello-routes
+      login-routes
+      message-routes
+      users-routes
+      turn-routes
+      message-attempt-routes
+      (GET "/ws/:username" [username] #(ws-app %1 username)))))
 
 (defn coerce-to-integer [v]
   (if (string? v)
@@ -61,5 +64,6 @@
 (defn -main [& args]
   (let [port (coerce-to-integer (env :port))]
     (migrations/migrate)
+    (migrations/migrate-data)
     ; TODO: get production-ready server running here...
-    (ring/serve (app-with-middleware) {:port port})))
+    (immutant/run (app-with-middleware) {:port port})))

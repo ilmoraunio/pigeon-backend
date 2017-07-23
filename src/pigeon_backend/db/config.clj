@@ -1,17 +1,19 @@
 (ns pigeon-backend.db.config
-  (:require [yesql.core :refer [defquery]]
-            [environ.core :refer [env]]
-            [pigeon-backend.db.migrations :as migrations]
-            [clojure.java.jdbc :as jdbc]))
+  (:require [environ.core :refer [env]]
+            [jeesql.core :refer [defqueries]]
+            [cheshire.core :refer [parse-string]])
+  (:import (org.postgresql.jdbc PgArray)
+           (org.postgresql.util PGobject)))
 
-(def db-spec 
-  {:connection-uri (env :connection-uri)})
+(def db-spec {:connection-uri (env :connection-uri)})
+(defqueries "sql/ragtime_migrations.sql")
 
-(defquery get-table-names-without-meta "sql/information_schema/get-table-names-without-meta.sql"
-  {:connection db-spec})
+(extend-protocol clojure.java.jdbc/IResultSetReadColumn
+  PgArray
+  (result-set-read-column [pgobj rsmeta idx]
+    (vec (.getArray pgobj))))
 
-(defquery get-table-names "sql/information_schema/get-table-names.sql"
-  {:connection db-spec})
-
-(defquery get-migrations "sql/ragtime_migrations/get-all.sql"
-  {:connection db-spec})
+(extend-protocol clojure.java.jdbc/IResultSetReadColumn
+  PGobject
+  (result-set-read-column [pgobj rsmeta idx]
+    (parse-string (.getValue pgobj))))
