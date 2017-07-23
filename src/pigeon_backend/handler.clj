@@ -64,6 +64,7 @@
 (defn -main [& args]
   (migrations/migrate)
   (migrations/migrate-data)
-  (if-let [port (coerce-to-integer (env :port))]
-    (immutant/run (app-with-middleware) {:port port})
-    (immutant/run (app-with-middleware))))
+  (let [port (coerce-to-integer (env :port 8080))
+        host                    (env :host "localhost")]
+    (immutant/run (app-with-middleware) {:port port
+                                         :host host})))
