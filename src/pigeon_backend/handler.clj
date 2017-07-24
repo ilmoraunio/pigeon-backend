@@ -20,6 +20,8 @@
             [pigeon-backend.websocket :refer [channels async-send! ws-app]])
   (:gen-class))
 
+(def async-keepalive (atom nil))
+
 (defn wrap-cors [handler]
   (fn [request]
     (let [response (handler request)]
@@ -53,6 +55,11 @@
     (Integer/parseInt v)
     v))
 
+(defn set-interval [callback ms]
+  (future (while true
+            (do (Thread/sleep ms)
+                (callback)))))
+
 (defn app-with-middleware
   ([] (-> #'app
           ; TODO: do not enable by default, but
@@ -67,4 +74,5 @@
   (let [port (coerce-to-integer (env :port 8080))
         host                    (env :host "localhost")]
     (immutant/run (app-with-middleware) {:port port
-                                         :host host})))
+                                         :host host})
+    (reset! async-keepalive (set-interval #(async-send! @channels "ping") 15000))))

@@ -45,4 +45,5 @@
         (migrations/migrate) => irrelevant :times 1,
         (migrations/migrate-data) => irrelevant :times 1)
       (against-background
-        (immutant/run anything anything) => irrelevant))))
+        (immutant/run anything anything) => irrelevant
+        (reset! anything anything) => irrelevant))))
