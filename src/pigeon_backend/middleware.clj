@@ -34,28 +34,32 @@
   "Used after wrap-auth"
   [kws handler]
   (fn [request]
-    (if-let [username (get-in request kws)]
-      (if-let [is-a-match?
-               (= username
-                 (:user (jws/unsign
-                          (parse-auth-key request)
-                          (env :jws-shared-secret))))]
-        (handler request)
+    (if-let [should-request-be-authorized? ((:request-method request) authorizable-http-methods)]
+      (if-let [username (get-in request kws)]
+        (if-let [is-a-match?
+                 (= username
+                   (:user (jws/unsign
+                            (parse-auth-key request)
+                            (env :jws-shared-secret))))]
+          (handler request)
+          (handle-exception-info
+            (ex-info "Not authorized" {:type :validation
+                                       :cause :authorization}) {} request))
         (handle-exception-info
-          (ex-info "Not authorized" {:type :validation
-                                     :cause :authorization}) {} request))
-      (handle-exception-info
-        (ex-info "Missing argument" {:type  :validation
-                                     :cause :authorization}) {} request))))
+          (ex-info "Missing argument" {:type  :validation
+                                       :cause :authorization}) {} request))
+      (handler request))))
 
 (defn wrap-auth-moderator
   "Used after wrap-auth"
   [handler]
   (fn [request]
-    (if-let [is-a-mod? (:is_moderator (jws/unsign
-                                        (parse-auth-key request)
-                                        (env :jws-shared-secret)))]
-      (handler request)
-      (handle-exception-info
-        (ex-info "Not authorized" {:type :validation
-                                   :cause :authorization}) {} request))))
+    (if-let [should-request-be-authorized? ((:request-method request) authorizable-http-methods)]
+      (if-let [is-a-mod? (:is_moderator (jws/unsign
+                                          (parse-auth-key request)
+                                          (env :jws-shared-secret)))]
+        (handler request)
+        (handle-exception-info
+          (ex-info "Not authorized" {:type :validation
+                                     :cause :authorization}) {} request))
+      (handler request))))
