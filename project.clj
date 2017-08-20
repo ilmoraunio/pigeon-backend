@@ -33,7 +33,7 @@
                                      [lein-cloverage "1.0.6"]]
                            ;;when :nrepl-port is set the application starts the nREPL server on load
                            :env {:dev true
-                                 :message-character-limit 150
+                                 :message-character-limit "150"
                                  :nrepl-port 7000}}
              :project/test {}
              :uberjar {:omit-source true

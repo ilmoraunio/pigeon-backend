@@ -69,4 +69,4 @@
     :middleware [wrap-auth]
     :tags ["message"]
     (GET "/" []
-      (ok {:message-character-limit (env :message-character-limit)}))))
+      (ok {:message-character-limit (Integer. (env :message-character-limit))}))))

@@ -113,7 +113,7 @@
           no-limitless-send-limit-rules? (empty? limitless-send-limit-rules)
           rules (sql-get-rule tx {:recipient recipient})]
 
-      (when-let [message-character-limit (env :message-character-limit)]
+      (when-let [message-character-limit (Integer. (env :message-character-limit))]
         (when (> (count message) message-character-limit)
           (throw (ex-info "Message character limit exceeded" data))))
 
