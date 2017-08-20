@@ -63,3 +63,10 @@
       :path-params [id :- s/Int]
       (do (message-service/message-attempt-undelete! {:id id})
           (no-content)))))
+
+(def message-character-limit-route
+  (context "/message_character_limit" []
+    :middleware [wrap-auth]
+    :tags ["message"]
+    (GET "/" []
+      (ok (env :message-character-limit)))))
