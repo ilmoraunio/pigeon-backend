@@ -6,7 +6,8 @@
             [schema-tools.core :as st]
             [pigeon-backend.services.util :refer [initialize-query-data]]
             [jeesql.core :refer [defqueries]]
-            [pigeon-backend.websocket :refer [channels async-send!]]))
+            [pigeon-backend.websocket :refer [channels async-send!]]
+            [environ.core :refer [env]]))
 
 (s/defschema New {:sender String
                   :recipient String
@@ -64,7 +65,7 @@
 
     applicable-rules))
 
-(s/defn message-create! [{:keys [sender recipient] :as data} :- New]
+(s/defn message-create! [{:keys [sender recipient message] :as data} :- New]
   ;;{:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
     (let [active-turn (->> (sql-turn-get tx)
@@ -111,6 +112,10 @@
                                                      (= (:type %) "limitless_send_limit"))))
           no-limitless-send-limit-rules? (empty? limitless-send-limit-rules)
           rules (sql-get-rule tx {:recipient recipient})]
+
+      (when-let [message-character-limit (Integer. (env :message-character-limit))]
+        (when (> (count message) message-character-limit)
+          (throw (ex-info "Message character limit exceeded" data))))
 
       (when (and all-rule-limits-exceeded?
                  all-shared-rule-limits-exceeded?

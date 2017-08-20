@@ -10,7 +10,9 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
             [pigeon-backend.routes.login :refer [login-routes]]
-            [pigeon-backend.routes.message :refer [message-routes message-attempt-routes]]
+            [pigeon-backend.routes.message :refer [message-routes
+                                                   message-attempt-routes
+                                                   message-character-limit-route]]
             [pigeon-backend.routes.users :refer [users-routes]]
             [pigeon-backend.routes.turn :refer [turn-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
@@ -48,6 +50,7 @@
       users-routes
       turn-routes
       message-attempt-routes
+      message-character-limit-route
       (GET "/ws/:username" [username] #(ws-app %1 username)))))
 
 (defn coerce-to-integer [v]
