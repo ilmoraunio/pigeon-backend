@@ -1,0 +1,38 @@
+expression = (atom | list | vector | map)
+atom = (<empty> | number | string | fns | symbol | keyword)
+
+(* Collections *)
+
+list = <"("> fns <empty> expression* <")">
+vector = <"["> expression* <"]">
+map = "{" (keyword <empty> expression <empty>*)* "}"
+
+(* Atoms *)
+
+number = #"\d*"
+string = #"\".*?\""
+empty = #"\s"
+symbol = #"([A-Za-z_-])+"
+keyword = #":([A-Za-z_-])+"
+special-variables = (params)
+fns = (if|comparison-signs|send|and|or|let|do|randomize-value|special-variables|keyword)
+
+(* Functions *)
+
+if = "if"
+comparison-signs = (equals-sign|less-than|less-than-or-equals|greater-than|greater-than-or-equals)
+equals-sign = "="
+less-than = "<"
+less-than-or-equals = "<="
+greater-than = ">"
+greater-than-or-equals = ">="
+send = "send"
+and = "and"
+or = "or"
+let = "let"
+do = "do"
+randomize-value = "randomize-value"
+
+(*  Special variables *)
+
+params = "*params*"
