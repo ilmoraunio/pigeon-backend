@@ -91,17 +91,16 @@
                                                               (fn [[k v]] {k (count v)})
                                                               (group-by :recipient (:messages entry))))]]
                                               (>= (get messages-counted-by-recipient recipient 0) (:value entry))))
-          shared-send-limit-rules (->> send-limits
-                                       (filter #(and (= (:from_node %) sender)
-                                                 (some #{recipient} (:to_nodes %))
-                                                 (= (:type %) "shared_send_limit"))))
           shared-send-limit-rules (doall (map (fn [{:keys [from_node to_nodes] :as value}]
                                                 (assoc value :messages
                                                              (sql-conversations tx
                                                                {:sender from_node
                                                                 :recipient to_nodes
                                                                 :turn (:id active-turn)})))
-                                              shared-send-limit-rules))
+                                              (->> send-limits
+                                                (filter #(and (= (:from_node %) sender)
+                                                              (some #{recipient} (:to_nodes %))
+                                                              (= (:type %) "shared_send_limit"))))))
           all-shared-rule-limits-exceeded? (every? true?
                                                    (for [entry shared-send-limit-rules]
                                                      (>= (count (:messages entry)) (:value entry))))
