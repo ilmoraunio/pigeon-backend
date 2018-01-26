@@ -73,17 +73,16 @@
                            first)
           send-limits (sql-get-send-limit tx)
           ;; todo: some duplicate code below...
-          send-limit-rules (->> send-limits
-                                (filter #(and (= (:from_node %) sender)
-                                          (some #{recipient} (:to_nodes %))
-                                          (= (:type %) "send_limit"))))
           send-limit-rules (doall (map (fn [{:keys [from_node to_nodes] :as value}]
                                          (assoc value :messages
                                                       (sql-conversations tx
                                                         {:sender from_node
                                                          :recipient to_nodes
                                                          :turn (:id active-turn)})))
-                                       send-limit-rules))
+                                       (->> send-limits
+                                            (filter #(and (= (:from_node %) sender)
+                                                          (some #{recipient} (:to_nodes %))
+                                                          (= (:type %) "send_limit"))))))
           all-rule-limits-exceeded? (every? true?
                                             (for [entry send-limit-rules
                                                   :let [messages-counted-by-recipient
