@@ -12,6 +12,13 @@
 (s/defschema New {:sender String
                   :recipient String
                   :message String})
+
+(s/defschema MessagePayload {:message String
+                             :sender String
+                             :recipient String
+                             :message_attempt s/Int
+                             :turn s/Int})
+
 (s/defschema Model (merge model/Model New {:message_attempt s/Int
                                            :turn s/Int}))
 (s/defschema Get {:sender String
@@ -64,6 +71,21 @@
           [] realized-result)]
 
     applicable-rules))
+
+(s/defn send-message [tx
+                      {:keys [sender] :as message-payload} :- MessagePayload
+                      recipients :- [String]]
+  (doseq [recipient recipients]
+    (sql-message-create<! tx (assoc message-payload :actual_recipient recipient))
+
+    (async-send!
+      (filter (fn [[k _]] (= k recipient)) @channels)
+      [:message-received sender])
+
+    (async-send!
+      (filter (fn [[k _]] (or (= k sender)
+                            (= k recipient))) @channels)
+      [:reload-messages])))
 
 (s/defn message-create! [{:keys [sender recipient message] :as data} :- New]
   ;;{:post [(s/validate Model %)]}
