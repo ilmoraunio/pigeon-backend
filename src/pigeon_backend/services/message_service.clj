@@ -45,6 +45,8 @@
 (defqueries "sql/turn.sql")
 (defqueries "sql/rule.sql")
 
+(def ^:dynamic *params*)
+
 (s/defn determine-applicable-rules [data :- [Rule]]
   {:post [(s/validate [Rule] %)]}
 
@@ -139,11 +141,21 @@
         (throw (ex-info "Message quota exceeded" data)))
 
       (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)]
-        (send-message tx {:message message
-                          :sender sender
-                          :message_attempt message-attempt-id
-                          :recipient recipient
-                          :actual_recipient recipient})))))
+        (with-bindings {#'*params* {:tx tx
+                                    :message message
+                                    :sender sender
+                                    :message_attempt message-attempt-id
+                                    :recipient recipient}}
+          (let [tx (:tx *params*)
+                message (:message *params*)
+                sender (:sender *params*)
+                message-attempt-id (:message_attempt *params*)
+                recipient (:recipient *params*)]
+            (send-message tx {:message message
+                              :sender sender
+                              :message_attempt message-attempt-id
+                              :recipient recipient
+                              :actual_recipient recipient})))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
                                                                     :turn_name String
