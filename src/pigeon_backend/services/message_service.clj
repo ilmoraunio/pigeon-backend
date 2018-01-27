@@ -63,10 +63,10 @@
     [:reload-messages]))
 
 (defmulti randomize-value class)
-(defmethod randomize-value Long [v]
-  (rand-nth (range v)))
-(defmethod randomize-value Double [v]
-  (rand v))
+(defmethod randomize-value Long [n]
+  (rand-nth (range n)))
+(defmethod randomize-value Double [n]
+  (rand n))
 
 (defn- valid-schema? [schema]
   (not-empty (insta/parses pigeon-execution-schema-parser schema)))
