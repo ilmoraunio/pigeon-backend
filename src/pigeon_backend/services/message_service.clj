@@ -17,7 +17,7 @@
                              :sender String
                              :recipient String
                              :message_attempt s/Int
-                             :turn s/Int})
+                             :actual_recipient String})
 
 (s/defschema Model (merge model/Model New {:message_attempt s/Int
                                            :turn s/Int}))
@@ -72,11 +72,8 @@
 
     applicable-rules))
 
-(s/defn send-message [tx
-                      {:keys [sender] :as message-payload} :- MessagePayload
-                      recipients :- [String]]
-  (doseq [recipient recipients]
-    (sql-message-create<! tx (assoc message-payload :actual_recipient recipient))
+(s/defn send-message [tx {:keys [sender recipient] :as message-payload} :- MessagePayload]
+    (sql-message-create<! tx message-payload)
 
     (async-send!
       (filter (fn [[k _]] (= k recipient)) @channels)
@@ -85,7 +82,7 @@
     (async-send!
       (filter (fn [[k _]] (or (= k sender)
                             (= k recipient))) @channels)
-      [:reload-messages])))
+      [:reload-messages]))
 
 (s/defn message-create! [{:keys [sender recipient message] :as data} :- New]
   ;;{:post [(s/validate Model %)]}
@@ -130,8 +127,7 @@
                                        (filter #(and (= (:from_node %) sender)
                                                      (some #{recipient} (:to_nodes %))
                                                      (= (:type %) "limitless_send_limit"))))
-          no-limitless-send-limit-rules? (empty? limitless-send-limit-rules)
-          rules (sql-get-rule tx {:recipient recipient})]
+          no-limitless-send-limit-rules? (empty? limitless-send-limit-rules)]
 
       (when-let [message-character-limit (Integer. (env :message-character-limit))]
         (when (> (count message) message-character-limit)
@@ -143,45 +139,11 @@
         (throw (ex-info "Message quota exceeded" data)))
 
       (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)]
-        ;; todo: log/persist applicable-rules
-        (if (not-empty rules)
-          (doseq [{:keys [if_satisfied_then_direct_to_nodes
-                          if_satisfied_then_duplicate_to_nodes
-                          if_satisfied_then_duplicate_from_nodes]} (determine-applicable-rules rules)]
-            (doseq [to_node if_satisfied_then_direct_to_nodes]
-              (sql-message-create<! tx (assoc data :actual_recipient to_node
-                                                   :message_attempt message-attempt-id))
-              (async-send!
-                (filter (fn [[k _]] (= k to_node)) @channels)
-                [:message-received sender])
-              (async-send!
-                (filter (fn [[k _]] (or (= k sender)
-                                        (= k to_node))) @channels)
-                [:reload-messages]))
-            (let [duplicate-sender-and-duplicate-recipient
-                  (map vector if_satisfied_then_duplicate_from_nodes
-                              if_satisfied_then_duplicate_to_nodes)]
-              (doseq [[duplicate-sender duplicate-recipient] duplicate-sender-and-duplicate-recipient]
-                (sql-message-create<! tx (assoc data :sender duplicate-sender
-                                                     :recipient duplicate-recipient
-                                                     :actual_recipient duplicate-recipient
-                                                     :message_attempt message-attempt-id))
-                (async-send!
-                  (filter (fn [[k _]] (= k duplicate-recipient)) @channels)
-                  [:message-received duplicate-sender])
-                (async-send!
-                  (filter (fn [[k _]] (or (= k duplicate-sender)
-                                        (= k duplicate-recipient))) @channels)
-                  [:reload-messages]))))
-          (do (sql-message-create<! tx (assoc data :actual_recipient recipient
-                                                   :message_attempt message-attempt-id))
-              (async-send!
-                (filter (fn [[k _]] (= k recipient)) @channels)
-                [:message-received sender])
-              (async-send!
-                (filter (fn [[k _]] (or (= k sender)
-                                        (= k recipient))) @channels)
-                [:reload-messages])))))))
+        (send-message tx {:message message
+                          :sender sender
+                          :message_attempt message-attempt-id
+                          :recipient recipient
+                          :actual_recipient recipient})))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
                                                                     :turn_name String
