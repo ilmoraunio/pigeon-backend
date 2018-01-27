@@ -15,7 +15,7 @@ empty = #"\s"
 symbol = #"([A-Za-z_-])+"
 keyword = #":([A-Za-z_-])+"
 special-variables = (params)
-fns = (if|comparison-signs|send|and|or|let|do|randomize-value|special-variables|keyword)
+fns = (if|comparison-signs|send-message|and|or|let|do|randomize-value|special-variables|keyword)
 
 (* Functions *)
 
@@ -26,7 +26,7 @@ less-than = "<"
 less-than-or-equals = "<="
 greater-than = ">"
 greater-than-or-equals = ">="
-send = "send"
+send-message = "send-message"
 and = "and"
 or = "or"
 let = "let"
