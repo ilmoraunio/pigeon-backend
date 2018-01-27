@@ -1,8 +1,23 @@
-(let [params *params*
-      dice-throw (randomize-value 6)
+(let [tx (:tx *params*)
       message (:message *params*)
-      intended-recipients (:intended-recipients params)
-      opposing-recipients (:opposing-recipients params)]
-  (if (= dice-throw 1)
-    (send message opposing-recipients)
-    (send message intended-recipients)))
+      sender (:sender *params*)
+      message-attempt-id (:message_attempt *params*)
+      recipient (:recipient *params*)
+      eavesdroppers (:eavesdroppers params)]
+  (if (= (randomize-value 6) 0)
+    (doseq [[captor-sender actual-recipient] eavesdroppers]
+      (send-message tx {:message message
+                        :sender sender
+                        :message_attempt message-attempt-id
+                        :recipient recipient
+                        :actual_recipient actual-recipient})
+      (send-message tx {:message message
+                        :sender captor-sender
+                        :message_attempt message-attempt-id
+                        :recipient actual-recipient
+                        :actual_recipient actual-recipient}))
+    (send-message tx {:message message
+                      :sender sender
+                      :message_attempt message-attempt-id
+                      :recipient recipient
+                      :actual_recipient recipient})))
