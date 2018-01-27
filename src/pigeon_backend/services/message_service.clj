@@ -50,33 +50,6 @@
   (slurp "resources/ebnf/pigeon-rules-spec.ebnf"))
 (def ^:dynamic *params*)
 
-(s/defn determine-applicable-rules [data :- [Rule]]
-  {:post [(s/validate [Rule] %)]}
-
-  (let [realized-result
-        (map #(case (:type %)
-               "rule_if_six_sided_dice_fuzzy"
-               (assoc % :realized_value (rand-nth [0.167
-                                                   0.333
-                                                   0.5
-                                                   0.667
-                                                   0.833
-                                                   1]))) data)
-        applicable-rules
-        (reduce (fn [coll {:keys [realized_value
-                                  value
-                                  type
-                                  short_circuit_rule_chain_if_true
-                                  short_circuit_rule_chain_if_false] :as entry}]
-                  (case type
-                    "rule_if_six_sided_dice_fuzzy"
-                    (if (<= realized_value value)
-                      (if short_circuit_rule_chain_if_true (reduced (conj coll entry)) (conj coll entry))
-                      (if short_circuit_rule_chain_if_false (reduced coll) coll))))
-          [] realized-result)]
-
-    applicable-rules))
-
 (s/defn send-message [tx {:keys [sender recipient] :as message-payload} :- MessagePayload]
   (sql-message-create<! tx message-payload)
 
