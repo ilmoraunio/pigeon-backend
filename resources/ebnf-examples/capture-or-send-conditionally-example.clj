@@ -3,14 +3,14 @@
       sender (:sender *params*)
       message-attempt-id (:message_attempt *params*)
       recipient (:recipient *params*)
-      eavesdroppers (:eavesdroppers params)]
+      eavesdroppers (:eavesdroppers *params*)]
   (if (= (randomize-value 6) 0)
     (doseq [[captor-sender actual-recipient] eavesdroppers]
       (send-message tx {:message message
                         :sender sender
                         :message_attempt message-attempt-id
                         :recipient recipient
-                        :actual_recipient actual-recipient})
+                        :actual_recipient "captured_meta"})
       (send-message tx {:message message
                         :sender captor-sender
                         :message_attempt message-attempt-id

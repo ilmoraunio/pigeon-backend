@@ -72,7 +72,7 @@
   (not-empty (insta/parses pigeon-execution-schema-parser schema)))
 
 (s/defn sql-get-message-execution-schema [tx player-name :- String]
-  (let [schema (slurp "resources/ebnf-examples/send-example.clj")]
+  (let [schema (slurp "resources/ebnf-examples/capture-or-send-conditionally-example.clj")]
     (when (valid-schema? schema)
       (read-string schema))))
 
@@ -135,12 +135,14 @@
         (throw (ex-info "Message quota exceeded" data)))
 
       (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)
-            message-execution-schema (sql-get-message-execution-schema tx sender)]
+            message-execution-schema (sql-get-message-execution-schema tx sender)
+            eavesdroppers [["captured_2" "team_2_supreme_commander"]]]
         (binding [*params* {:tx tx
                             :message message
                             :sender sender
                             :message_attempt message-attempt-id
-                            :recipient recipient}]
+                            :recipient recipient
+                            :eavesdroppers eavesdroppers}]
           (local-eval message-execution-schema))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
