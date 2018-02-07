@@ -136,7 +136,8 @@
 
       (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)
             message-execution-schema (sql-get-message-execution-schema tx sender)
-            eavesdroppers [["captured_2" "team_2_supreme_commander"]]]
+            eavesdroppers [["captured_2" "team_2_supreme_commander"]
+                           ["captured_3" "team_3_supreme_commander"]]]
         (binding [*params* {:tx tx
                             :message message
                             :sender sender
