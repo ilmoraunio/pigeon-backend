@@ -8,7 +8,8 @@
             [jeesql.core :refer [defqueries]]
             [pigeon-backend.websocket :refer [channels async-send!]]
             [environ.core :refer [env]]
-            [instaparse.core :as insta]))
+            [instaparse.core :as insta])
+  (:import (clojure.lang Keyword)))
 
 (s/defschema New {:sender String
                   :recipient String
@@ -46,8 +47,7 @@
 (defqueries "sql/turn.sql")
 (defqueries "sql/rule.sql")
 
-(insta/defparser pigeon-execution-schema-parser
-  (slurp "resources/ebnf/pigeon-rules-spec.ebnf"))
+(def rules (atom (read-string (slurp "rules.edn"))))
 (def ^:dynamic *params*)
 
 (s/defn send-message [tx {:keys [sender recipient] :as message-payload} :- MessagePayload]
@@ -67,14 +67,6 @@
   (rand-nth (range n)))
 (defmethod randomize-value Double [n]
   (rand n))
-
-(defn- valid-schema? [schema]
-  (not-empty (insta/parses pigeon-execution-schema-parser schema)))
-
-(s/defn sql-get-message-execution-schema [tx player-name :- String]
-  (let [schema (slurp "resources/ebnf-examples/capture-or-send-conditionally-example.clj")]
-    (when (valid-schema? schema)
-      (read-string schema))))
 
 (defn- local-eval [x]
   (binding [*ns* (find-ns 'pigeon-backend.services.message-service)]
@@ -134,17 +126,15 @@
                  no-limitless-send-limit-rules?) ;; limitless_send_limit trumps all
         (throw (ex-info "Message quota exceeded" data)))
 
-      (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)
-            message-execution-schema (sql-get-message-execution-schema tx sender)
-            eavesdroppers [["captured_2" "team_2_supreme_commander"]
-                           ["captured_3" "team_3_supreme_commander"]]]
-        (binding [*params* {:tx tx
-                            :message message
-                            :sender sender
-                            :message_attempt message-attempt-id
-                            :recipient recipient
-                            :eavesdroppers eavesdroppers}]
-          (local-eval message-execution-schema))))))
+      (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)]
+        (binding [*params* (merge (get @rules :default)
+                                  (get @rules sender)
+                                  {:tx tx
+                                   :message message
+                                   :sender sender
+                                   :message_attempt message-attempt-id
+                                   :recipient recipient})]
+          (local-eval (:message-execution-schema *params*)))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
                                                                     :turn_name String
