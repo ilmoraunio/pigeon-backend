@@ -129,6 +129,7 @@
       (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)]
         (binding [*params* (merge (get @rules :default)
                                   (get @rules sender)
+                                  (get @rules [sender recipient])
                                   {:tx tx
                                    :message message
                                    :sender sender
