@@ -1,33 +1,33 @@
-{:default {:message-execution-schema (let [tx (:tx *params*)
-                                           message (:message *params*)
-                                           sender (:sender *params*)
-                                           message-attempt-id (:message_attempt *params*)
-                                           recipient (:recipient *params*)
-                                           eavesdroppers (:eavesdroppers *params*)]
-                                       (send-message tx {:message message
-                                                         :sender sender
-                                                         :message_attempt message-attempt-id
-                                                         :recipient recipient
-                                                         :actual_recipient recipient}))}
+{:default {:message-execution-schema        (let [tx                 (:tx *params*)
+                                                  message            (:message *params*)
+                                                  sender             (:sender *params*)
+                                                  message-attempt-id (:message_attempt *params*)
+                                                  recipient          (:recipient *params*)
+                                                  eavesdroppers      (:eavesdroppers *params*)]
+                                              (send-message tx {:message          message
+                                                                :sender           sender
+                                                                :message_attempt  message-attempt-id
+                                                                :recipient        recipient
+                                                                :actual_recipient recipient}))}
  "team_1_supreme_commander" {:eavesdroppers [["captured_2" "team_2_supreme_commander"]
                                              ["captured_3" "team_3_supreme_commander"]]}
- "team_1_player_1" {:eavesdroppers [["captured_2" "team_2_supreme_commander"]
-                                    ["captured_3" "team_3_supreme_commander"]]}
- "team_1_player_2" {:eavesdroppers [["captured_2" "team_2_supreme_commander"]
-                                    ["captured_3" "team_3_supreme_commander"]]}
+ "team_1_player_1" {:eavesdroppers          [["captured_2" "team_2_supreme_commander"]
+                                             ["captured_3" "team_3_supreme_commander"]]}
+ "team_1_player_2" {:eavesdroppers          [["captured_2" "team_2_supreme_commander"]
+                                             ["captured_3" "team_3_supreme_commander"]]}
  "team_2_supreme_commander" {:eavesdroppers [["captured_1" "team_1_supreme_commander"]
                                              ["captured_3" "team_3_supreme_commander"]]}
- "team_2_player_1" {:eavesdroppers [["captured_1" "team_1_supreme_commander"]
-                                    ["captured_3" "team_3_supreme_commander"]]}
- "team_2_player_2" {:eavesdroppers [["captured_1" "team_1_supreme_commander"]
-                                    ["captured_3" "team_3_supreme_commander"]]}
- "team_2_player_3" {:eavesdroppers [["captured_1" "team_1_supreme_commander"]
-                                    ["captured_3" "team_3_supreme_commander"]]}
- "team_2_player_4" {:eavesdroppers [["captured_1" "team_1_supreme_commander"]
-                                    ["captured_3" "team_3_supreme_commander"]]}
+ "team_2_player_1" {:eavesdroppers          [["captured_1" "team_1_supreme_commander"]
+                                             ["captured_3" "team_3_supreme_commander"]]}
+ "team_2_player_2" {:eavesdroppers          [["captured_1" "team_1_supreme_commander"]
+                                             ["captured_3" "team_3_supreme_commander"]]}
+ "team_2_player_3" {:eavesdroppers          [["captured_1" "team_1_supreme_commander"]
+                                             ["captured_3" "team_3_supreme_commander"]]}
+ "team_2_player_4" {:eavesdroppers          [["captured_1" "team_1_supreme_commander"]
+                                             ["captured_3" "team_3_supreme_commander"]]}
  "team_3_supreme_commander" {:eavesdroppers [["captured_1" "team_1_supreme_commander"]
                                              ["captured_2" "team_2_supreme_commander"]]}
- "team_3_player_1" {:eavesdroppers [["captured_1" "team_1_supreme_commander"]
-                                    ["captured_2" "team_2_supreme_commander"]]}
- "team_3_player_2" {:eavesdroppers [["captured_1" "team_1_supreme_commander"]
-                                    ["captured_2" "team_2_supreme_commander"]]}}
+ "team_3_player_1" {:eavesdroppers          [["captured_1" "team_1_supreme_commander"]
+                                             ["captured_2" "team_2_supreme_commander"]]}
+ "team_3_player_2" {:eavesdroppers          [["captured_1" "team_1_supreme_commander"]
+                                             ["captured_2" "team_2_supreme_commander"]]}}
