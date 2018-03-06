@@ -7,9 +7,7 @@
             [pigeon-backend.services.util :refer [initialize-query-data]]
             [jeesql.core :refer [defqueries]]
             [pigeon-backend.websocket :refer [channels async-send!]]
-            [environ.core :refer [env]]
-            [instaparse.core :as insta])
-  (:import (clojure.lang Keyword)))
+            [environ.core :refer [env]]))
 
 (s/defschema New {:sender String
                   :recipient String
@@ -47,7 +45,7 @@
 (defqueries "sql/turn.sql")
 (defqueries "sql/rule.sql")
 
-(def rules (atom (read-string (slurp "rules.edn"))))
+(def rules (atom nil))
 (def ^:dynamic *params*)
 
 (s/defn send-message [tx {:keys [sender recipient] :as message-payload} :- MessagePayload]
