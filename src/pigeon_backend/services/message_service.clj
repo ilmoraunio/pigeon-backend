@@ -12,6 +12,13 @@
 (s/defschema New {:sender String
                   :recipient String
                   :message String})
+
+(s/defschema MessagePayload {:message String
+                             :sender String
+                             :recipient String
+                             :message_attempt s/Int
+                             :actual_recipient String})
+
 (s/defschema Model (merge model/Model New {:message_attempt s/Int
                                            :turn s/Int}))
 (s/defschema Get {:sender String
@@ -38,32 +45,30 @@
 (defqueries "sql/turn.sql")
 (defqueries "sql/rule.sql")
 
-(s/defn determine-applicable-rules [data :- [Rule]]
-  {:post [(s/validate [Rule] %)]}
+(def rules (atom nil))
+(def ^:dynamic *params*)
 
-  (let [realized-result
-        (map #(case (:type %)
-               "rule_if_six_sided_dice_fuzzy"
-               (assoc % :realized_value (rand-nth [0.167
-                                                   0.333
-                                                   0.5
-                                                   0.667
-                                                   0.833
-                                                   1]))) data)
-        applicable-rules
-        (reduce (fn [coll {:keys [realized_value
-                                  value
-                                  type
-                                  short_circuit_rule_chain_if_true
-                                  short_circuit_rule_chain_if_false] :as entry}]
-                  (case type
-                    "rule_if_six_sided_dice_fuzzy"
-                    (if (<= realized_value value)
-                      (if short_circuit_rule_chain_if_true (reduced (conj coll entry)) (conj coll entry))
-                      (if short_circuit_rule_chain_if_false (reduced coll) coll))))
-          [] realized-result)]
+(s/defn send-message [tx {:keys [sender recipient] :as message-payload} :- MessagePayload]
+  (sql-message-create<! tx message-payload)
 
-    applicable-rules))
+  (async-send!
+    (filter (fn [[k _]] (= k recipient)) @channels)
+    [:message-received sender])
+
+  (async-send!
+    (filter (fn [[k _]] (or (= k sender)
+                          (= k recipient))) @channels)
+    [:reload-messages]))
+
+(defmulti randomize-value class)
+(defmethod randomize-value Long [n]
+  (rand-nth (range n)))
+(defmethod randomize-value Double [n]
+  (rand n))
+
+(defn- local-eval [x]
+  (binding [*ns* (find-ns 'pigeon-backend.services.message-service)]
+    (eval x)))
 
 (s/defn message-create! [{:keys [sender recipient message] :as data} :- New]
   ;;{:post [(s/validate Model %)]}
@@ -73,17 +78,16 @@
                            first)
           send-limits (sql-get-send-limit tx)
           ;; todo: some duplicate code below...
-          send-limit-rules (->> send-limits
-                                (filter #(and (= (:from_node %) sender)
-                                          (some #{recipient} (:to_nodes %))
-                                          (= (:type %) "send_limit"))))
           send-limit-rules (doall (map (fn [{:keys [from_node to_nodes] :as value}]
                                          (assoc value :messages
                                                       (sql-conversations tx
                                                         {:sender from_node
                                                          :recipient to_nodes
                                                          :turn (:id active-turn)})))
-                                       send-limit-rules))
+                                       (->> send-limits
+                                            (filter #(and (= (:from_node %) sender)
+                                                          (some #{recipient} (:to_nodes %))
+                                                          (= (:type %) "send_limit"))))))
           all-rule-limits-exceeded? (every? true?
                                             (for [entry send-limit-rules
                                                   :let [messages-counted-by-recipient
@@ -92,17 +96,16 @@
                                                               (fn [[k v]] {k (count v)})
                                                               (group-by :recipient (:messages entry))))]]
                                               (>= (get messages-counted-by-recipient recipient 0) (:value entry))))
-          shared-send-limit-rules (->> send-limits
-                                       (filter #(and (= (:from_node %) sender)
-                                                 (some #{recipient} (:to_nodes %))
-                                                 (= (:type %) "shared_send_limit"))))
           shared-send-limit-rules (doall (map (fn [{:keys [from_node to_nodes] :as value}]
                                                 (assoc value :messages
                                                              (sql-conversations tx
                                                                {:sender from_node
                                                                 :recipient to_nodes
                                                                 :turn (:id active-turn)})))
-                                              shared-send-limit-rules))
+                                              (->> send-limits
+                                                (filter #(and (= (:from_node %) sender)
+                                                              (some #{recipient} (:to_nodes %))
+                                                              (= (:type %) "shared_send_limit"))))))
           all-shared-rule-limits-exceeded? (every? true?
                                                    (for [entry shared-send-limit-rules]
                                                      (>= (count (:messages entry)) (:value entry))))
@@ -110,8 +113,7 @@
                                        (filter #(and (= (:from_node %) sender)
                                                      (some #{recipient} (:to_nodes %))
                                                      (= (:type %) "limitless_send_limit"))))
-          no-limitless-send-limit-rules? (empty? limitless-send-limit-rules)
-          rules (sql-get-rule tx {:recipient recipient})]
+          no-limitless-send-limit-rules? (empty? limitless-send-limit-rules)]
 
       (when-let [message-character-limit (Integer. (env :message-character-limit))]
         (when (> (count message) message-character-limit)
@@ -123,45 +125,15 @@
         (throw (ex-info "Message quota exceeded" data)))
 
       (let [{message-attempt-id :id} (sql-message-attempt-create<! tx data)]
-        ;; todo: log/persist applicable-rules
-        (if (not-empty rules)
-          (doseq [{:keys [if_satisfied_then_direct_to_nodes
-                          if_satisfied_then_duplicate_to_nodes
-                          if_satisfied_then_duplicate_from_nodes]} (determine-applicable-rules rules)]
-            (doseq [to_node if_satisfied_then_direct_to_nodes]
-              (sql-message-create<! tx (assoc data :actual_recipient to_node
-                                                   :message_attempt message-attempt-id))
-              (async-send!
-                (filter (fn [[k _]] (= k to_node)) @channels)
-                [:message-received sender])
-              (async-send!
-                (filter (fn [[k _]] (or (= k sender)
-                                        (= k to_node))) @channels)
-                [:reload-messages]))
-            (let [duplicate-sender-and-duplicate-recipient
-                  (map vector if_satisfied_then_duplicate_from_nodes
-                              if_satisfied_then_duplicate_to_nodes)]
-              (doseq [[duplicate-sender duplicate-recipient] duplicate-sender-and-duplicate-recipient]
-                (sql-message-create<! tx (assoc data :sender duplicate-sender
-                                                     :recipient duplicate-recipient
-                                                     :actual_recipient duplicate-recipient
-                                                     :message_attempt message-attempt-id))
-                (async-send!
-                  (filter (fn [[k _]] (= k duplicate-recipient)) @channels)
-                  [:message-received duplicate-sender])
-                (async-send!
-                  (filter (fn [[k _]] (or (= k duplicate-sender)
-                                        (= k duplicate-recipient))) @channels)
-                  [:reload-messages]))))
-          (do (sql-message-create<! tx (assoc data :actual_recipient recipient
-                                                   :message_attempt message-attempt-id))
-              (async-send!
-                (filter (fn [[k _]] (= k recipient)) @channels)
-                [:message-received sender])
-              (async-send!
-                (filter (fn [[k _]] (or (= k sender)
-                                        (= k recipient))) @channels)
-                [:reload-messages])))))))
+        (binding [*params* (merge (get @rules :default)
+                                  (get @rules sender)
+                                  (get @rules [sender recipient])
+                                  {:tx tx
+                                   :message message
+                                   :sender sender
+                                   :message_attempt message-attempt-id
+                                   :recipient recipient})]
+          (local-eval (:message-execution-schema *params*)))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
                                                                     :turn_name String

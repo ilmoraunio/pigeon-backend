@@ -13,13 +13,15 @@
             [pigeon-backend.routes.message :refer [message-routes
                                                    message-attempt-routes
                                                    message-character-limit-route]]
+            [pigeon-backend.services.message-service :as message-service]
             [pigeon-backend.routes.users :refer [users-routes]]
             [pigeon-backend.routes.turn :refer [turn-routes]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [buddy.sign.jws :as jws]
             [immutant.web :as immutant]
             [immutant.web.middleware :refer [wrap-websocket]]
-            [pigeon-backend.websocket :refer [channels async-send! ws-app]])
+            [pigeon-backend.websocket :refer [channels async-send! ws-app]]
+            [clojure.java.io :as io])
   (:gen-class))
 
 (def async-keepalive (atom nil))
@@ -63,6 +65,16 @@
             (do (Thread/sleep ms)
                 (callback)))))
 
+(defn get-default-config [file-path]
+  (with-open [r (-> (io/resource file-path)
+                  io/reader)]
+    (-> r slurp read-string)))
+
+(defn get-overriding-config [file-path]
+  (when-let [exists? (.exists (io/as-file file-path))]
+    (with-open [r (io/reader file-path)]
+      (-> r slurp read-string))))
+
 (defn app-with-middleware
   ([] (-> #'app
           ; TODO: do not enable by default, but
@@ -74,6 +86,11 @@
 (defn -main [& args]
   (migrations/migrate)
   (migrations/migrate-data)
+  (reset! message-service/rules (get-default-config "rules.edn"))
+  (when-let [overriding-rules (get-overriding-config "rules.edn")]
+    (reset! message-service/rules overriding-rules))
+  (clojure.pprint/pprint @message-service/rules)
+
   (let [port (coerce-to-integer (env :port 8080))
         host                    (env :host "localhost")]
     (immutant/run (app-with-middleware) {:port port
