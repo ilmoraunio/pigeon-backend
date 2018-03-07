@@ -6,10 +6,13 @@
             [pigeon-backend.test-util :refer :all]
             [midje.sweet :refer :all]
             [schema.core :as s]
-            [pigeon-backend.db.migrations :as migrations]))
+            [pigeon-backend.db.migrations :as migrations]
+            [pigeon-backend.services.message-service :as message-service]
+            [pigeon-backend.handler :as handler]))
 
 (deftest message-routes-test
-  (with-state-changes [(before :facts (do (empty-and-create-tables)
+  (with-state-changes [(before :facts (do (reset! message-service/rules (handler/get-default-config "rules.edn"))
+                                          (empty-and-create-tables)
                                           ;; todo: fix tests to be deterministic
                                           (migrations/migrate-data-extra)))]
     (fact "Insertion"
