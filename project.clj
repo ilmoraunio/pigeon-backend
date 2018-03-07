@@ -18,8 +18,7 @@
                  [cheshire "5.3.1"]
                  [com.taoensso/sente "1.11.0"]
                  [org.immutant/web "2.1.0"]
-                 [com.cognitect/transit-clj "0.8.300"]
-                 [instaparse "1.4.8"]]
+                 [com.cognitect/transit-clj "0.8.300"]]
   :plugins       [[lein-environ "0.4.0"]]
   :uberjar-name "server.jar"
   :eval-in :nrepl

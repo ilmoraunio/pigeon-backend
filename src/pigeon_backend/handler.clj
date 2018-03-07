@@ -72,7 +72,7 @@
 
 (defn get-overriding-config [file-path]
   (when-let [exists? (.exists (io/as-file file-path))]
-    (with-open [r (-> (io/reader file-path))]
+    (with-open [r (io/reader file-path)]
       (-> r slurp read-string))))
 
 (defn app-with-middleware
