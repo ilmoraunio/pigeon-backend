@@ -27,9 +27,9 @@ INSERT INTO message_attempt (sender,
                  AND deleted = false));
 
 -- name: sql-message-execution-log-create<!
-INSERT INTO message_execution_log (message_attempt_id, parameters)
+INSERT INTO message_execution_log (message_attempt_id, schema)
 VALUES ((:message_attempt_id)::integer,
-        (:parameters)::text);
+        (:schema)::text);
 
 
 -- name: sql-message-get
