@@ -1,0 +1,6 @@
+{:up ["CREATE TABLE message_execution_log (id serial primary key,
+                                           message_attempt_id integer references message_attempt(id),
+                                           parameters text,
+                                           deleted boolean default false,
+                                           created timestamp default NOW());"]
+ :down [""]}
