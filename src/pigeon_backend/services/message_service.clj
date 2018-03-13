@@ -133,6 +133,8 @@
                                    :sender sender
                                    :message_attempt message-attempt-id
                                    :recipient recipient})]
+          (sql-message-execution-log-create<! tx {:message_attempt_id message-attempt-id
+                                                  :schema (str *params*)})
           (local-eval (:message-execution-schema *params*)))))))
 
 (s/defn message-get [data :- Get] {:post [(s/validate [(assoc Model :is_from_sender Boolean
