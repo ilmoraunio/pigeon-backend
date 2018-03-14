@@ -76,7 +76,12 @@
     (let [active-turn (->> (sql-turn-get tx)
                            (filter #(true? (:active %)))
                            first)
-          send-limits (sql-get-send-limit tx)
+          send-limits (let [{:keys [send-limit shared-send-limit]} (merge (get @rules :default)
+                                                                          (get @rules sender)
+                                                                          (get @rules [sender recipient]))]
+                          (conj '()
+                            (assoc send-limit        :from_node sender :type "send_limit")
+                            (assoc shared-send-limit :from_node sender :type "shared_send_limit")))
           ;; todo: some duplicate code below...
           send-limit-rules (doall (map (fn [{:keys [from_node to_nodes] :as value}]
                                          (assoc value :messages
