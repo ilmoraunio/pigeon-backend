@@ -23,54 +23,81 @@
                                                            :recipient recipient
                                                            :actual_recipient recipient})))}
 
+ "moderator"                {:message-execution-schema (send-message (:tx *params*)
+                                                         {:message (:message *params*)
+                                                          :sender (:sender *params*)
+                                                          :message_attempt (:message_attempt *params*)
+                                                          :recipient (:recipient *params*)
+                                                          :actual_recipient (:recipient *params*)})
+
+                             :limitless-send-limit [{:to_nodes ["team_1_supreme_commander"
+                                                                "team_1_player_1"
+                                                                "team_1_player_2"
+                                                                "team_2_supreme_commander"
+                                                                "team_2_player_1"
+                                                                "team_2_player_2"
+                                                                "team_2_player_3"
+                                                                "team_2_player_4"
+                                                                "team_3_supreme_commander"
+                                                                "team_3_player_1"
+                                                                "team_3_player_2"]}]}
+
+ {:recipient "moderator"} {:message-execution-schema (send-message (:tx *params*)
+                                                       {:message (:message *params*)
+                                                        :sender (:sender *params*)
+                                                        :message_attempt (:message_attempt *params*)
+                                                        :recipient (:recipient *params*)
+                                                        :actual_recipient (:recipient *params*)})
+                           :limitless-send-limit [{:to_nodes ["moderator"]}]}
+
  "team_1_supreme_commander" {:eavesdroppers     [["captured_2" "team_2_supreme_commander"]
                                                  ["captured_3" "team_3_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_1_player_1" "team_1_player_2"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_1_player_1" "team_1_player_2"] :value 1}]}
 
  "team_1_player_1"          {:eavesdroppers     [["captured_2" "team_2_supreme_commander"]
                                                  ["captured_3" "team_3_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_1_supreme_commander"] :value 1}
-                             :shared-send-limit {:to_nodes ["team_1_player_2"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_1_supreme_commander"] :value 1}]
+                             :shared-send-limit [{:to_nodes ["team_1_player_2"] :value 1}]}
 
  "team_1_player_2"          {:eavesdroppers     [["captured_2" "team_2_supreme_commander"]
                                                  ["captured_3" "team_3_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_1_supreme_commander"] :value 1}
-                             :shared-send-limit {:to_nodes ["team_1_player_1"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_1_supreme_commander"] :value 1}]
+                             :shared-send-limit [{:to_nodes ["team_1_player_1"] :value 1}]}
 
  "team_2_supreme_commander" {:eavesdroppers     [["captured_1" "team_1_supreme_commander"]
                                                  ["captured_3" "team_3_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_2_player_1" "team_2_player_2" "team_2_player_3" "team_2_player_4"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_2_player_1" "team_2_player_2" "team_2_player_3" "team_2_player_4"] :value 1}]}
 
  "team_2_player_1"          {:eavesdroppers     [["captured_1" "team_1_supreme_commander"]
                                                  ["captured_3" "team_3_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_2_supreme_commander"] :value 1}
-                             :shared-send-limit {:to_nodes ["team_2_player_2" "team_2_player_3" "team_2_player_4"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_2_supreme_commander"] :value 1}]
+                             :shared-send-limit [{:to_nodes ["team_2_player_2" "team_2_player_3" "team_2_player_4"] :value 1}]}
 
  "team_2_player_2"          {:eavesdroppers     [["captured_1" "team_1_supreme_commander"]
                                                  ["captured_3" "team_3_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_2_supreme_commander"] :value 1}
-                             :shared-send-limit {:to_nodes ["team_2_player_1" "team_2_player_3" "team_2_player_4"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_2_supreme_commander"] :value 1}]
+                             :shared-send-limit [{:to_nodes ["team_2_player_1" "team_2_player_3" "team_2_player_4"] :value 1}]}
 
  "team_2_player_3"          {:eavesdroppers     [["captured_1" "team_1_supreme_commander"]
                                                  ["captured_3" "team_3_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_2_supreme_commander"] :value 1}
-                             :shared-send-limit {:to_nodes ["team_2_player_1" "team_2_player_2" "team_2_player_4"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_2_supreme_commander"] :value 1}]
+                             :shared-send-limit [{:to_nodes ["team_2_player_1" "team_2_player_2" "team_2_player_4"] :value 1}]}
 
  "team_2_player_4"          {:eavesdroppers     [["captured_1" "team_1_supreme_commander"]
                                                  ["captured_3" "team_3_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_2_supreme_commander"] :value 1}
-                             :shared-send-limit {:to_nodes ["team_2_player_1" "team_2_player_2" "team_2_player_3"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_2_supreme_commander"] :value 1}]
+                             :shared-send-limit [{:to_nodes ["team_2_player_1" "team_2_player_2" "team_2_player_3"] :value 1}]}
 
  "team_3_supreme_commander" {:eavesdroppers     [["captured_1" "team_1_supreme_commander"]
                                                  ["captured_2" "team_2_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_3_player_1" "team_3_player_2"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_3_player_1" "team_3_player_2"] :value 1}]}
 
  "team_3_player_1"          {:eavesdroppers     [["captured_1" "team_1_supreme_commander"]
                                                  ["captured_2" "team_2_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_3_supreme_commander"] :value 1}
-                             :shared-send-limit {:to_nodes ["team_3_player_2"] :value 1}}
+                             :send-limit        [{:to_nodes ["team_3_supreme_commander"] :value 1}]
+                             :shared-send-limit [{:to_nodes ["team_3_player_2"] :value 1}]}
 
  "team_3_player_2"          {:eavesdroppers     [["captured_1" "team_1_supreme_commander"]
                                                  ["captured_2" "team_2_supreme_commander"]]
-                             :send-limit        {:to_nodes ["team_3_supreme_commander"] :value 1}
-                             :shared-send-limit {:to_nodes ["team_3_player_1"] :value 1}}}
+                             :send-limit        [{:to_nodes ["team_3_supreme_commander"] :value 1}]
+                             :shared-send-limit [{:to_nodes ["team_3_player_1"] :value 1}]}}
