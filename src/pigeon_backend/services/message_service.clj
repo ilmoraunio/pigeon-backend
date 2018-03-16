@@ -70,13 +70,24 @@
   (binding [*ns* (find-ns 'pigeon-backend.services.message-service)]
     (eval x)))
 
+(defn get-rules-for-message-scenario [rules {:keys [sender recipient]}]
+  (merge (get rules :default)
+         (get rules sender)
+         (get rules {:recipient recipient})
+         (get rules [sender recipient])))
+
 (s/defn message-create! [{:keys [sender recipient message] :as data} :- New]
   ;;{:post [(s/validate Model %)]}
   (jdbc/with-db-transaction [tx db-spec]
-    (let [active-turn (->> (sql-turn-get tx)
+    (let [rules-for-message-scenario (get-rules-for-message-scenario @rules data)
+          active-turn (->> (sql-turn-get tx)
                            (filter #(true? (:active %)))
                            first)
-          send-limits (sql-get-send-limit tx)
+          send-limits (let [{:keys [send-limit shared-send-limit limitless-send-limit]} rules-for-message-scenario]
+                        (concat
+                          (map #(assoc % :from_node sender :type "send_limit") send-limit)
+                          (map #(assoc % :from_node sender :type "shared_send_limit") shared-send-limit)
+                          (map #(assoc % :from_node sender :type "limitless_send_limit") limitless-send-limit)))
           ;; todo: some duplicate code below...
           send-limit-rules (doall (map (fn [{:keys [from_node to_nodes] :as value}]
                                          (assoc value :messages

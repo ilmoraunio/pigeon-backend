@@ -1,0 +1,27 @@
+{:up ["INSERT INTO users_edge
+       (from_node,                   to_node,                   type) VALUES
+
+       ('moderator',            'team_1_supreme_commander',          'visibility')
+      ,('moderator',            'team_1_player_1',                   'visibility')
+      ,('moderator',            'team_1_player_2',                   'visibility')
+      ,('moderator',            'team_2_supreme_commander',          'visibility')
+      ,('moderator',            'team_2_player_1',                   'visibility')
+      ,('moderator',            'team_2_player_2',                   'visibility')
+      ,('moderator',            'team_2_player_3',                   'visibility')
+      ,('moderator',            'team_2_player_4',                   'visibility')
+      ,('moderator',            'team_3_supreme_commander',          'visibility')
+      ,('moderator',            'team_3_player_1',                   'visibility')
+      ,('moderator',            'team_3_player_2',                   'visibility')
+
+      ,('team_1_supreme_commander',   'moderator',                   'visibility')
+      ,('team_1_player_1',            'moderator',                   'visibility')
+      ,('team_1_player_2',            'moderator',                   'visibility')
+      ,('team_2_supreme_commander',   'moderator',                   'visibility')
+      ,('team_2_player_1',            'moderator',                   'visibility')
+      ,('team_2_player_2',            'moderator',                   'visibility')
+      ,('team_2_player_3',            'moderator',                   'visibility')
+      ,('team_2_player_4',            'moderator',                   'visibility')
+      ,('team_3_supreme_commander',   'moderator',                   'visibility')
+      ,('team_3_player_1',            'moderator',                   'visibility')
+      ,('team_3_player_2',            'moderator',                   'visibility');"]
+ :down [""]}
