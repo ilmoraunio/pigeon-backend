@@ -10,6 +10,9 @@
             [pigeon-backend.services.message-service :as message-service]
             [pigeon-backend.handler :as handler]))
 
+(def capture-or-send-conditionally-rules
+  (atom (handler/get-overriding-config "resources/rules-example/capture-or-send-conditionally-example.edn")))
+
 (deftest message-routes-test
   (with-state-changes [(before :facts (do (reset! message-service/rules (handler/get-default-config "rules.edn"))
                                           (empty-and-create-tables)
@@ -27,32 +30,35 @@
                                                 (mock/content-type "application/json")
                                                 (mock/header :authorization (tokenize token-team-1-supreme-commander))
                                                 (mock/body (cheshire/generate-string {:message "message"})))))
-      (let [response-1 (insert-request "team_1_player_1")
-            response-2 (insert-request "team_1_player_2")]
-        (:status response-1) => 201
-        (:status response-2) => 201))
+      (with-redefs [message-service/rules capture-or-send-conditionally-rules]
+        (let [response-1 (insert-request "team_1_player_1")
+              response-2 (insert-request "team_1_player_2")]
+          (:status response-1) => 201
+          (:status response-2) => 201)))
 
     (fact "Message quota exceeded (send_limit)"
       (defn insert-request [] (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
                                        (mock/content-type "application/json")
                                        (mock/header :authorization (tokenize token-team-1-supreme-commander))
                                        (mock/body (cheshire/generate-string {:message "message"})))))
-      (let [response-1 (insert-request)
-            response-2 (insert-request)]
-        (:status response-1) => 201
-        (:status response-2) => 400))
+      (with-redefs [message-service/rules capture-or-send-conditionally-rules]
+        (let [response-1 (insert-request)
+              response-2 (insert-request)]
+          (:status response-1) => 201
+          (:status response-2) => 400)))
 
     (fact "Message quota exceeded (shared_send_limit)"
-      (let [response-1 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_2")
+      (with-redefs [message-service/rules capture-or-send-conditionally-rules]
+        (let [response-1 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_2")
                                 (mock/content-type "application/json")
                                 (mock/header :authorization (tokenize token-team-1-player-1))
                                 (mock/body (cheshire/generate-string {:message "message"}))))
-            response-2 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_3")
+              response-2 (app (-> (mock/request :post "/api/v0/message/sender/team_1_player_1/recipient/team_1_player_3")
                                 (mock/content-type "application/json")
                                 (mock/header :authorization (tokenize token-team-1-player-1))
                                 (mock/body (cheshire/generate-string {:message "message"}))))]
-        (:status response-1) => 201
-        (:status response-2) => 400))
+          (:status response-1) => 201
+          (:status response-2) => 400)))
 
     (fact "Listing"
       (let [_ (app (-> (mock/request :post "/api/v0/message/sender/team_1_supreme_commander/recipient/team_1_player_1")
