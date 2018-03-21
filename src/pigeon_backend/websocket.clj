@@ -76,7 +76,11 @@
               connected-uids
               ajax-post-fn
               ajax-get-or-ws-handshake-fn]}
-      (sente/make-channel-socket! (get-sch-adapter) {})]
+      (sente/make-channel-socket!
+        (get-sch-adapter)
+        {:user-id-fn (fn [{{:keys [username client-id]} :params}]
+                       {:username username
+                        :client-id client-id})})]
   (def ring-ajax-post                ajax-post-fn)
   (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
   (def ch-chsk                       ch-recv) ; ChannelSocket's receive channel
