@@ -7,6 +7,7 @@
             [ring.server.standalone :as ring]
             [environ.core :refer [env]]
             [pigeon-backend.db.migrations :as migrations]
+            [pigeon-backend.middleware :refer [wrap-websocket-auth]]
             [ring.middleware.reload :refer [wrap-reload]]
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
             [pigeon-backend.routes.login :refer [login-routes]]
@@ -53,7 +54,8 @@
       message-character-limit-route
       (context "/chsk" req
         :middleware [ring.middleware.keyword-params/wrap-keyword-params
-                     ring.middleware.params/wrap-params]
+                     ring.middleware.params/wrap-params
+                     wrap-websocket-auth]
         (GET  "/" _ (websocket/ring-ajax-get-or-ws-handshake req))
         (POST "/" _ (websocket/ring-ajax-post req))))))
 

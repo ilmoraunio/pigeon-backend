@@ -2,7 +2,8 @@
   (require [buddy.sign.jws :as jws]
            [pigeon-backend.services.exception-util :refer [handle-exception-info]]
            [environ.core :refer [env]]
-           [pigeon-backend.util :refer :all]))
+           [pigeon-backend.util :refer :all]
+           [ring.util.http-response :refer :all]))
 
 (def ^{:private true} authorizable-http-methods #{:get :head :post :put :delete :patch})
 
@@ -63,3 +64,16 @@
           (ex-info "Not authorized" {:type :validation
                                      :cause :authorization}) {} request))
       (handler request))))
+
+(defn wrap-websocket-auth [handler]
+  (fn [request]
+    (let [params (:params request)
+          {:keys [username authorization]} params]
+      (if (some nil? [username authorization])
+        (unauthorized!)
+        (if (or (empty? authorization) (< (count authorization) 3))
+          (unauthorized!)
+          (let [{:keys [user]} (jws/unsign authorization (env :jws-shared-secret))]
+            (if (not= user username)
+              (unauthorized!)
+              (handler request))))))))

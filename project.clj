@@ -19,7 +19,8 @@
                  [com.taoensso/sente "1.11.0"]
                  [org.immutant/web "2.1.0"]
                  [com.cognitect/transit-clj "0.8.300"]
-                 [com.taoensso/sente "1.12.0"]]
+                 [com.taoensso/sente "1.12.0"]
+                 [metosin/ring-http-response "0.9.0"]]
   :plugins       [[lein-environ "0.4.0"]]
   :uberjar-name "server.jar"
   :eval-in :nrepl
