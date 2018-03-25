@@ -88,3 +88,7 @@
   (def connected-uids                connected-uids) ; Watchable, read-only atom
 
   (sente/start-server-chsk-router! ch-chsk event-msg-handler))
+
+(defmulti filter-users type)
+(defmethod filter-users java.lang.String [username]
+  (filter (fn [m] (= (:username m) username)) (:any @connected-uids)))

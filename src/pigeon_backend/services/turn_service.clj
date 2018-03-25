@@ -24,5 +24,6 @@
   (let [return-val (jdbc/with-db-transaction [tx db-spec]
                      (sql-inactivate-turn<! tx)
                      (sql-activate-turn<! tx data))]
-    (websocket/chsk-send! :sente/all-users-without-uid [:pigeon/reload-turns])
+    (doseq [uid (:any @websocket/connected-uids)]
+      (websocket/chsk-send! uid [:pigeon/reload-turns]))
     return-val))

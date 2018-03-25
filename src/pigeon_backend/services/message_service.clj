@@ -51,20 +51,11 @@
 (s/defn send-message [tx {:keys [sender recipient] :as message-payload} :- MessagePayload]
   (sql-message-create<! tx message-payload)
 
-  (comment "todo"
-           (async-send!
-             (filter (fn [[k _]] (= k recipient)) @channels)
-             [:message-received sender]))
-
-  (comment "todo"
-           (async-send!
-             (filter (fn [[k _]] (or (= k sender)
-                                   (= k recipient))) @channels)
-             [:reload-messages]))
-
-  (websocket/chsk-send! :sente/all-users-without-uid [:pigeon/message-received sender]) ;; todo: recipient-only
-  (websocket/chsk-send! :sente/all-users-without-uid [:pigeon/reload-messages]) ;; todo: sender & recipient-only
-  )
+  (let [[sender-uid] (websocket/filter-users sender)
+        [recipient]  (websocket/filter-users recipient)]
+    (websocket/chsk-send! recipient  [:pigeon/message-received sender])
+    (websocket/chsk-send! sender-uid [:pigeon/reload-messages])
+    (websocket/chsk-send! recipient  [:pigeon/reload-messages])))
 
 (defmulti randomize-value class)
 (defmethod randomize-value Long [n]
