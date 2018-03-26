@@ -51,11 +51,12 @@
 (s/defn send-message [tx {:keys [sender recipient] :as message-payload} :- MessagePayload]
   (sql-message-create<! tx message-payload)
 
-  (let [[sender-uid] (websocket/filter-users sender)
-        [recipient]  (websocket/filter-users recipient)]
-    (websocket/chsk-send! recipient  [:pigeon/message-received sender])
-    (websocket/chsk-send! sender-uid [:pigeon/reload-messages])
-    (websocket/chsk-send! recipient  [:pigeon/reload-messages])))
+  (when-let [[sender-uid] (seq (websocket/filter-users sender))]
+    (websocket/chsk-send! sender-uid [:pigeon/reload-messages]))
+
+  (when-let [[recipient]  (seq (websocket/filter-users recipient))]
+    (websocket/chsk-send! recipient [:pigeon/message-received sender])
+    (websocket/chsk-send! recipient [:pigeon/reload-messages])))
 
 (defmulti randomize-value class)
 (defmethod randomize-value Long [n]
