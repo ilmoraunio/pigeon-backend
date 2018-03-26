@@ -6,8 +6,7 @@
             [schema-tools.core :as st]
             [pigeon-backend.services.util :refer [initialize-query-data]]
             [jeesql.core :refer [defqueries]]
-            [immutant.web.async :as async]
-            [pigeon-backend.websocket :refer [channels async-send!]]))
+            [pigeon-backend.websocket :as websocket]))
 
 (s/defschema Model (merge model/Model {:name String
                                        :ordering s/Int
@@ -25,5 +24,6 @@
   (let [return-val (jdbc/with-db-transaction [tx db-spec]
                      (sql-inactivate-turn<! tx)
                      (sql-activate-turn<! tx data))]
-    (async-send! @channels [:reload-turns])
+    (doseq [uid (:any @websocket/connected-uids)]
+      (websocket/chsk-send! uid [:pigeon/reload-turns]))
     return-val))

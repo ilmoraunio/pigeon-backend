@@ -6,8 +6,8 @@
             [schema-tools.core :as st]
             [pigeon-backend.services.util :refer [initialize-query-data]]
             [jeesql.core :refer [defqueries]]
-            [pigeon-backend.websocket :refer [channels async-send!]]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [pigeon-backend.websocket :as websocket]))
 
 (s/defschema New {:sender String
                   :recipient String
@@ -51,14 +51,12 @@
 (s/defn send-message [tx {:keys [sender recipient] :as message-payload} :- MessagePayload]
   (sql-message-create<! tx message-payload)
 
-  (async-send!
-    (filter (fn [[k _]] (= k recipient)) @channels)
-    [:message-received sender])
+  (when-let [[sender-uid] (seq (websocket/filter-users sender))]
+    (websocket/chsk-send! sender-uid [:pigeon/reload-messages]))
 
-  (async-send!
-    (filter (fn [[k _]] (or (= k sender)
-                          (= k recipient))) @channels)
-    [:reload-messages]))
+  (when-let [[recipient]  (seq (websocket/filter-users recipient))]
+    (websocket/chsk-send! recipient [:pigeon/message-received sender])
+    (websocket/chsk-send! recipient [:pigeon/reload-messages])))
 
 (defmulti randomize-value class)
 (defmethod randomize-value Long [n]

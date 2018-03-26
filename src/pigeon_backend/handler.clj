@@ -7,6 +7,7 @@
             [ring.server.standalone :as ring]
             [environ.core :refer [env]]
             [pigeon-backend.db.migrations :as migrations]
+            [pigeon-backend.middleware :refer [wrap-websocket-auth]]
             [ring.middleware.reload :refer [wrap-reload]]
             [pigeon-backend.services.exception-util :refer [handle-exception-info]]
             [pigeon-backend.routes.login :refer [login-routes]]
@@ -20,11 +21,9 @@
             [buddy.sign.jws :as jws]
             [immutant.web :as immutant]
             [immutant.web.middleware :refer [wrap-websocket]]
-            [pigeon-backend.websocket :refer [channels async-send! ws-app]]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [pigeon-backend.websocket :as websocket])
   (:gen-class))
-
-(def async-keepalive (atom nil))
 
 (defn wrap-cors [handler]
   (fn [request]
@@ -53,7 +52,12 @@
       turn-routes
       message-attempt-routes
       message-character-limit-route
-      (GET "/ws/:username" [username] #(ws-app %1 username)))))
+      (context "/chsk" req
+        :middleware [ring.middleware.keyword-params/wrap-keyword-params
+                     ring.middleware.params/wrap-params
+                     wrap-websocket-auth]
+        (GET  "/" _ (websocket/ring-ajax-get-or-ws-handshake req))
+        (POST "/" _ (websocket/ring-ajax-post req))))))
 
 (defn coerce-to-integer [v]
   (if (string? v)
@@ -94,5 +98,4 @@
   (let [port (coerce-to-integer (env :port 8080))
         host                    (env :host "localhost")]
     (immutant/run (app-with-middleware) {:port port
-                                         :host host})
-    (reset! async-keepalive (set-interval #(async-send! @channels "ping") 15000))))
+                                         :host host})))

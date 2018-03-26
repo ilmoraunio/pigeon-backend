@@ -35,4 +35,5 @@
    :cause String})
 
 (defn handle-exception-info [^Exception e data request]
+  (prn e)
   (return-exception-message e))
